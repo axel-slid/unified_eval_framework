@@ -1,48 +1,51 @@
 # %%
+import os
+os.environ["HF_HOME"] = "/mnt/shared/dils/hf_cache"
+os.environ["HUGGINGFACE_HUB_CACHE"] = "/mnt/shared/dils/hf_cache"
+os.environ["TRANSFORMERS_CACHE"] = "/mnt/shared/dils/hf_cache"
 
-# %%
 import torch
 from PIL import Image
-from transformers import AutoProcessor, AutoModelForVision2Seq
+from transformers import AutoProcessor, SmolVLMForConditionalGeneration
 
-MODEL_PATH = "HuggingFaceTB/SmolVLM2-2.2B-Base"  # or local path to your downloaded model
-IMAGE_PATH = "tests/images/001.jpg"
+# Point directly at local download — no network, no cache writes
+MODEL_PATH = "/mnt/shared/dils/models/SmolVLM2-2.2B-Instruct"
+IMAGE_PATH = "inferences/images/001.jpg"
 
-processor = AutoProcessor.from_pretrained(MODEL_PATH)
+processor = AutoProcessor.from_pretrained(MODEL_PATH, local_files_only=True)
+processor.image_processor.size = {"longest_edge": 378}
+processor.image_processor.max_image_size = {"longest_edge": 378}
 
-model = AutoModelForVision2Seq.from_pretrained(
+model = SmolVLMForConditionalGeneration.from_pretrained(
     MODEL_PATH,
-    torch_dtype=torch.float16,
-    device_map=None,
-    low_cpu_mem_usage=False,
+    torch_dtype=torch.bfloat16,
+    device_map="cuda",
+    local_files_only=True,  # never touch the network or cache
 )
+model = model.eval()
 
-device = (
-    torch.device("mps") if torch.backends.mps.is_available()
-    else torch.device("cuda") if torch.cuda.is_available()
-    else torch.device("cpu")
-)
+image = Image.open(IMAGE_PATH).convert("RGB")
+image = image.resize((378, 378), Image.LANCZOS)
 
-model = model.eval().to(device)
-
-# SmolVLM uses a chat template with messages format
 messages = [
     {
         "role": "user",
         "content": [
-            {"type": "image", "url": IMAGE_PATH},
-            {"type": "text",  "text": "Describe this image in detail."},
+            {"type": "image"},
+            {"type": "text", "text": "Describe this image in detail."},
         ],
     }
 ]
 
-inputs = processor.apply_chat_template(
-    messages,
-    add_generation_prompt=True,
-    tokenize=True,
+text_prompt = processor.apply_chat_template(messages, add_generation_prompt=True)
+
+inputs = processor(
+    text=text_prompt,
+    images=image,
     return_tensors="pt",
-    return_dict=True,
-).to(device)
+).to("cuda")
+
+print("pixel_values shape:", inputs["pixel_values"].shape)
 
 with torch.no_grad():
     outputs = model.generate(
@@ -51,7 +54,6 @@ with torch.no_grad():
         do_sample=False,
     )
 
-# Decode only the newly generated tokens (skip the input prompt)
 generated_ids = outputs[:, inputs["input_ids"].shape[1]:]
 response = processor.decode(generated_ids[0], skip_special_tokens=True)
 print(response)

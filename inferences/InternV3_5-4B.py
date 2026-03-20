@@ -2,35 +2,40 @@
 
 import torch
 from PIL import Image
-from transformers import AutoModel, AutoProcessor
+from transformers import AutoProcessor, InternVLForConditionalGeneration
 
 MODEL_PATH = "OpenGVLab/InternVL3_5-4B-HF"
 IMAGE_PATH = "inferences/images/001.jpg"
 
 processor = AutoProcessor.from_pretrained(MODEL_PATH)
 
-model = AutoModel.from_pretrained(
+model = InternVLForConditionalGeneration.from_pretrained(
     MODEL_PATH,
-    torch_dtype=torch.float16,
-    device_map=None,
-    low_cpu_mem_usage=False,
+    torch_dtype=torch.bfloat16,
+    device_map="cuda",
 )
 
-device = (
-    torch.device("mps") if torch.backends.mps.is_available()
-    else torch.device("cuda") if torch.cuda.is_available()
-    else torch.device("cpu")
-)
-
-model = model.eval().to(device)
+model = model.eval()
 
 image = Image.open(IMAGE_PATH).convert("RGB")
 
+messages = [
+    {
+        "role": "user",
+        "content": [
+            {"type": "image"},
+            {"type": "text", "text": "Describe this image in detail."},
+        ],
+    }
+]
+
+text_prompt = processor.apply_chat_template(messages, add_generation_prompt=True)
+
 inputs = processor(
-    text="<image>\nDescribe this image in detail.",
+    text=text_prompt,
     images=image,
     return_tensors="pt",
-).to(device)
+).to("cuda")
 
 with torch.no_grad():
     outputs = model.generate(
