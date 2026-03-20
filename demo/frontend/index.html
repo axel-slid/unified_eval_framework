@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VLM CPU Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0ede8;
+    --surface: #e8e4de;
+    --surface2: #ddd8d0;
+    --border: #c8c2b8;
+    --text: #1a1714;
+    --text-muted: #7a736a;
+    --text-dim: #aaa49c;
+    --accent: #c84b2f;
+    --accent2: #2f7ac8;
+    --green: #2a8a4a;
+    --orange: #c87a2f;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 2px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .logo span { color: var(--accent); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .dot.on { background: var(--green); box-shadow: 0 0 5px var(--green); }
+  .dot.busy { background: var(--orange); animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* ── Main layout ── */
+  .app {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 0;
+    height: calc(100vh - 54px);
+  }
+
+  /* ── Camera panel ── */
+  .camera-panel {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .cam-wrap {
+    flex: 1;
+    background: #1a1714;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scaleX(-1);  /* mirror like a real webcam */
+  }
+
+  canvas { display: none; }
+
+  .cam-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    background: #1a1714;
+  }
+
+  .cam-overlay p {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+  }
+
+  .cam-btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid #444;
+    color: #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .cam-btn:hover { border-color: #ccc; color: #fff; }
+
+  /* Capture flash */
+  .flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.05s;
+  }
+
+  .flash.active { opacity: 0.6; }
+
+  /* Inference indicator overlay */
+  .inferring-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--orange);
+    letter-spacing: 2px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .inferring-badge.show { display: flex; }
+
+  .mini-spin {
+    width: 10px; height: 10px;
+    border: 1.5px solid rgba(255,255,255,.2);
+    border-top-color: var(--orange);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Camera controls */
+  .cam-controls {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+  }
+
+  .capture-btn {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: transform 0.1s, opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  .capture-btn:hover { transform: scale(1.05); }
+  .capture-btn:active { transform: scale(0.95); }
+  .capture-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .auto-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .interval-select {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+
+  .toggle-auto {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .toggle-auto.running {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(200,75,47,0.06);
+  }
+
+  .prompt-area {
+    flex: 1;
+  }
+
+  .prompt-input {
+    width: 100%;
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    padding: 6px 10px;
+    resize: none;
+    height: 34px;
+    line-height: 1.4;
+  }
+
+  .prompt-input:focus { outline: 1px solid var(--accent2); }
+
+  /* ── Right panel ── */
+  .right-panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Model status */
+  .model-status {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .model-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .model-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .model-info { flex: 1; }
+  .model-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .model-sub { font-family: var(--mono); font-size: 10px; color: var(--text-muted); }
+
+  .load-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 7px 16px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .load-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .load-btn.unload { border-color: var(--text-dim); color: var(--text-dim); }
+  .load-btn.unload:hover { border-color: var(--accent); color: var(--accent); }
+  .load-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* CPU meter */
+  .cpu-meter {
+    margin-top: 12px;
+  }
+
+  .cpu-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+  }
+
+  .thread-bars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+  }
+
+  .thread-bar {
+    background: var(--surface2);
+    border-radius: 2px;
+    height: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .thread-fill {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--accent2);
+    border-radius: 2px;
+    transition: height 0.4s;
+  }
+
+  .thread-fill.active { background: var(--orange); }
+
+  .thread-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    z-index: 1;
+  }
+
+  /* Response log */
+  .response-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+  }
+
+  .log-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .log-entry {
+    margin-bottom: 16px;
+    border-left: 2px solid var(--border);
+    padding-left: 12px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .log-entry.latest { border-left-color: var(--accent); }
+
+  .log-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 5px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .log-meta .lat { color: var(--accent2); }
+
+  .log-text {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .log-thumb {
+    width: 48px; height: 36px;
+    object-fit: cover;
+    border-radius: 3px;
+    float: right;
+    margin-left: 8px;
+    border: 1px solid var(--border);
+  }
+
+  .empty-log {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: center;
+    padding: 40px 0;
+    line-height: 2;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">VLM <span>//</span> CPU DEMO</div>
+  <div class="header-right">
+    <span><span class="dot" id="camDot"></span><span id="camStatus">camera off</span></span>
+    <span><span class="dot" id="modelDot"></span><span id="modelStatus">no model</span></span>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--text-dim)">4 × ARM @ 2.80GHz</span>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- ── Camera ── -->
+  <div class="camera-panel">
+    <div class="cam-wrap">
+      <div class="cam-overlay" id="camOverlay">
+        <p>Camera not started</p>
+        <button class="cam-btn" onclick="startCamera()">START CAMERA</button>
+      </div>
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas"></canvas>
+      <div class="flash" id="flash"></div>
+      <div class="inferring-badge" id="inferBadge">
+        <div class="mini-spin"></div>
+        INFERRING
+      </div>
+    </div>
+
+    <div class="cam-controls">
+      <button class="capture-btn" id="captureBtn" onclick="captureAndInfer()" disabled title="Capture & infer">
+        📷
+      </button>
+
+      <div class="prompt-area">
+        <textarea class="prompt-input" id="promptInput" rows="1"
+          placeholder="What do you see?">What do you see?</textarea>
+      </div>
+
+      <div class="auto-wrap">
+        <select class="interval-select" id="intervalSelect">
+          <option value="2000">2s</option>
+          <option value="4000" selected>4s</option>
+          <option value="8000">8s</option>
+          <option value="15000">15s</option>
+        </select>
+        <button class="toggle-auto" id="autoBtn" onclick="toggleAuto()">AUTO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Right panel ── -->
+  <div class="right-panel">
+
+    <!-- Model panel -->
+    <div class="model-status">
+      <div class="model-label">Model</div>
+      <div class="model-row">
+        <div class="model-info">
+          <div class="model-name">SmolVLM2-2.2B</div>
+          <div class="model-sub" id="modelSub">Not loaded — ~8GB RAM, float32</div>
+        </div>
+        <button class="load-btn" id="loadBtn" onclick="toggleModel()">LOAD</button>
+      </div>
+
+      <div class="cpu-meter">
+        <div class="cpu-row">
+          <span>CPU Cores (4 × ARM)</span>
+          <span id="threadCount">4 threads</span>
+        </div>
+        <div class="thread-bars" id="threadBars">
+          <div class="thread-bar"><div class="thread-fill" id="t0" style="height:0%"></div><div class="thread-label">0</div></div>
+          <div class="thread-bar"><div class="thread-fill" id="t1" style="height:0%"></div><div class="thread-label">1</div></div>
+          <div class="thread-bar"><div class="thread-fill" id="t2" style="height:0%"></div><div class="thread-label">2</div></div>
+          <div class="thread-bar"><div class="thread-fill" id="t3" style="height:0%"></div><div class="thread-label">3</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Response log -->
+    <div class="response-log" id="responseLog">
+      <div class="log-label">Responses</div>
+      <div class="empty-log" id="emptyLog">
+        Load the model<br>start the camera<br>hit capture
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = '';
+let stream = null;
+let autoTimer = null;
+let autoRunning = false;
+let modelLoaded = false;
+let modelLoading = false;
+let inferring = false;
+let threadAnimTimer = null;
+
+// ── Camera ────────────────────────────────────────────────────────────────────
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }
+    });
+    const video = document.getElementById('video');
+    video.srcObject = stream;
+    document.getElementById('camOverlay').style.display = 'none';
+    document.getElementById('camDot').className = 'dot on';
+    document.getElementById('camStatus').textContent = 'camera on';
+    updateCaptureBtn();
+  } catch(e) {
+    alert('Camera access denied: ' + e.message);
+  }
+}
+
+function captureFrame() {
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.save();
+  ctx.scale(-1, 1);  // mirror to match video
+  ctx.drawImage(video, -canvas.width, 0);
+  ctx.restore();
+  return canvas.toDataURL('image/jpeg', 0.7);
+}
+
+// ── Model ─────────────────────────────────────────────────────────────────────
+async function toggleModel() {
+  if (modelLoading) return;
+  if (modelLoaded) {
+    await fetch(`${API}/api/unload`, { method: 'POST' });
+    modelLoaded = false;
+    setModelUI(false);
+  } else {
+    setModelUI(null); // loading state
+    const res = await fetch(`${API}/api/load`, { method: 'POST' });
+    const data = await res.json();
+    if (data.status === 'loading' || data.status === 'already_loaded') {
+      pollModelStatus();
+    }
+  }
+}
+
+async function pollModelStatus() {
+  modelLoading = true;
+  while (true) {
+    await sleep(1500);
+    try {
+      const res = await fetch(`${API}/api/status`);
+      const data = await res.json();
+      if (data.model_loaded && !data.loading) {
+        modelLoaded = true;
+        modelLoading = false;
+        setModelUI(true);
+        break;
+      }
+      if (!data.loading && !data.model_loaded) {
+        modelLoading = false;
+        setModelUI(false);
+        break;
+      }
+    } catch(e) { break; }
+  }
+}
+
+function setModelUI(state) {
+  // state: true=loaded, false=unloaded, null=loading
+  const btn = document.getElementById('loadBtn');
+  const sub = document.getElementById('modelSub');
+  const dot = document.getElementById('modelDot');
+  const statusEl = document.getElementById('modelStatus');
+
+  if (state === true) {
+    btn.textContent = 'UNLOAD';
+    btn.className = 'load-btn unload';
+    btn.disabled = false;
+    sub.textContent = 'Loaded — float32 · 4 threads';
+    dot.className = 'dot on';
+    statusEl.textContent = 'model ready';
+  } else if (state === false) {
+    btn.textContent = 'LOAD';
+    btn.className = 'load-btn';
+    btn.disabled = false;
+    sub.textContent = 'Not loaded — ~8GB RAM, float32';
+    dot.className = 'dot';
+    statusEl.textContent = 'no model';
+  } else {
+    btn.textContent = 'LOADING...';
+    btn.disabled = true;
+    sub.textContent = 'Loading weights into RAM...';
+    dot.className = 'dot busy';
+    statusEl.textContent = 'loading...';
+  }
+  updateCaptureBtn();
+}
+
+// ── Inference ─────────────────────────────────────────────────────────────────
+async function captureAndInfer() {
+  if (inferring || !modelLoaded || !stream) return;
+  inferring = true;
+
+  // Flash effect
+  const flash = document.getElementById('flash');
+  flash.classList.add('active');
+  setTimeout(() => flash.classList.remove('active'), 150);
+
+  // Show badge
+  document.getElementById('inferBadge').classList.add('show');
+  document.getElementById('captureBtn').disabled = true;
+  animateThreads(true);
+
+  const frameData = captureFrame();
+  const prompt = document.getElementById('promptInput').value || 'What do you see?';
+
+  // Convert base64 to blob
+  const blob = await (await fetch(frameData)).blob();
+  const form = new FormData();
+  form.append('image', blob, 'frame.jpg');
+  form.append('prompt', prompt);
+
+  const t0 = Date.now();
+  try {
+    const res = await fetch(`${API}/api/infer`, { method: 'POST', body: form });
+    const data = await res.json();
+    addLogEntry(data.response, data.latency_ms, frameData);
+  } catch(e) {
+    addLogEntry('Error: ' + e.message, Date.now()-t0, frameData);
+  }
+
+  document.getElementById('inferBadge').classList.remove('show');
+  animateThreads(false);
+  inferring = false;
+  document.getElementById('captureBtn').disabled = false;
+}
+
+function addLogEntry(text, latencyMs, thumbData) {
+  const log = document.getElementById('responseLog');
+  document.getElementById('emptyLog')?.remove();
+
+  // Remove 'latest' from previous
+  document.querySelectorAll('.log-entry.latest').forEach(e => e.classList.remove('latest'));
+
+  const entry = document.createElement('div');
+  entry.className = 'log-entry latest';
+
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  entry.innerHTML = `
+    <div class="log-meta">
+      <span>${time}</span>
+      <span class="lat">${latencyMs}ms</span>
+      <span>SmolVLM2</span>
+    </div>
+    <div class="log-text">
+      <img class="log-thumb" src="${thumbData}">
+      ${text}
+    </div>`;
+
+  log.insertBefore(entry, log.children[1] || null);
+
+  // Keep last 20 entries
+  const entries = log.querySelectorAll('.log-entry');
+  if (entries.length > 20) entries[entries.length - 1].remove();
+}
+
+// ── Auto mode ─────────────────────────────────────────────────────────────────
+function toggleAuto() {
+  autoRunning = !autoRunning;
+  const btn = document.getElementById('autoBtn');
+  if (autoRunning) {
+    btn.classList.add('running');
+    btn.textContent = 'STOP';
+    scheduleAuto();
+  } else {
+    btn.classList.remove('running');
+    btn.textContent = 'AUTO';
+    clearTimeout(autoTimer);
+  }
+}
+
+function scheduleAuto() {
+  if (!autoRunning) return;
+  const interval = parseInt(document.getElementById('intervalSelect').value);
+  autoTimer = setTimeout(async () => {
+    if (autoRunning && modelLoaded && stream && !inferring) {
+      await captureAndInfer();
+    }
+    scheduleAuto();
+  }, interval);
+}
+
+// ── Thread animation (simulate CPU load during inference) ─────────────────────
+function animateThreads(active) {
+  clearInterval(threadAnimTimer);
+  if (active) {
+    threadAnimTimer = setInterval(() => {
+      for (let i = 0; i < 4; i++) {
+        const fill = document.getElementById(`t${i}`);
+        const h = active ? Math.round(60 + Math.random() * 35) : 0;
+        fill.style.height = h + '%';
+        fill.className = 'thread-fill active';
+      }
+    }, 300);
+  } else {
+    for (let i = 0; i < 4; i++) {
+      const fill = document.getElementById(`t${i}`);
+      fill.style.height = '0%';
+      fill.className = 'thread-fill';
+    }
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function updateCaptureBtn() {
+  const btn = document.getElementById('captureBtn');
+  btn.disabled = !(stream && modelLoaded);
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── Poll server status on load ────────────────────────────────────────────────
+async function checkInitialStatus() {
+  try {
+    const res = await fetch(`${API}/api/status`);
+    const data = await res.json();
+    if (data.model_loaded) {
+      modelLoaded = true;
+      setModelUI(true);
+    } else if (data.loading) {
+      setModelUI(null);
+      pollModelStatus();
+    }
+  } catch(e) {}
+}
+
+checkInitialStatus();
+</script>
+</body>
+</html>
