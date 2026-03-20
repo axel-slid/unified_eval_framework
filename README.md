@@ -379,7 +379,7 @@ CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models yourmodel
 | 2 | Mostly wrong, minor correct elements |
 | 1 | Completely wrong or refused to answer |
 
-The judge sees the image directly so it can verify accuracy without needing a reference answer. **Estimated API cost:** ~$0.03 per 100 images × 2 models with `gpt-5.4-mini`.
+The judge sees the image directly so it can verify accuracy without needing a reference answer. **Estimated API cost:** ~$0.05 per 100 images with `gpt-5.4-mini`.
 
 ---
 
