@@ -53,6 +53,72 @@ unified_eval_framework/
 
 ---
 
+## Quick Start
+
+Everything from clone to benchmark results, copy-paste top to bottom:
+
+```bash
+# ── 1. Clone ──────────────────────────────────────────────────────────────────
+git clone https://github.com/axel-slid/unified_eval_framework.git
+cd unified_eval_framework
+
+# ── 2. Shared server only: redirect HF cache to avoid home dir quota ──────────
+export HF_HOME=/mnt/shared/<yourname>/hf_cache
+export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache
+# make permanent:
+echo 'export HF_HOME=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
+echo 'export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
+
+# ── 3. Download model + create conda env ──────────────────────────────────────
+bash scripts/download_smolvlm.sh       # SmolVLM2-2.2B  (~5GB)
+# bash scripts/download_internv3.sh    # InternVL3.5-4B (~9GB, optional)
+
+# ── 4. Activate env ───────────────────────────────────────────────────────────
+conda activate SmolVLM-env
+
+# ── 5. Verify inference works (should print a image description) ──────────────
+python inferences/SmolVLM2-2.2B-Base.py
+
+# ── 6. Download 100 diverse test images ───────────────────────────────────────
+cd benchmark
+python test_sets/download_test_images.py --count 100
+# generates: test_sets/captioning_100.json
+
+# ── 7. Set OpenAI key and run ─────────────────────────────────────────────────
+export OPENAI_API_KEY=sk-...
+
+# check which GPU is free first:
+nvidia-smi
+
+CUDA_VISIBLE_DEVICES=0 python run_benchmark.py \
+    --test-set test_sets/captioning_100.json \
+    --models smolvlm
+
+# to run both models:
+CUDA_VISIBLE_DEVICES=0 python run_benchmark.py \
+    --test-set test_sets/captioning_100.json \
+    --models smolvlm internvl
+```
+
+Results are saved to `benchmark/results/` — open the `.html` file in any browser.
+
+---
+
+## Sample Report
+
+100-image captioning benchmark, scored by `gpt-5.4-mini` as judge:
+
+| Model | Avg Score | Avg Latency | N |
+|-------|-----------|-------------|---|
+| SmolVLM2-2.2B-Instruct | 3.70 / 5 | 3448ms | 100 |
+| InternVL3-4B-HF | 4.00 / 5 | 7789ms | 100 |
+
+Full results: [results.html](results.html)
+
+![Benchmark report screenshot](docs/report_preview.png)
+
+---
+
 ## Full Workflow
 
 ### Step 1 — Clone the repo
@@ -100,7 +166,7 @@ This will:
 
 ### Step 3 — Verify inference works
 
-Before benchmarking, confirm each model loads and produces output. These scripts run a single image through the model and print the response.
+Before benchmarking, confirm each model loads and produces output.
 
 ```bash
 # SmolVLM2
@@ -112,7 +178,7 @@ conda activate InternV3-env
 python inferences/InternV3_5-4B.py
 ```
 
-If you see a text description printed to stdout, the model is working. If you want to use a locally downloaded model instead of pulling from HuggingFace, update `MODEL_PATH` at the top of the script:
+If you see a text description printed to stdout, the model is working. To use a locally downloaded model instead of pulling from HuggingFace, update `MODEL_PATH` at the top of the script:
 
 ```python
 MODEL_PATH = "../models/SmolVLM2-2.2B-Instruct"   # local path
@@ -124,60 +190,50 @@ MODEL_PATH = "../models/SmolVLM2-2.2B-Instruct"   # local path
 
 Open `benchmark/benchmark_config.yaml` and check:
 
-1. **Model paths** — update `model_path` to your local path if you downloaded the weights:
-   ```yaml
-   models:
-     smolvlm:
-       model_path: /path/to/models/SmolVLM2-2.2B-Instruct  # local
-       # model_path: HuggingFaceTB/SmolVLM2-2.2B-Instruct  # or pull from Hub
-   ```
+**Model paths** — update to your local path if you downloaded the weights:
+```yaml
+models:
+  smolvlm:
+    model_path: /mnt/shared/<you>/models/SmolVLM2-2.2B-Instruct  # local
+    # model_path: HuggingFaceTB/SmolVLM2-2.2B-Instruct           # or pull from Hub
+```
 
-2. **Enable/disable models** — set `enabled: false` to skip a model without removing its config:
-   ```yaml
-   models:
-     smolvlm:
-       enabled: true
-     internvl:
-       enabled: false   # skip this one
-   ```
+**Enable/disable models** — set `enabled: false` to skip without removing config:
+```yaml
+models:
+  smolvlm:
+    enabled: true
+  internvl:
+    enabled: false
+```
 
-3. **Judge model** — currently set to `gpt-5.4-mini`. Change if needed:
-   ```yaml
-   judge:
-     model: gpt-5.4-mini
-   ```
+**Judge model** — defaults to `gpt-5.4-mini`:
+```yaml
+judge:
+  model: gpt-5.4-mini
+```
 
 ---
 
 ### Step 5 — Prepare a test set
 
-#### Option A — Use the built-in sample set (3 images, quick smoke test)
+#### Option A — Built-in sample (3 images, quick smoke test)
 
-The repo includes `benchmark/test_sets/sample.json` with 3 hand-written items. Good for verifying the pipeline works before a full run.
+`benchmark/test_sets/sample.json` — use this first to verify the pipeline runs end to end.
 
 #### Option B — Download 100 diverse images from the web
 
 ```bash
 cd benchmark
-conda activate SmolVLM-env
 python test_sets/download_test_images.py --count 100
-```
+# → generates test_sets/captioning_100.json automatically
 
-This downloads images from Wikimedia Commons across 10 diverse categories (people, animals, food, cities, sports, etc.) and generates `test_sets/captioning_100.json` automatically.
-
-Options:
-```bash
-# Custom output location
-python test_sets/download_test_images.py --count 100 --output test_sets/images/captioning
-
-# Single topic instead of diverse categories
+# options:
 python test_sets/download_test_images.py --count 100 --query "product packaging"
-
-# Slower download rate if hitting rate limits
-python test_sets/download_test_images.py --count 100 --delay 2.5
+python test_sets/download_test_images.py --count 100 --delay 2.5   # slower if hitting rate limits
 ```
 
-#### Option C — Build a test set from your own images
+#### Option C — Build from your own images
 
 ```bash
 python test_sets/generate_test_set.py \
@@ -185,9 +241,7 @@ python test_sets/generate_test_set.py \
     --output test_sets/your_test_set.json
 ```
 
-#### Option D — Write a custom test set manually
-
-Create a JSON file. Each item needs:
+#### Option D — Write manually
 
 ```json
 [
@@ -196,12 +250,12 @@ Create a JSON file. Each item needs:
     "image": "test_sets/images/001.jpg",
     "question": "What text is visible in this image?",
     "reference_answer": "EXIT",
-    "rubric": "Award full marks if all visible text is correctly identified. Partial credit for partially correct answers. Penalize hallucinated text."
+    "rubric": "Award full marks if all visible text is correctly identified. Penalize hallucinated text."
   }
 ]
 ```
 
-`reference_answer` can be left empty `""` for open-ended tasks like captioning — the judge will evaluate based on the image directly.
+`reference_answer` can be `""` for open-ended captioning — the judge scores from the image directly.
 
 ---
 
@@ -209,66 +263,58 @@ Create a JSON file. Each item needs:
 
 ```bash
 cd benchmark
-conda activate SmolVLM-env   # use whichever env has your model's deps
+conda activate SmolVLM-env
 export OPENAI_API_KEY=sk-...
 
-# Run all enabled models against the sample set
-python run_benchmark.py
+# smoke test on 3 images
+python run_benchmark.py --test-set test_sets/sample.json --models smolvlm
 
-# Run against the 100-image captioning set
-python run_benchmark.py --test-set test_sets/captioning_100.json
+# full 100-image run
+CUDA_VISIBLE_DEVICES=0 python run_benchmark.py \
+    --test-set test_sets/captioning_100.json \
+    --models smolvlm internvl
 
-# Run only specific models
-python run_benchmark.py --models smolvlm
-python run_benchmark.py --models smolvlm internvl
-
-# Run on a specific GPU (check free GPUs with nvidia-smi)
-CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models smolvlm internvl
+# run models one at a time if GPU memory is tight
+CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models smolvlm
+CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models internvl
 ```
-
-> **Multi-GPU tip:** Run models one at a time if GPU memory is tight:
-> ```bash
-> CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models smolvlm
-> CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models internvl
-> ```
 
 ---
 
 ### Step 7 — View results
 
-Results are saved to `benchmark/results/`:
+Results land in `benchmark/results/`:
 
-- `results_<timestamp>.json` — raw scores, responses, latencies, and judge reasons per question per model
-- `report_<timestamp>.html` — formatted side-by-side comparison table, open in any browser
+- `results_<timestamp>.json` — raw scores, responses, latencies, judge reasons
+- `report_<timestamp>.html` — side-by-side comparison table, open in any browser
 
-A summary is also printed to the terminal:
-
+Terminal summary:
 ```
 ============================================================
 SUMMARY
 ============================================================
 Model                          Avg Score    Avg Latency      N
 --------------------------------------------------------------
-SmolVLM2 (SmolVLM2-2.2B)           3.67          812ms      3
-InternVL3 (InternVL3_5-4B)         4.33         1204ms      3
+SmolVLM2 (SmolVLM2-2.2B)           3.70         3448ms    100
+InternVL3 (InternVL3_5-4B)         4.00         7789ms    100
 ```
 
 ---
 
 ## Adding Your Own Model
 
-Adding a new model requires 3 files/edits — nothing else needs to change.
+3 steps, no changes to `run_benchmark.py`.
 
 ### 1. Create `benchmark/models/yourmodel.py`
 
-Copy `smolvlm.py` as a template. The only contract is implementing `load()` and `run()`:
+Copy `smolvlm.py` as a template and implement `load()` and `run()`:
 
 ```python
 from __future__ import annotations
 import time
 import torch
 from PIL import Image
-from transformers import AutoProcessor, YourModelClass   # swap in the right class
+from transformers import AutoProcessor, YourModelClass
 from models.base import BaseVLMModel, InferenceResult
 from config import ModelConfig
 
@@ -295,7 +341,7 @@ class YourModel(BaseVLMModel):
             t0 = time.perf_counter()
             # outputs = self.model.generate(...)
             latency_ms = (time.perf_counter() - t0) * 1000
-            response = "..."   # decoded output
+            response = "..."
             return InferenceResult(response=response, latency_ms=latency_ms)
         except Exception as e:
             return InferenceResult(response="", latency_ms=0.0, error=str(e))
@@ -314,7 +360,7 @@ from .yourmodel import YourModel
 MODEL_REGISTRY = {
     "SmolVLMModel": SmolVLMModel,
     "InternVLModel": InternVLModel,
-    "YourModel": YourModel,      # ← add this line
+    "YourModel": YourModel,      # ← add this
 }
 ```
 
@@ -325,13 +371,13 @@ models:
   yourmodel:
     enabled: true
     class: YourModel
-    model_path: /path/to/your/model   # or HuggingFace repo ID
+    model_path: /path/to/your/model
     dtype: bfloat16
     generation:
       max_new_tokens: 256
 ```
 
-Then run:
+Run it:
 ```bash
 CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models yourmodel
 ```
@@ -340,7 +386,7 @@ CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models yourmodel
 
 ## Scoring
 
-Responses are scored 1–5 by the judge model (default: `gpt-5.4-mini`) using a per-question rubric. The judge also sees the image directly, so it can verify whether the model's description is accurate.
+Responses are scored 1–5 by the judge model. The judge sees the image directly so it can verify whether the model's description is accurate without needing a reference answer.
 
 | Score | Meaning |
 |-------|---------|
@@ -358,38 +404,34 @@ Responses are scored 1–5 by the judge model (default: `gpt-5.4-mini`) using a 
 
 | Model | Params | Avg Score (/ 5) | Avg Latency | Test Set |
 |-------|--------|-----------------|-------------|----------|
-| SmolVLM2-2.2B-Instruct | 2.2B | — | — | — |
-| InternVL3.5-4B-HF | 4B | — | — | — |
+| SmolVLM2-2.2B-Instruct | 2.2B | 3.70 | 3448ms | captioning 100 |
+| InternVL3.5-4B-HF | 4B | 4.00 | 7789ms | captioning 100 |
 | *(your model here)* | — | — | — | — |
-
-> Run the benchmark and paste your results here.
 
 ---
 
 ## Configuration Reference
 
-All settings live in `benchmark/benchmark_config.yaml`:
-
 ```yaml
-output_dir: results            # where JSON + HTML reports are saved
+output_dir: results
 
 judge:
-  model: gpt-5.4-mini          # OpenAI model used for scoring
+  model: gpt-5.4-mini
   max_tokens: 256
   timeout_seconds: 30
 
-generation_defaults:           # applied to all models unless overridden
+generation_defaults:
   max_new_tokens: 256
   do_sample: false
 
 models:
   smolvlm:
-    enabled: true              # set false to skip without deleting config
-    class: SmolVLMModel        # must match a key in models/__init__.py MODEL_REGISTRY
-    model_path: /path/to/model # local path or HuggingFace repo ID
+    enabled: true
+    class: SmolVLMModel        # must match MODEL_REGISTRY key in models/__init__.py
+    model_path: /path/to/model
     dtype: bfloat16            # float32 | float16 | bfloat16
     generation:
-      max_new_tokens: 256      # overrides generation_defaults for this model
+      max_new_tokens: 256      # overrides generation_defaults
 ```
 
 ---
@@ -397,24 +439,22 @@ models:
 ## Troubleshooting
 
 **CUDA out of memory**
-Check if another process is using the GPU:
 ```bash
-nvidia-smi
-kill <pid>   # free the memory, then re-run
+nvidia-smi          # find the PID hogging memory
+kill <pid>          # free it, then re-run
 ```
 
 **Disk quota exceeded**
-Redirect HuggingFace cache to a larger partition (see Prerequisites above).
+Redirect HuggingFace cache to a larger partition (see Prerequisites).
 
 **`ImportError: cannot import name X from transformers`**
-Your transformers version is too old:
 ```bash
 pip install --upgrade "transformers>=4.52.1"
+# then restart Jupyter kernel if in a notebook
 ```
-Then restart your Jupyter kernel if running in a notebook.
 
 **Judge scores all 0**
-`OPENAI_API_KEY` is not set in the current shell. The benchmark still runs and saves responses — add the key and re-run to get scores.
+`OPENAI_API_KEY` is not set. The benchmark still runs and saves responses — set the key and re-run to get scores.
 
-**Model produces garbage output / ignores the image**
-Make sure you're using the `-Instruct` variant of the model, not `-Base`. Base models are not fine-tuned for instruction following.
+**Model produces garbage / ignores the image**
+Use the `-Instruct` variant, not `-Base`. Base models are not fine-tuned for instruction following.
