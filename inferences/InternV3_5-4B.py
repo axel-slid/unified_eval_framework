@@ -2,23 +2,18 @@
 
 import torch
 from PIL import Image
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoProcessor
 
 MODEL_PATH = "OpenGVLab/InternVL3_5-4B-HF"
 IMAGE_PATH = "tests/images/001.jpg"
 
-tokenizer = AutoTokenizer.from_pretrained(
-    MODEL_PATH,
-    trust_remote_code=True,
-    use_fast=False,
-)
+processor = AutoProcessor.from_pretrained(MODEL_PATH)
 
 model = AutoModel.from_pretrained(
     MODEL_PATH,
-    trust_remote_code=True,
-    torch_dtype=torch.float32,
-    device_map=None,          # disable auto device mapping
-    low_cpu_mem_usage=False,  # prevents meta tensor usage
+    torch_dtype=torch.float16,
+    device_map=None,
+    low_cpu_mem_usage=False,
 )
 
 device = (
@@ -31,15 +26,19 @@ model = model.eval().to(device)
 
 image = Image.open(IMAGE_PATH).convert("RGB")
 
-response = model.chat(
-    tokenizer=tokenizer,
-    image=image,
-    question="<image>\nDescribe this image in detail.",
-    generation_config={
-        "max_new_tokens": 128,
-        "do_sample": False,
-    },
-)
+inputs = processor(
+    text="<image>\nDescribe this image in detail.",
+    images=image,
+    return_tensors="pt",
+).to(device)
 
+with torch.no_grad():
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=128,
+        do_sample=False,
+    )
+
+response = processor.decode(outputs[0], skip_special_tokens=True)
 print(response)
 # %%

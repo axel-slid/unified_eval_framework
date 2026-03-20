@@ -1,0 +1,20 @@
+[
+  {
+    "id": "001",
+    "image": "test_sets/images/001.jpg",
+    "question": "How many people are visible in this image?",
+    "rubric": "Award full marks for the correct count. Award partial credit (3/5) if the answer is within 1 of the correct number. Deduct marks for vague answers like 'several' without a number."
+  },
+  {
+    "id": "002",
+    "image": "test_sets/images/002.jpg",
+    "question": "What is the dominant color in this image?",
+    "rubric": "Accept any reasonable color name that matches the most visually prominent color. Be lenient with synonyms (e.g. 'navy' for 'dark blue')."
+  },
+  {
+    "id": "003",
+    "image": "test_sets/images/003.jpg",
+    "question": "Describe what is happening in this image in one sentence.",
+    "rubric": "The response should correctly identify the main subject and action. It does not need to capture every detail. Penalize hallucinated elements that are clearly not present."
+  }
+]

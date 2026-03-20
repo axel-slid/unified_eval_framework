@@ -1,0 +1,50 @@
+# benchmark_config.yaml
+# Central config for the VLM benchmark.
+# All model paths, judge settings, and run options live here.
+
+# ── Output ────────────────────────────────────────────────────────────────────
+output_dir: results
+
+# ── Judge (Claude-as-judge) ───────────────────────────────────────────────────
+judge:
+  model: claude-sonnet-4-20250514
+  max_tokens: 256
+  timeout_seconds: 30
+
+# ── Generation defaults (can be overridden per model below) ───────────────────
+generation_defaults:
+  max_new_tokens: 256
+  do_sample: false
+
+# ── Models ────────────────────────────────────────────────────────────────────
+# enabled: false to skip a model without deleting its config
+# model_path: HuggingFace repo ID or local path
+# generation: optional overrides on top of generation_defaults above
+
+models:
+  smolvlm:
+    enabled: true
+    class: SmolVLMModel
+    model_path: HuggingFaceTB/SmolVLM2-2.2B-Instruct
+    # model_path: ../models/SmolVLM2-2.2B-Base   # ← swap to local path if downloaded
+    dtype: float16
+    generation:
+      max_new_tokens: 256
+
+  internvl:
+    enabled: true
+    class: InternVLModel
+    model_path: OpenGVLab/InternVL3_5-4B-HF
+    # model_path: ../models/InternVL3_5-4B-HF
+    dtype: float16
+    generation:
+      max_new_tokens: 256
+
+  # ── Template for adding a new model ─────────────────────────────────────────
+  # yourmodel:
+  #   enabled: false
+  #   class: YourModelClass          # must match class name in models/yourmodel.py
+  #   model_path: org/repo-or-local-path
+  #   dtype: float16                 # float32 | float16 | bfloat16
+  #   generation:
+  #     max_new_tokens: 128
