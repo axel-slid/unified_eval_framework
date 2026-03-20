@@ -106,7 +106,7 @@ Results are saved to `benchmark/results/` — open `report_all_models_<timestamp
 
 ---
 
-## Sample Report
+## Report that I got:
 
 100-image captioning benchmark, scored by `gpt-5.4-mini` as judge:
 
