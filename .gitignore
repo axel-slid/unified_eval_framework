@@ -1,1 +1,3 @@
 models/
+benchmark/test_sets/images/
+benchmark/results/

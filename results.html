@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>VLM Benchmark — 20260320_041108</title>
+<style>
+  body { font-family: 'Courier New', monospace; background: #0d0d0d; color: #ccc; padding: 2rem; }
+  h1 { color: #fff; font-size: 1.4rem; letter-spacing: 3px; text-transform: uppercase; }
+  h2 { color: #888; font-size: .9rem; letter-spacing: 2px; text-transform: uppercase;
+        border-bottom: 1px solid #222; padding-bottom: .4rem; margin-top: 2rem; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 1.5rem; font-size: .85rem; }
+  th { background: #161616; color: #aaa; padding: 7px 12px; text-align: left;
+        border-bottom: 1px solid #2a2a2a; }
+  td { padding: 8px 12px; border-bottom: 1px solid #1a1a1a; vertical-align: top; }
+  tr:hover td { background: #131313; }
+  code { background: #1a1a1a; padding: 1px 5px; border-radius: 3px; font-size: .8rem; }
+  .tag { display:inline-block; background:#1a1a1a; color:#666;
+          padding: 2px 10px; border-radius: 3px; font-size: .75rem; }
+</style>
+</head>
+<body>
+<h1>VLM Benchmark Report</h1>
+<p class="tag">20260320_041108</p>
+
+<h2>Summary</h2>
+<table>
+  <tr><th>Model</th><th>Avg Score</th><th>Avg Latency</th><th>N</th><th>Path</th></tr>
+  <tr><td>SmolVLM2 (SmolVLM2-2.2B-Instruct)</td><td>3.33 / 5</td><td>540ms</td><td>3</td><td><code>/mnt/shared/dils/models/SmolVLM2-2.2B-Instruct</code></td></tr><tr><td>InternVL3 (InternVL3_5-4B-HF)</td><td>4.00 / 5</td><td>1929ms</td><td>3</td><td><code>OpenGVLab/InternVL3_5-4B-HF</code></td></tr>
+</table>
+
+<h2>Per-Question Results</h2>
+<table>
+  <tr><th>Question</th><th>SmolVLM2 (SmolVLM2-2.2B-Instruct)</th><th>InternVL3 (InternVL3_5-4B-HF)</th></tr>
+  <tr><td><b>001</b><br><small>How many people are visible in this image?</small></td><td><span style="color:#3d9;font-weight:bold">5/5</span> <small>(1071.3ms)</small><br><small> There are two people visible in this image.…</small><br><i style="font-size:11px;color:#666">The model correctly states that there are two people visible, matching the reference answer exactly.</i></td><td><span style="color:#3d9;font-weight:bold">5/5</span> <small>(1520.5ms)</small><br><small>user
+
+How many people are visible in this image?
+assistant
+There is one person visible in this image.…</small><br><i style="font-size:11px;color:#666">The model correctly states that there is one person visible, matching the reference answer exactly.</i></td></tr><tr><td><b>002</b><br><small>What is the dominant color in this image?</small></td><td><span style="color:#e54;font-weight:bold">1/5</span> <small>(231.1ms)</small><br><small> The dominant color in this image is yellow.…</small><br><i style="font-size:11px;color:#666">The response identifies yellow as the dominant color, but this does not match the reference answer.</i></td><td><span style="color:#3d9;font-weight:bold">5/5</span> <small>(1913.1ms)</small><br><small>user
+
+What is the dominant color in this image?
+assistant
+The dominant color in this image is green, primarily from the …</small><br><i style="font-size:11px;color:#666">The response correctly identifies green as the dominant color, which matches the likely most prominent color in the image.</i></td></tr><tr><td><b>003</b><br><small>Describe what is happening in this image in one sentence.</small></td><td><span style="color:#3d9;font-weight:bold">4/5</span> <small>(319.0ms)</small><br><small> Two men are standing in front of a building, one of them is wearing a backpack.…</small><br><i style="font-size:11px;color:#666">The response correctly identifies two men standing in front of a building and mentions the backpack, but it is slightly less complete than the reference description.</i></td><td><span style="color:#e54;font-weight:bold">2/5</span> <small>(2353.3ms)</small><br><small>user
+
+Describe what is happening in this image in one sentence.
+assistant
+Two people are standing and talking in front o…</small><br><i style="font-size:11px;color:#666">The response gives a generic scene description with some plausible elements, but it likely misses the main subject/action from the image and includes unsupported details like a clock tower and classical building.</i></td></tr>
+</table>
+</body>
+</html>
