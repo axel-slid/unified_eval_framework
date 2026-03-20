@@ -4,8 +4,8 @@ import torch
 from PIL import Image
 from transformers import AutoModel, AutoTokenizer
 
-MODEL_PATH = "models/InternVL3_5-4B"
-IMAGE_PATH = "tests/images/001.jpg.jpg"
+MODEL_PATH = "OpenGVLab/InternVL3_5-4B-HF"
+IMAGE_PATH = "tests/images/001.jpg"
 
 tokenizer = AutoTokenizer.from_pretrained(
     MODEL_PATH,
@@ -15,34 +15,31 @@ tokenizer = AutoTokenizer.from_pretrained(
 
 model = AutoModel.from_pretrained(
     MODEL_PATH,
-    torch_dtype=torch.float16 if torch.backends.mps.is_available() else torch.float32,
-    low_cpu_mem_usage=True,
     trust_remote_code=True,
+    torch_dtype=torch.float32,
+    device_map=None,          # disable auto device mapping
+    low_cpu_mem_usage=False,  # prevents meta tensor usage
 )
 
-if torch.backends.mps.is_available():
-    device = torch.device("mps")
-elif torch.cuda.is_available():
-    device = torch.device("cuda")
-else:
-    device = torch.device("cpu")
+device = (
+    torch.device("mps") if torch.backends.mps.is_available()
+    else torch.device("cuda") if torch.cuda.is_available()
+    else torch.device("cpu")
+)
 
 model = model.eval().to(device)
 
 image = Image.open(IMAGE_PATH).convert("RGB")
 
-question = "<image>\nDescribe this image in detail."
-
 response = model.chat(
     tokenizer=tokenizer,
-    pixel_values=None,
-    question=question,
+    image=image,
+    question="<image>\nDescribe this image in detail.",
     generation_config={
-        "max_new_tokens": 256,
+        "max_new_tokens": 128,
         "do_sample": False,
     },
-    image=image,
 )
 
-print("\n=== Response ===\n")
 print(response)
+# %%

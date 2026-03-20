@@ -32,7 +32,7 @@ conda activate "${ENV_NAME}"
 
 python -m pip install --upgrade pip setuptools wheel
 
-# macOS-friendly PyTorch install
+
 pip install torch torchvision torchaudio
 
 pip install \
@@ -46,7 +46,6 @@ pip install \
   einops \
   num2words
 
-# Optional for video support on Apple Silicon / macOS
 pip install eva-decord || true
 
 mkdir -p "${MODEL_DIR}"
