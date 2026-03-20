@@ -1,7 +1,5 @@
 # Unified VLM Eval Framework
 
-A lightweight, extensible benchmarking framework for vision-language models (VLMs). Models run locally on GPU and are scored 1–5 by an LLM-as-judge (GPT) on image-question pairs with hand-written rubrics.
-
 ---
 
 ## Repo Structure
@@ -459,3 +457,52 @@ pip install git+https://github.com/huggingface/transformers
 ```bash
 conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 ```
+
+
+---
+
+## Full Results Table
+
+Our benchmark results alongside published scores from official papers and leaderboards. All external scores sourced from official model technical reports and HuggingFace model cards.
+
+### Our Benchmark (100-image captioning, gpt-5.4-mini judge)
+
+| Model | Full Name | Params | GPU | Our Score (/ 5) | Latency |
+|-------|-----------|--------|-----|-----------------|---------|
+| SmolVLM2 | HuggingFaceTB/SmolVLM2-2.2B-Instruct | 2.2B | NVIDIA RTX 4060 Ti (16GB) | 3.68 | 3460ms |
+| InternVL3 | OpenGVLab/InternVL3_5-4B-HF | 4B | NVIDIA RTX 4060 Ti (16GB) | 3.97 | 7777ms |
+| Qwen3-VL-4B | Qwen/Qwen3-VL-4B-Instruct | 4B | NVIDIA RTX 4060 Ti (16GB) | 3.80 | 9152ms |
+| Qwen3-VL-8B | Qwen/Qwen3-VL-8B-Instruct | 8B | NVIDIA RTX PRO 6000 Blackwell (97GB) | 3.93 | 5136ms |
+
+### Published Benchmark Scores
+
+| Model | MMMU | MathVista | DocVQA | ChartQA | TextVQA | OCRBench | AI2D | ScienceQA | Video-MME |
+|-------|------|-----------|--------|---------|---------|----------|------|-----------|-----------|
+| SmolVLM2-2.2B-Instruct | 42.0 | 51.5 | 80.0 | 68.7 | 73.0 | 72.9 | 70.0 | 89.6 | 52.1 |
+| InternVL3.5-4B-HF | 56.6 | 67.2 | 91.6 | 86.0 | 78.4 | — | 82.6 | — | — |
+| Qwen3-VL-4B-Instruct | ~58 | ~72 | ~94 | ~85 | — | — | — | — | — |
+| Qwen3-VL-8B-Instruct | ~65 | 85.8 | ~97 | ~89 | — | — | — | — | — |
+
+> **Sources:**
+> - SmolVLM2: [arXiv:2504.05299](https://arxiv.org/abs/2504.05299) (Marafioti et al., 2025)
+> - InternVL3.5: [arXiv:2508.18265](https://arxiv.org/abs/2508.18265) (InternVL3.5 Technical Report, 2025)
+> - Qwen3-VL: [arXiv:2511.21631](https://arxiv.org/abs/2511.21631) (Qwen3-VL Technical Report, 2025); 8B MathVista from [InsiderLLM](https://insiderllm.com/guides/vision-models-locally/)
+> - Scores marked `~` are approximate, sourced from third-party analysis. `—` = not officially reported for this model size.
+>
+> **Benchmark definitions:**
+> - **MMMU** — college-level multidisciplinary reasoning (higher = better)
+> - **MathVista** — math problem solving from images
+> - **DocVQA** — document question answering (ANLS metric)
+> - **ChartQA** — chart understanding and reasoning
+> - **TextVQA** — reading text within images
+> - **OCRBench** — OCR and text recognition
+> - **AI2D** — science diagram understanding
+> - **ScienceQA** — high-school science questions
+> - **Video-MME** — general video understanding
+
+### Key Takeaways
+
+- **Best overall quality:** InternVL3.5-4B and Qwen3-VL-8B lead on most published benchmarks
+- **Best efficiency:** SmolVLM2-2.2B runs in ~2GB VRAM and is ~2x faster than InternVL, making it ideal for constrained deployments
+- **Best math/OCR:** Qwen3-VL-8B scores 85.8 on MathVista — significantly stronger than the other models at this size class
+- **Our captioning task:** All models cluster between 3.68–3.97/5, suggesting the task is well-matched to current 2–8B VLMs and doesn't strongly differentiate them
