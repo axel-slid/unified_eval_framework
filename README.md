@@ -51,13 +51,10 @@ unified_eval_framework/
 
 > **Shared server tip:** If your home directory has a disk quota, redirect everything to a larger partition before doing anything else:
 > ```bash
-> # Redirect HuggingFace cache
 > export HF_HOME=/mnt/shared/<yourname>/hf_cache
 > export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache
 > echo 'export HF_HOME=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
 > echo 'export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
->
-> # Redirect conda envs + packages
 > mkdir -p /mnt/shared/<yourname>/envs /mnt/shared/<yourname>/conda_pkgs
 > conda config --add envs_dirs /mnt/shared/<yourname>/envs
 > conda config --add pkgs_dirs /mnt/shared/<yourname>/conda_pkgs
@@ -71,23 +68,23 @@ unified_eval_framework/
 Everything from clone to benchmark results, copy-paste top to bottom:
 
 ```bash
-# ── 1. Clone ──────────────────────────────────────────────────────────────────
+# 1. Clone
 git clone https://github.com/axel-slid/unified_eval_framework.git
 cd unified_eval_framework
 
-# ── 2. Shared server only: redirect caches to avoid home dir quota ─────────────
+# 2. Shared server only: redirect caches to avoid home dir quota
 export HF_HOME=/mnt/shared/<yourname>/hf_cache
 export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache
 echo 'export HF_HOME=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
 echo 'export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
 
-# ── 3. Download all models ─────────────────────────────────────────────────────
-bash scripts/download_smolvlm.sh         # SmolVLM2-2.2B   (~5GB)  → SmolVLM-env
-bash scripts/download_internv3.sh        # InternVL3.5-4B  (~9GB)  → InternV3-env
-bash scripts/download_qwen3vl_4b.sh      # Qwen3-VL-4B     (~9GB)  → Qwen3VL-env
-bash scripts/download_qwen3vl_8b.sh      # Qwen3-VL-8B     (~18GB) → Qwen3VL-env
+# 3. Download all models
+bash scripts/download_smolvlm.sh         # SmolVLM2-2.2B   (~5GB)
+bash scripts/download_internv3.sh        # InternVL3.5-4B  (~9GB)
+bash scripts/download_qwen3vl_4b.sh      # Qwen3-VL-4B     (~9GB)
+bash scripts/download_qwen3vl_8b.sh      # Qwen3-VL-8B     (~18GB)
 
-# ── 4. Verify each model loads (should print an image description) ─────────────
+# 4. Verify each model loads
 conda activate SmolVLM-env
 python inferences/SmolVLM2-2.2B-Base.py
 
@@ -98,12 +95,11 @@ conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 python inferences/Qwen3VL-4B.py
 python inferences/Qwen3VL-8B.py
 
-# ── 5. Download 100 test images ────────────────────────────────────────────────
+# 5. Download 100 test images
 cd benchmark
-conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 python test_sets/download_test_images.py --count 100
 
-# ── 6. Run all models and generate combined report ─────────────────────────────
+# 6. Run all models and generate combined report
 export OPENAI_API_KEY=sk-...
 bash run_all_models.sh
 ```
@@ -118,10 +114,10 @@ Results are saved to `benchmark/results/` — open `report_all_models_<timestamp
 
 | Model | Params | Avg Score | Avg Latency | N |
 |-------|--------|-----------|-------------|---|
-| SmolVLM2-2.2B-Instruct | 2.2B | 3.70 / 5 | 3448ms | 100 |
-| InternVL3-4B-HF | 4B | 4.00 / 5 | 7789ms | 100 |
-| Qwen3-VL-4B-Instruct | 4B | — | — | — |
-| Qwen3-VL-8B-Instruct | 8B | — | — | — |
+| SmolVLM2-2.2B-Instruct | 2.2B | 3.68 / 5 | 3460ms | 100 |
+| InternVL3-4B-HF | 4B | 3.97 / 5 | 7777ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | 3.80 / 5 | 9152ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | 3.93 / 5 | 5136ms | 100 |
 
 Full results: [results.html](results.html)
 
@@ -142,8 +138,6 @@ cd unified_eval_framework
 
 ### Step 2 — Download models
 
-Each model has a download script that creates its conda environment and downloads weights.
-
 | Model | Script | Env | Size |
 |-------|--------|-----|------|
 | SmolVLM2-2.2B-Instruct | `download_smolvlm.sh` | `SmolVLM-env` | ~5GB |
@@ -158,42 +152,31 @@ bash scripts/download_qwen3vl_4b.sh   # creates shared env + downloads 4B
 bash scripts/download_qwen3vl_8b.sh   # reuses same env, downloads 8B weights
 ```
 
-> **Note on Qwen3-VL:** Scripts create the conda env at `/mnt/shared/<yourname>/envs/Qwen3VL-env` to avoid home directory quota issues. Both 4B and 8B share this one environment. Activate with the full path: `conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env`
+> **Note on Qwen3-VL:** The env is created at `/mnt/shared/<yourname>/envs/Qwen3VL-env` to avoid home dir quota issues. Activate with the full path: `conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env`
 
-> **Gated models:** Set `HF_TOKEN` before running:
-> ```bash
-> export HF_TOKEN=hf_...
-> bash scripts/download_smolvlm.sh
-> ```
+> **Gated models:** `export HF_TOKEN=hf_...` before running the script.
 
 ---
 
 ### Step 3 — Verify inference works
 
 ```bash
-# SmolVLM2
 conda activate SmolVLM-env
 python inferences/SmolVLM2-2.2B-Base.py
 
-# InternVL3.5
 conda activate InternV3-env
 python inferences/InternV3_5-4B.py
 
-# Qwen3-VL 4B
 conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 python inferences/Qwen3VL-4B.py
-
-# Qwen3-VL 8B (needs 16GB+ VRAM)
-python inferences/Qwen3VL-8B.py
+python inferences/Qwen3VL-8B.py    # needs 16GB+ VRAM
 ```
-
-If you see a text description printed to stdout, the model is working.
 
 ---
 
 ### Step 4 — Configure the benchmark
 
-Open `benchmark/benchmark_config.yaml` and update model paths to your local downloads:
+Open `benchmark/benchmark_config.yaml` and update `model_path` to your local downloads:
 
 ```yaml
 models:
@@ -206,7 +189,7 @@ models:
   internvl:
     enabled: true
     class: InternVLModel
-    model_path: OpenGVLab/InternVL3_5-4B-HF   # or local path
+    model_path: OpenGVLab/InternVL3_5-4B-HF
     dtype: bfloat16
 
   qwen3vl_4b:
@@ -228,24 +211,21 @@ Set `enabled: false` to skip a model without removing its config.
 
 ### Step 5 — Prepare a test set
 
-#### Option A — Built-in sample (3 images, quick smoke test)
+**Option A — Built-in sample (3 images, smoke test)**
 
-`benchmark/test_sets/sample.json` — use this first to verify the pipeline end to end.
+`benchmark/test_sets/sample.json`
 
-#### Option B — Download 100 diverse images from the web
+**Option B — Download 100 diverse images from the web**
 
 ```bash
 cd benchmark
-conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 python test_sets/download_test_images.py --count 100
-# → generates test_sets/captioning_100.json automatically
-
 # options:
 python test_sets/download_test_images.py --count 100 --query "product packaging"
-python test_sets/download_test_images.py --count 100 --delay 2.5   # slower if hitting 429s
+python test_sets/download_test_images.py --count 100 --delay 2.5
 ```
 
-#### Option C — Build from your own images
+**Option C — Build from your own images**
 
 ```bash
 python test_sets/generate_test_set.py \
@@ -253,7 +233,7 @@ python test_sets/generate_test_set.py \
     --output test_sets/your_test_set.json
 ```
 
-#### Option D — Write manually
+**Option D — Write manually**
 
 ```json
 [
@@ -267,13 +247,13 @@ python test_sets/generate_test_set.py \
 ]
 ```
 
-`reference_answer` can be `""` for captioning — the judge scores from the image directly.
+`reference_answer` can be `""` — the judge scores from the image directly.
 
 ---
 
 ### Step 6 — Run the benchmark
 
-#### Run all 4 models with one command (recommended)
+**Run all 4 models (recommended):**
 
 ```bash
 cd benchmark
@@ -282,26 +262,18 @@ export OPENAI_API_KEY=sk-...
 bash run_all_models.sh
 ```
 
-This runs each model sequentially, unloading between runs to free GPU memory, then merges all results into a single `report_all_models_<timestamp>.html`.
+Runs each model sequentially, unloads between runs, then merges into one `report_all_models_<timestamp>.html`.
 
-#### Run individual models
+**Run individual models:**
 
 ```bash
-cd benchmark
-export OPENAI_API_KEY=sk-...
-
-# check free GPUs first
-nvidia-smi
+nvidia-smi   # check free GPUs first
 
 CUDA_VISIBLE_DEVICES=0 python run_benchmark.py \
     --test-set test_sets/captioning_100.json \
-    --models smolvlm
+    --models smolvlm internvl qwen3vl_4b
 
-CUDA_VISIBLE_DEVICES=0 python run_benchmark.py \
-    --test-set test_sets/captioning_100.json \
-    --models internvl qwen3vl_4b
-
-# 8B needs 16GB+ VRAM — use a bigger GPU
+# 8B needs 16GB+ VRAM
 CUDA_VISIBLE_DEVICES=1 python run_benchmark.py \
     --test-set test_sets/captioning_100.json \
     --models qwen3vl_8b
@@ -314,21 +286,8 @@ CUDA_VISIBLE_DEVICES=1 python run_benchmark.py \
 Results land in `benchmark/results/`:
 
 - `results_<timestamp>.json` — raw scores, responses, latencies, judge reasons
-- `report_<timestamp>.html` — side-by-side comparison, open in any browser
-- `report_all_models_<timestamp>.html` — combined 4-model report from `run_all_models.sh`
-
-Terminal summary printed after each run:
-```
-=================================================================
-SUMMARY
-=================================================================
-Model                            Avg Score    Avg Latency      N
------------------------------------------------------------------
-SmolVLM2 (SmolVLM2-2.2B)             3.70         3448ms    100
-InternVL3 (InternVL3_5-4B)           4.00         7789ms    100
-Qwen3-VL (Qwen3-VL-4B-Instruct)        —              —      —
-Qwen3-VL (Qwen3-VL-8B-Instruct)        —              —      —
-```
+- `report_<timestamp>.html` — side-by-side comparison table
+- `report_all_models_<timestamp>.html` — combined report from `run_all_models.sh`
 
 ---
 
@@ -337,8 +296,6 @@ Qwen3-VL (Qwen3-VL-8B-Instruct)        —              —      —
 3 steps, no changes to `run_benchmark.py`.
 
 ### 1. Create `benchmark/models/yourmodel.py`
-
-Copy `smolvlm.py` as a template and implement `load()` and `run()`:
 
 ```python
 from __future__ import annotations
@@ -368,7 +325,6 @@ class YourModel(BaseVLMModel):
     def run(self, image_path: str, question: str) -> InferenceResult:
         try:
             image = Image.open(image_path).convert("RGB")
-            # ... your inference code here ...
             t0 = time.perf_counter()
             # outputs = self.model.generate(...)
             latency_ms = (time.perf_counter() - t0) * 1000
@@ -392,7 +348,7 @@ MODEL_REGISTRY = {
     "SmolVLMModel": SmolVLMModel,
     "InternVLModel": InternVLModel,
     "Qwen3VLModel": Qwen3VLModel,
-    "YourModel": YourModel,      # ← add this
+    "YourModel": YourModel,
 }
 ```
 
@@ -409,7 +365,6 @@ models:
       max_new_tokens: 256
 ```
 
-Run it:
 ```bash
 CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models yourmodel
 ```
@@ -417,8 +372,6 @@ CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models yourmodel
 ---
 
 ## Scoring
-
-Responses are scored 1–5 by the judge model. The judge sees the image directly so it can verify accuracy without needing a reference answer.
 
 | Score | Meaning |
 |-------|---------|
@@ -428,19 +381,26 @@ Responses are scored 1–5 by the judge model. The judge sees the image directly
 | 2 | Mostly wrong, minor correct elements |
 | 1 | Completely wrong or refused to answer |
 
-**Estimated API cost:** ~$0.03 per 100 images × 2 models with `gpt-5.4-mini`.
+The judge sees the image directly so it can verify accuracy without needing a reference answer. **Estimated API cost:** ~$0.03 per 100 images × 2 models with `gpt-5.4-mini`.
 
 ---
 
 ## Model Results
 
-| Model | Params | Avg Score (/ 5) | Avg Latency | Test Set |
-|-------|--------|-----------------|-------------|----------|
-| SmolVLM2-2.2B-Instruct | 2.2B | 3.70 | 3448ms | captioning 100 |
-| InternVL3.5-4B-HF | 4B | 4.00 | 7789ms | captioning 100 |
-| Qwen3-VL-4B-Instruct | 4B | — | — | — |
-| Qwen3-VL-8B-Instruct | 8B | — | — | — |
-| *(your model here)* | — | — | — | — |
+100-image captioning benchmark on diverse Wikimedia Commons images, judged by `gpt-5.4-mini`:
+
+| Model | Params | Avg Score (/ 5) | Avg Latency | N |
+|-------|--------|-----------------|-------------|---|
+| SmolVLM2-2.2B-Instruct | 2.2B | 3.68 | 3460ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | 3.80 | 9152ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | 3.93 | 5136ms | 100 |
+| InternVL3.5-4B-HF | 4B | 3.97 | 7777ms | 100 |
+
+**Key observations:**
+- InternVL3.5-4B scores highest overall despite equal parameter count to Qwen3-VL-4B
+- Qwen3-VL-8B is faster than 4B despite being larger — better GPU utilization on the RTX Pro 6000
+- SmolVLM2 is the fastest by ~2x with competitive quality for its size
+- All models cluster between 3.68–3.97, suggesting captioning is well-matched to current 2–8B VLMs
 
 ---
 
@@ -450,7 +410,7 @@ Responses are scored 1–5 by the judge model. The judge sees the image directly
 output_dir: results
 
 judge:
-  model: gpt-5.4-mini          # OpenAI model used for scoring
+  model: gpt-5.4-mini
   max_tokens: 256
   timeout_seconds: 30
 
@@ -461,11 +421,11 @@ generation_defaults:
 models:
   smolvlm:
     enabled: true
-    class: SmolVLMModel        # must match MODEL_REGISTRY key in models/__init__.py
-    model_path: /path/to/model # local path or HuggingFace repo ID
-    dtype: bfloat16            # float32 | float16 | bfloat16
+    class: SmolVLMModel
+    model_path: /path/to/model
+    dtype: bfloat16
     generation:
-      max_new_tokens: 256      # overrides generation_defaults for this model
+      max_new_tokens: 256
 ```
 
 ---
@@ -474,18 +434,15 @@ models:
 
 **CUDA out of memory**
 ```bash
-nvidia-smi              # find the PID hogging memory
-kill <pid>              # free it, then re-run
+nvidia-smi && kill <pid>
 ```
-If running multiple models in sequence still OOMs, run them one at a time using `--models <key>`.
 
-**Disk quota exceeded**
-Redirect HuggingFace cache and conda envs to a larger partition (see Prerequisites). The Qwen3-VL scripts do this automatically.
+**Disk quota exceeded** — redirect HF cache and conda envs (see Prerequisites).
 
 **`ImportError: cannot import name X from transformers`**
 ```bash
 pip install --upgrade "transformers>=4.52.1"
-# Qwen3-VL needs transformers from source:
+# Qwen3-VL needs source build:
 pip install git+https://github.com/huggingface/transformers
 ```
 
@@ -494,14 +451,11 @@ pip install git+https://github.com/huggingface/transformers
 /mnt/shared/<yourname>/envs/Qwen3VL-env/bin/pip install num2words
 ```
 
-**Judge scores all 0**
-`OPENAI_API_KEY` is not set. The benchmark still runs and saves responses — set the key and re-run to get scores.
+**Judge scores all 0** — `OPENAI_API_KEY` not set. Benchmark still saves responses — add key and re-run.
 
-**Model produces garbage / ignores the image**
-Use the `-Instruct` variant, not `-Base`. Base models are not fine-tuned for instruction following.
+**Model ignores the image** — use `-Instruct` variant, not `-Base`.
 
-**Qwen3-VL conda env not found**
-Activate by full path, not name:
+**Qwen3-VL env not found** — activate by full path:
 ```bash
 conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 ```
