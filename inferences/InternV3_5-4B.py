@@ -5,7 +5,7 @@ from PIL import Image
 from transformers import AutoModel, AutoProcessor
 
 MODEL_PATH = "OpenGVLab/InternVL3_5-4B-HF"
-IMAGE_PATH = "tests/images/001.jpg"
+IMAGE_PATH = "inferences/images/001.jpg"
 
 processor = AutoProcessor.from_pretrained(MODEL_PATH)
 
