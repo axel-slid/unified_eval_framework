@@ -1,0 +1,702 @@
+[
+  {
+    "id": "001",
+    "image": "test_sets/images/captioning/001.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "002",
+    "image": "test_sets/images/captioning/002.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "003",
+    "image": "test_sets/images/captioning/003.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "004",
+    "image": "test_sets/images/captioning/004.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "005",
+    "image": "test_sets/images/captioning/005.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "006",
+    "image": "test_sets/images/captioning/006.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "007",
+    "image": "test_sets/images/captioning/007.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "008",
+    "image": "test_sets/images/captioning/008.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "009",
+    "image": "test_sets/images/captioning/009.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "010",
+    "image": "test_sets/images/captioning/010.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "011",
+    "image": "test_sets/images/captioning/011.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "012",
+    "image": "test_sets/images/captioning/012.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "013",
+    "image": "test_sets/images/captioning/013.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "014",
+    "image": "test_sets/images/captioning/014.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "015",
+    "image": "test_sets/images/captioning/015.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "016",
+    "image": "test_sets/images/captioning/016.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "017",
+    "image": "test_sets/images/captioning/017.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "018",
+    "image": "test_sets/images/captioning/018.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "019",
+    "image": "test_sets/images/captioning/019.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "020",
+    "image": "test_sets/images/captioning/020.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "021",
+    "image": "test_sets/images/captioning/021.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "022",
+    "image": "test_sets/images/captioning/022.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "023",
+    "image": "test_sets/images/captioning/023.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "024",
+    "image": "test_sets/images/captioning/024.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "025",
+    "image": "test_sets/images/captioning/025.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "026",
+    "image": "test_sets/images/captioning/026.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "027",
+    "image": "test_sets/images/captioning/027.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "028",
+    "image": "test_sets/images/captioning/028.png",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "029",
+    "image": "test_sets/images/captioning/029.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "030",
+    "image": "test_sets/images/captioning/030.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "031",
+    "image": "test_sets/images/captioning/031.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "032",
+    "image": "test_sets/images/captioning/032.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "033",
+    "image": "test_sets/images/captioning/033.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "034",
+    "image": "test_sets/images/captioning/034.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "035",
+    "image": "test_sets/images/captioning/035.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "036",
+    "image": "test_sets/images/captioning/036.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "037",
+    "image": "test_sets/images/captioning/037.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "038",
+    "image": "test_sets/images/captioning/038.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "039",
+    "image": "test_sets/images/captioning/039.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "040",
+    "image": "test_sets/images/captioning/040.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "041",
+    "image": "test_sets/images/captioning/041.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "042",
+    "image": "test_sets/images/captioning/042.png",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "043",
+    "image": "test_sets/images/captioning/043.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "044",
+    "image": "test_sets/images/captioning/044.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "045",
+    "image": "test_sets/images/captioning/045.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "046",
+    "image": "test_sets/images/captioning/046.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "047",
+    "image": "test_sets/images/captioning/047.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "048",
+    "image": "test_sets/images/captioning/048.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "049",
+    "image": "test_sets/images/captioning/049.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "050",
+    "image": "test_sets/images/captioning/050.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "051",
+    "image": "test_sets/images/captioning/051.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "052",
+    "image": "test_sets/images/captioning/052.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "053",
+    "image": "test_sets/images/captioning/053.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "054",
+    "image": "test_sets/images/captioning/054.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "055",
+    "image": "test_sets/images/captioning/055.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "056",
+    "image": "test_sets/images/captioning/056.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "057",
+    "image": "test_sets/images/captioning/057.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "058",
+    "image": "test_sets/images/captioning/058.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "059",
+    "image": "test_sets/images/captioning/059.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "060",
+    "image": "test_sets/images/captioning/060.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "061",
+    "image": "test_sets/images/captioning/061.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "062",
+    "image": "test_sets/images/captioning/062.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "063",
+    "image": "test_sets/images/captioning/063.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "064",
+    "image": "test_sets/images/captioning/064.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "065",
+    "image": "test_sets/images/captioning/065.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "066",
+    "image": "test_sets/images/captioning/066.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "067",
+    "image": "test_sets/images/captioning/067.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "068",
+    "image": "test_sets/images/captioning/068.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "069",
+    "image": "test_sets/images/captioning/069.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "070",
+    "image": "test_sets/images/captioning/070.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "071",
+    "image": "test_sets/images/captioning/071.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "072",
+    "image": "test_sets/images/captioning/072.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "073",
+    "image": "test_sets/images/captioning/073.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "074",
+    "image": "test_sets/images/captioning/074.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "075",
+    "image": "test_sets/images/captioning/075.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "076",
+    "image": "test_sets/images/captioning/076.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "077",
+    "image": "test_sets/images/captioning/077.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "078",
+    "image": "test_sets/images/captioning/078.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "079",
+    "image": "test_sets/images/captioning/079.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "080",
+    "image": "test_sets/images/captioning/080.png",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "081",
+    "image": "test_sets/images/captioning/081.png",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "082",
+    "image": "test_sets/images/captioning/082.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "083",
+    "image": "test_sets/images/captioning/083.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "084",
+    "image": "test_sets/images/captioning/084.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "085",
+    "image": "test_sets/images/captioning/085.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "086",
+    "image": "test_sets/images/captioning/086.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "087",
+    "image": "test_sets/images/captioning/087.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "088",
+    "image": "test_sets/images/captioning/088.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "089",
+    "image": "test_sets/images/captioning/089.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "090",
+    "image": "test_sets/images/captioning/090.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "091",
+    "image": "test_sets/images/captioning/091.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "092",
+    "image": "test_sets/images/captioning/092.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "093",
+    "image": "test_sets/images/captioning/093.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "094",
+    "image": "test_sets/images/captioning/094.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "095",
+    "image": "test_sets/images/captioning/095.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "096",
+    "image": "test_sets/images/captioning/096.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "097",
+    "image": "test_sets/images/captioning/097.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "098",
+    "image": "test_sets/images/captioning/098.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "099",
+    "image": "test_sets/images/captioning/099.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  },
+  {
+    "id": "100",
+    "image": "test_sets/images/captioning/100.jpg",
+    "question": "Describe this image in detail.",
+    "reference_answer": "",
+    "rubric": "Judge the description based on the image provided. Award 5 if accurate, detailed, mentions main subjects, actions, colors, and setting. Award 4 if mostly accurate with minor omissions. Award 3 if correct but vague or missing important elements. Award 2 if partially correct with notable errors or hallucinations. Award 1 if mostly wrong, irrelevant, or heavily hallucinated. Penalize any details clearly not present in the image."
+  }
+]

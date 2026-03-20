@@ -7,7 +7,7 @@ output_dir: results
 
 # ── Judge (Claude-as-judge) ───────────────────────────────────────────────────
 judge:
-  model: claude-sonnet-4-20250514
+  model: gpt-5.4-mini 
   max_tokens: 256
   timeout_seconds: 30
 
@@ -25,9 +25,8 @@ models:
   smolvlm:
     enabled: true
     class: SmolVLMModel
-    model_path: HuggingFaceTB/SmolVLM2-2.2B-Instruct
-    # model_path: ../models/SmolVLM2-2.2B-Base   # ← swap to local path if downloaded
-    dtype: float16
+    model_path: /mnt/shared/dils/models/SmolVLM2-2.2B-Instruct
+    dtype: bfloat16
     generation:
       max_new_tokens: 256
 
@@ -35,8 +34,9 @@ models:
     enabled: true
     class: InternVLModel
     model_path: OpenGVLab/InternVL3_5-4B-HF
-    # model_path: ../models/InternVL3_5-4B-HF
-    dtype: float16
+    # swap to local path once downloaded to avoid cache issues:
+    # model_path: /mnt/shared/dils/models/InternVL3_5-4B-HF
+    dtype: bfloat16
     generation:
       max_new_tokens: 256
 
@@ -44,7 +44,7 @@ models:
   # yourmodel:
   #   enabled: false
   #   class: YourModelClass          # must match class name in models/yourmodel.py
-  #   model_path: org/repo-or-local-path
-  #   dtype: float16                 # float32 | float16 | bfloat16
+  #   model_path: /mnt/shared/dils/models/your-model
+  #   dtype: bfloat16                # float32 | float16 | bfloat16
   #   generation:
-  #     max_new_tokens: 128
+  #     max_new_tokens: 256

@@ -82,7 +82,14 @@ def run_benchmark(
                 judge_result = None
             else:
                 print(f"    Response ({result.latency_ms:.0f}ms): {result.response[:80]}...")
-                judge_result = judge(question, rubric, result.response, cfg.judge)
+                judge_result = judge(
+                        question,
+                        rubric,
+                        result.response,
+                        cfg.judge,
+                        reference_answer=item.get("reference_answer", ""),
+                        image_path=image_path,   # ← add this
+                    ) 
                 if judge_result.error:
                     print(f"    JUDGE ERROR: {judge_result.error}")
                 else:
