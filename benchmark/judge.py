@@ -12,7 +12,7 @@ from config import JudgeConfig
 
 @dataclass
 class JudgeResult:
-    score: int
+    score: int        # 0–100
     reason: str
     error: str | None = None
 
@@ -33,16 +33,16 @@ Reference answer:
 Model response:
 {response}
 
-Score the response from 1 to 5 using this scale:
-1 - Completely wrong or refused to answer
-2 - Mostly wrong, minor correct elements
-3 - Partially correct, missing key details
-4 - Mostly correct, minor issues
-5 - Fully correct and complete
+Score the response from 0 to 100 using this scale:
+0–20   - Completely wrong, refused to answer, or heavy hallucination
+21–40  - Mostly wrong, minor correct elements
+41–60  - Partially correct, missing key details
+61–80  - Mostly correct, minor issues or omissions
+81–100 - Fully correct and complete, accurate to the image
 
 Base the score on correctness relative to the image, reference answer, and rubric.
 Return ONLY valid JSON with no preamble, no markdown fences:
-{{"score": <int 1-5>, "reason": "<one sentence explanation>"}}
+{{"score": <int 0-100>, "reason": "<one sentence explanation>"}}
 """
 
 
@@ -65,9 +65,8 @@ def judge(
         return JudgeResult(score=0, reason="No API key set — scoring skipped", error=None)
 
     if not response.strip():
-        return JudgeResult(score=1, reason="Model returned empty response")
+        return JudgeResult(score=0, reason="Model returned empty response")
 
-    # Build message content — text only, or text + image
     text_content = JUDGE_PROMPT.format(
         question=question,
         rubric=rubric,
@@ -109,7 +108,7 @@ def judge(
         parsed = json.loads(text)
         score = int(parsed["score"])
         reason = str(parsed["reason"]).strip()
-        if not 1 <= score <= 5:
+        if not 0 <= score <= 100:
             raise ValueError(f"Score out of range: {score}")
         if not reason:
             raise ValueError("Empty reason returned by judge")

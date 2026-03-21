@@ -56,6 +56,30 @@ models:
     generation:
       max_new_tokens: 256
 
+  internvl_int8:
+    enabled: true
+    class: InternVLModel
+    model_path: /mnt/shared/dils/projects/logitech/unified_eval_framework/models/InternVL3_5-4B-HF-int8
+    dtype: bfloat16    # weights already int8 on disk, load normally
+    generation:
+      max_new_tokens: 256
+
+  qwen3vl_4b_int8:
+    enabled: true
+    class: Qwen3VLModel
+    model_path: /mnt/shared/dils/projects/logitech/unified_eval_framework/models/Qwen3-VL-4B-Instruct-int8
+    dtype: bfloat16    # weights already int8 on disk, load normally
+    generation:
+      max_new_tokens: 256
+
+  qwen3vl_8b_int8:
+    enabled: true
+    class: Qwen3VLModel
+    model_path: /mnt/shared/dils/projects/logitech/unified_eval_framework/models/Qwen3-VL-8B-Instruct-int8
+    dtype: bfloat16    # weights already int8 on disk, load normally
+    generation:
+      max_new_tokens: 256
+
   # ── Template for adding a new model ─────────────────────────────────────────
   # yourmodel:
   #   enabled: false

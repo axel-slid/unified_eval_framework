@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+
+
+# %%
+
+
+# %%
 """
 quantize/quantize.py — quantize VLMs to int8 and save to disk.
 
