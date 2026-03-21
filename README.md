@@ -12,14 +12,14 @@ GPT generates 5 targeted questions per image with reference answers. All models 
 
 | Model | Params | dtype | Avg Score | vs GPT | Avg Latency | N |
 |-------|--------|-------|-----------|--------|-------------|---|
-| GPT Baseline (gpt-5.4-mini) | — | — | **90.9 / 100** | baseline | 1064ms | 100 |
-| Qwen3-VL-4B-Instruct | 4B | bfloat16 | **88.6 / 100** | −2.3 | 2547ms | 100 |
-| Qwen3-VL-8B-Instruct | 8B | bfloat16 | **88.3 / 100** | −2.6 | 3267ms | 100 |
-| Qwen3-VL-4B-Instruct | 4B | int8 | **87.5 / 100** | −3.5 | 10843ms | 100 |
-| Qwen3-VL-8B-Instruct | 8B | int8 | **87.4 / 100** | −3.5 | 13460ms | 100 |
-| SmolVLM2-2.2B-Instruct | 2.2B | bfloat16 | **72.0 / 100** | −18.9 | 315ms | 100 |
-| InternVL3-4B-HF | 4B | int8 | **62.9 / 100** | −28.0 | 5415ms | 100 |
-| InternVL3-4B-HF | 4B | bfloat16 | **65.3 / 100** | −25.6 | 1400ms | 100 |
+| GPT Baseline (gpt-5.4-mini) | — | — | ![90.9](https://img.shields.io/badge/90.9-brightgreen?style=flat-square) | baseline | 1064ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | bfloat16 | ![88.6](https://img.shields.io/badge/88.6-brightgreen?style=flat-square) | −2.3 | 2547ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | bfloat16 | ![88.3](https://img.shields.io/badge/88.3-brightgreen?style=flat-square) | −2.6 | 3267ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | int8 | ![87.5](https://img.shields.io/badge/87.5-brightgreen?style=flat-square) | −3.5 | 10843ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | int8 | ![87.4](https://img.shields.io/badge/87.4-brightgreen?style=flat-square) | −3.5 | 13460ms | 100 |
+| SmolVLM2-2.2B-Instruct | 2.2B | bfloat16 | ![72.0](https://img.shields.io/badge/72.0-yellow?style=flat-square) | −18.9 | 315ms | 100 |
+| InternVL3-4B-HF | 4B | bfloat16 | ![65.3](https://img.shields.io/badge/65.3-orange?style=flat-square) | −25.6 | 1400ms | 100 |
+| InternVL3-4B-HF | 4B | int8 | ![62.9](https://img.shields.io/badge/62.9-orange?style=flat-square) | −28.0 | 5415ms | 100 |
 
 **Key findings:**
 - Qwen3-VL (4B and 8B) scores within 2–3 points of the GPT ceiling — best instruction-following at this size class
@@ -441,26 +441,26 @@ yourmodel:
 
 | Model | Params | dtype | GPU | Avg Score | vs GPT | Latency | N |
 |-------|--------|-------|-----|-----------|--------|---------|---|
-| GPT Baseline (gpt-5.4-mini) | — | — | — | 90.9 / 100 | baseline | 1064ms | 100 |
-| Qwen3-VL-4B-Instruct | 4B | bfloat16 | RTX PRO 6000 (97GB) | 88.6 / 100 | −2.3 | 2547ms | 100 |
-| Qwen3-VL-8B-Instruct | 8B | bfloat16 | RTX PRO 6000 (97GB) | 88.3 / 100 | −2.6 | 3267ms | 100 |
-| Qwen3-VL-4B-Instruct | 4B | int8 | RTX PRO 6000 (97GB) | 87.5 / 100 | −3.5 | 10843ms | 100 |
-| Qwen3-VL-8B-Instruct | 8B | int8 | RTX PRO 6000 (97GB) | 87.4 / 100 | −3.5 | 13460ms | 100 |
-| SmolVLM2-2.2B-Instruct | 2.2B | bfloat16 | RTX 4060 Ti (16GB) | 72.0 / 100 | −18.9 | 315ms | 100 |
-| InternVL3-4B-HF | 4B | bfloat16 | RTX 4060 Ti (16GB) | 65.3 / 100 | −25.6 | 1400ms | 100 |
-| InternVL3-4B-HF | 4B | int8 | RTX PRO 6000 (97GB) | 62.9 / 100 | −28.0 | 5415ms | 100 |
+| GPT Baseline (gpt-5.4-mini) | — | — | — | ![90.9](https://img.shields.io/badge/90.9-brightgreen?style=flat-square) | baseline | 1064ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | bfloat16 | RTX PRO 6000 (97GB) | ![88.6](https://img.shields.io/badge/88.6-brightgreen?style=flat-square) | −2.3 | 2547ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | bfloat16 | RTX PRO 6000 (97GB) | ![88.3](https://img.shields.io/badge/88.3-brightgreen?style=flat-square) | −2.6 | 3267ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | int8 | RTX PRO 6000 (97GB) | ![87.5](https://img.shields.io/badge/87.5-brightgreen?style=flat-square) | −3.5 | 10843ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | int8 | RTX PRO 6000 (97GB) | ![87.4](https://img.shields.io/badge/87.4-brightgreen?style=flat-square) | −3.5 | 13460ms | 100 |
+| SmolVLM2-2.2B-Instruct | 2.2B | bfloat16 | RTX 4060 Ti (16GB) | ![72.0](https://img.shields.io/badge/72.0-yellow?style=flat-square) | −18.9 | 315ms | 100 |
+| InternVL3-4B-HF | 4B | bfloat16 | RTX 4060 Ti (16GB) | ![65.3](https://img.shields.io/badge/65.3-orange?style=flat-square) | −25.6 | 1400ms | 100 |
+| InternVL3-4B-HF | 4B | int8 | RTX PRO 6000 (97GB) | ![62.9](https://img.shields.io/badge/62.9-orange?style=flat-square) | −28.0 | 5415ms | 100 |
 
 ### Captioning Benchmark (0–100, GPT judge, free-form description)
 
 | Model | Params | dtype | GPU | Avg Score | Latency | N |
 |-------|--------|-------|-----|-----------|---------|---|
-| InternVL3-4B-HF | 4B | bfloat16 | RTX 4060 Ti (16GB) | 82.2 / 100 | 4760ms | 100 |
-| InternVL3-4B-HF | 4B | int8 | RTX PRO 6000 (97GB) | 79.7 / 100 | 16058ms | 100 |
-| Qwen3-VL-4B-Instruct | 4B | bfloat16 | RTX 4060 Ti (16GB) | 78.6 / 100 | 6195ms | 100 |
-| Qwen3-VL-8B-Instruct | 8B | int8 | RTX PRO 6000 (97GB) | 79.6 / 100 | 21167ms | 100 |
-| Qwen3-VL-4B-Instruct | 4B | int8 | RTX PRO 6000 (97GB) | 78.5 / 100 | 21506ms | 100 |
-| Qwen3-VL-8B-Instruct | 8B | bfloat16 | RTX PRO 6000 (97GB) | 77.0 / 100 | 5254ms | 100 |
-| SmolVLM2-2.2B-Instruct | 2.2B | bfloat16 | RTX 4060 Ti (16GB) | 73.6 / 100 | 2879ms | 100 |
+| InternVL3-4B-HF | 4B | bfloat16 | RTX 4060 Ti (16GB) | ![82.2](https://img.shields.io/badge/82.2-brightgreen?style=flat-square) | 4760ms | 100 |
+| InternVL3-4B-HF | 4B | int8 | RTX PRO 6000 (97GB) | ![79.7](https://img.shields.io/badge/79.7-green?style=flat-square) | 16058ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | int8 | RTX PRO 6000 (97GB) | ![79.6](https://img.shields.io/badge/79.6-green?style=flat-square) | 21167ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | bfloat16 | RTX 4060 Ti (16GB) | ![78.6](https://img.shields.io/badge/78.6-green?style=flat-square) | 6195ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | int8 | RTX PRO 6000 (97GB) | ![78.5](https://img.shields.io/badge/78.5-green?style=flat-square) | 21506ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | bfloat16 | RTX PRO 6000 (97GB) | ![77.0](https://img.shields.io/badge/77.0-green?style=flat-square) | 5254ms | 100 |
+| SmolVLM2-2.2B-Instruct | 2.2B | bfloat16 | RTX 4060 Ti (16GB) | ![73.6](https://img.shields.io/badge/73.6-yellow?style=flat-square) | 2879ms | 100 |
 
 ### Published Benchmark Scores
 
