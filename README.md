@@ -258,7 +258,33 @@ python test_sets/generate_test_set.py \
 
 ---
 
-### Step 5 — Run VQA benchmark (recommended)
+### Step 5 — Quantize models to int8
+
+Quantizes and saves int8 versions of all models to disk. Only needs to be done once — quantized models load like any normal local model afterwards.
+
+```bash
+cd quantize
+/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/pip install bitsandbytes
+
+# quantize all models
+/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python quantize.py --all
+
+# or specific models
+/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python quantize.py \
+    --models internvl qwen3vl_4b qwen3vl_8b
+```
+
+Saves to `models/InternVL3_5-4B-HF-int8/`, `models/Qwen3-VL-4B-Instruct-int8/`, etc. Then set the int8 entries in `benchmark_config.yaml` to `enabled: true`.
+
+| Model | bfloat16 | int8 |
+|-------|----------|------|
+| InternVL3-4B | ~8GB | ~4GB |
+| Qwen3-VL-4B | ~8GB | ~4GB |
+| Qwen3-VL-8B | ~16GB | ~8GB |
+
+---
+
+### Step 6 — Run VQA benchmark (recommended)
 
 ```bash
 cd benchmark
@@ -285,7 +311,7 @@ $PYTHON run_benchmark_vqa.py --models smolvlm internvl --no-gpt-baseline
 
 ---
 
-### Step 6 — Run captioning benchmark
+### Step 7 — Run captioning benchmark
 
 ```bash
 nohup bash -c '
@@ -325,32 +351,6 @@ EOF
 
 tail -f logs/benchmark_run.log
 ```
-
----
-
-### Step 7 — (Optional) Quantize to int8
-
-```bash
-cd quantize
-/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/pip install bitsandbytes
-
-# quantize all models
-/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python quantize.py --all
-
-# or specific models
-/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python quantize.py \
-    --models internvl qwen3vl_4b qwen3vl_8b
-```
-
-Saves quantized models to `models/InternVL3_5-4B-HF-int8/`, etc. Then update `benchmark_config.yaml` int8 entries to `enabled: true` and re-run the benchmark.
-
-int8 memory savings:
-
-| Model | bfloat16 | int8 |
-|-------|----------|------|
-| InternVL3-4B | ~8GB | ~4GB |
-| Qwen3-VL-4B | ~8GB | ~4GB |
-| Qwen3-VL-8B | ~16GB | ~8GB |
 
 ---
 
