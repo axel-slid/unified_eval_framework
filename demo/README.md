@@ -1,14 +1,14 @@
 # VLM CPU Demo
 
-Webcam demo optimised for CPU-only inference on 4-core ARM devices (or any machine without a GPU).
+Webcam demo for CPU-only inference. Supports SmolVLM2, Qwen3-VL, and InternVL with multi-model selection in the UI.
 
 ## Structure
 
 ```
 demo/
-├── server.py        ← FastAPI backend, CPU inference, webcam frame handling
+├── server.py        ← FastAPI backend, CPU inference, model switching
 ├── frontend/
-│   └── index.html   ← Webcam UI with auto-capture and response log
+│   └── index.html   ← Webcam UI with model selection + inference log
 └── README.md
 ```
 
@@ -16,11 +16,15 @@ demo/
 
 ```bash
 pip install fastapi uvicorn python-multipart pillow torch torchvision transformers
+# for Qwen3-VL only:
+pip install qwen-vl-utils
 ```
 
-SmolVLM2 must be downloaded first:
+Download models first:
 ```bash
-bash scripts/download_smolvlm.sh
+bash scripts/download_smolvlm.sh       # SmolVLM2-2.2B (~8 GB, recommended for CPU)
+bash scripts/download_qwen3vl_4b.sh    # Qwen3-VL-4B (optional)
+bash scripts/download_internv3.sh      # InternVL3.5-4B (optional)
 ```
 
 ## Run
@@ -28,28 +32,42 @@ bash scripts/download_smolvlm.sh
 ```bash
 cd demo
 
-# 4-thread CPU simulation (matches 4-core ARM @ 2.80GHz)
+# 4-thread CPU (recommended for 4-core machines)
 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 python server.py
 
-# open in browser
+# auto-load SmolVLM2 on startup
+python server.py --model smolvlm
+
+# open browser
 # http://localhost:8080
 ```
 
 ## Usage
 
-1. Click **LOAD** — loads SmolVLM2 into RAM (~8GB, float32, takes 30–60s on CPU)
-2. Click **START CAMERA** — opens webcam
-3. Hit **📷** to capture a frame and run inference
-4. Or set an interval and hit **AUTO** to run continuously every N seconds
-5. Responses appear in the log on the right with timestamp, latency, and thumbnail
+1. Click **LOAD** — loads the selected model into RAM (SmolVLM2 ~30–60s on CPU)
+2. Select which models to compare in the **Models** panel (chips in top-right)
+3. Click **START CAMERA** — opens your webcam
+4. Hit **CAPTURE** to snap a frame and run inference
+5. Set an interval and hit **AUTO** for continuous inference
+6. Responses appear in the log with timestamp, latency, and thumbnail
 
-## Expected latency on 4× ARM @ 2.80GHz
+> **Note**: Only one model can be loaded at a time due to the 8 GB RAM constraint.
+> The frontend will show all available models as chips, but inference is routed
+> to whichever model is currently loaded. Selecting multiple chips lets you
+> queue different models if the server is extended to support model switching.
 
-| max_new_tokens | Approx. latency |
+## RAM budget (CPU, float32 / bfloat16)
+
+| Model | dtype | RAM |
+|---|---|---|
+| SmolVLM2-2.2B | float32 | ~8 GB ✅ fits |
+| Qwen3-VL-4B | bfloat16 | ~8 GB ⚠️ tight |
+| InternVL3.5-4B | bfloat16 | ~8 GB ⚠️ tight |
+
+## Expected latency (4× ARM @ 2.80GHz)
+
+| max_new_tokens | Latency |
 |---|---|
 | 32 | ~15–25s |
 | 64 (default) | ~25–50s |
 | 128 | ~50–90s |
-
-Adjust `max_new_tokens` in `server.py` to trade quality for speed.
-Set the auto interval to match your expected latency (e.g. 30s).

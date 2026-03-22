@@ -4,781 +4,444 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VLM CPU Demo</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f0ede8;
-    --surface: #e8e4de;
-    --surface2: #ddd8d0;
-    --border: #c8c2b8;
-    --text: #1a1714;
-    --text-muted: #7a736a;
-    --text-dim: #aaa49c;
-    --accent: #c84b2f;
-    --accent2: #2f7ac8;
+    --bg: #f5f2ed;
+    --surface: #ffffff;
+    --surface2: #eeebe5;
+    --border: #d8d3cc;
+    --text: #1c1a17;
+    --text-muted: #7a7570;
+    --text-dim: #b0ab9f;
+    --accent: #e84b2c;
+    --accent-soft: rgba(232,75,44,0.08);
     --green: #2a8a4a;
     --orange: #c87a2f;
-    --mono: 'DM Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --radius: 10px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; min-height: 100vh; display: flex; flex-direction: column; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
-    padding: 16px 28px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--bg);
-  }
-
-  .logo {
-    font-family: var(--mono);
-    font-size: 13px;
-    letter-spacing: 2px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
+  header { padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--bg); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: var(--mono); font-size: 12px; letter-spacing: 3px; font-weight: 500; color: var(--text); text-transform: uppercase; }
   .logo span { color: var(--accent); }
+  .header-right { display: flex; align-items: center; gap: 20px; font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+  .status-pill { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); transition: background 0.3s; flex-shrink: 0; }
+  .dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot.busy { background: var(--orange); animation: pulse 1.2s infinite; }
+  .dot.err { background: var(--accent); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-muted);
-  }
+  .app { flex: 1; display: grid; grid-template-columns: 1fr 460px; height: calc(100vh - 50px); }
 
-  .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 5px;
-    background: var(--border);
-    transition: background 0.3s;
-  }
+  /* Left panel */
+  .left-panel { display: flex; flex-direction: column; border-right: 1px solid var(--border); overflow: hidden; }
+  .frame-area { flex: 1; background: #18160f; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; min-height: 0; }
+  .frame-area video, .frame-area img#snapshot { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .cam-placeholder { display: flex; flex-direction: column; align-items: center; gap: 10px; color: #4a4540; font-family: var(--mono); font-size: 12px; user-select: none; }
+  .cam-placeholder svg { opacity: 0.3; }
+  .frame-badge { position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,0.6); color: #fff; font-family: var(--mono); font-size: 10px; padding: 4px 8px; border-radius: 4px; backdrop-filter: blur(4px); }
+  .inference-flash { position: absolute; inset: 0; background: rgba(232,75,44,0.15); pointer-events: none; opacity: 0; transition: opacity 0.15s; }
+  .inference-flash.active { opacity: 1; }
 
-  .dot.on { background: var(--green); box-shadow: 0 0 5px var(--green); }
-  .dot.busy { background: var(--orange); animation: blink 1s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+  /* Controls */
+  .controls { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--border); background: var(--bg); }
+  .controls-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+  .field-group { display: flex; flex-direction: column; gap: 4px; }
+  .field-label { font-family: var(--mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
 
-  /* ── Main layout ── */
-  .app {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 0;
-    height: calc(100vh - 54px);
-  }
+  input[type=text], textarea, select { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; font-family: var(--mono); font-size: 12px; color: var(--text); outline: none; transition: border-color 0.2s; width: 100%; }
+  input[type=text]:focus, textarea:focus, select:focus { border-color: var(--text-muted); }
+  select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+  textarea { resize: vertical; min-height: 56px; max-height: 120px; line-height: 1.5; }
 
-  /* ── Camera panel ── */
-  .camera-panel {
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid var(--border);
-    overflow: hidden;
-  }
+  .btn { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.5px; padding: 8px 14px; border-radius: var(--radius); border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; background: var(--surface); color: var(--text); white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .btn:hover { background: var(--surface2); border-color: var(--text-dim); }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .btn-primary:hover { background: #3a3530; border-color: #3a3530; }
+  .btn-accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-accent:hover { background: #d43a1e; border-color: #d43a1e; }
+  .btn-danger { background: var(--surface); color: var(--accent); border-color: #e8c0b8; }
+  .btn-danger:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .btn-sm { padding: 6px 10px; font-size: 10px; }
+  .interval-select { width: auto; padding: 7px 28px 7px 10px; font-size: 11px; }
 
-  .cam-wrap {
-    flex: 1;
-    background: #1a1714;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  /* Right panel */
+  .right-panel { display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+  .right-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .right-header h2 { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
 
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transform: scaleX(-1);  /* mirror like a real webcam */
-  }
+  /* Model chips */
+  .model-panel { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; background: var(--surface2); }
+  .model-panel-title { font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
+  .model-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .model-chip { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 10px 5px 8px; font-family: var(--mono); font-size: 10px; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .model-chip:hover { border-color: var(--text-dim); }
+  .model-chip.selected { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .model-chip.loading-chip { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); animation: pulse 1.2s infinite; }
+  .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.4; flex-shrink: 0; }
+  .model-chip.selected .chip-dot { opacity: 1; background: var(--green); }
 
-  canvas { display: none; }
+  /* Log */
+  .log { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .log::-webkit-scrollbar { width: 4px; }
+  .log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .log-empty { flex: 1; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: 1px; }
 
-  .cam-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 12px;
-    background: #1a1714;
-  }
+  .log-entry { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; animation: slide-in 0.2s ease; }
+  @keyframes slide-in { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .log-entry-header { padding: 8px 12px; display: flex; align-items: center; gap: 8px; background: var(--surface2); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .log-model-badge { font-family: var(--mono); font-size: 9px; font-weight: 500; background: var(--text); color: var(--bg); border-radius: 4px; padding: 2px 6px; letter-spacing: 0.5px; }
+  .log-time { font-family: var(--mono); font-size: 10px; color: var(--text-muted); flex: 1; }
+  .log-latency { font-family: var(--mono); font-size: 10px; color: var(--text-dim); }
+  .log-entry-body { display: flex; gap: 10px; padding: 10px 12px; }
+  .log-thumb { width: 60px; height: 60px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--surface2); }
+  .log-text-area { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .log-prompt { font-family: var(--mono); font-size: 10px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .log-response { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .log-response.loading { color: var(--text-dim); display: flex; align-items: center; gap: 8px; font-style: italic; }
 
-  .cam-overlay p {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: #666;
-    text-align: center;
-  }
-
-  .cam-btn {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 2px;
-    padding: 10px 24px;
-    background: transparent;
-    border: 1px solid #444;
-    color: #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .cam-btn:hover { border-color: #ccc; color: #fff; }
-
-  /* Capture flash */
-  .flash {
-    position: absolute;
-    inset: 0;
-    background: white;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.05s;
-  }
-
-  .flash.active { opacity: 0.6; }
-
-  /* Inference indicator overlay */
-  .inferring-badge {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    background: rgba(0,0,0,0.7);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 4px;
-    padding: 6px 12px;
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--orange);
-    letter-spacing: 2px;
-    display: none;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .inferring-badge.show { display: flex; }
-
-  .mini-spin {
-    width: 10px; height: 10px;
-    border: 1.5px solid rgba(255,255,255,.2);
-    border-top-color: var(--orange);
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-  }
-
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Camera controls */
-  .cam-controls {
-    padding: 14px 20px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--surface);
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+    .left-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    .right-panel { height: 50vh; }
   }
-
-  .capture-btn {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: none;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    transition: transform 0.1s, opacity 0.2s;
-    flex-shrink: 0;
-  }
-
-  .capture-btn:hover { transform: scale(1.05); }
-  .capture-btn:active { transform: scale(0.95); }
-  .capture-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-  .auto-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  .interval-select {
-    font-family: var(--mono);
-    font-size: 11px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    color: var(--text);
-    padding: 4px 8px;
-    cursor: pointer;
-  }
-
-  .toggle-auto {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1px;
-    padding: 5px 12px;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .toggle-auto.running {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(200,75,47,0.06);
-  }
-
-  .prompt-area {
-    flex: 1;
-  }
-
-  .prompt-input {
-    width: 100%;
-    font-family: var(--mono);
-    font-size: 11px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    color: var(--text);
-    padding: 6px 10px;
-    resize: none;
-    height: 34px;
-    line-height: 1.4;
-  }
-
-  .prompt-input:focus { outline: 1px solid var(--accent2); }
-
-  /* ── Right panel ── */
-  .right-panel {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* Model status */
-  .model-status {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-  }
-
-  .model-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .model-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .model-info { flex: 1; }
-  .model-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
-  .model-sub { font-family: var(--mono); font-size: 10px; color: var(--text-muted); }
-
-  .load-btn {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 2px;
-    padding: 7px 16px;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  .load-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .load-btn.unload { border-color: var(--text-dim); color: var(--text-dim); }
-  .load-btn.unload:hover { border-color: var(--accent); color: var(--accent); }
-  .load-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  /* CPU meter */
-  .cpu-meter {
-    margin-top: 12px;
-  }
-
-  .cpu-row {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--text-muted);
-    margin-bottom: 5px;
-  }
-
-  .thread-bars {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
-  }
-
-  .thread-bar {
-    background: var(--surface2);
-    border-radius: 2px;
-    height: 18px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .thread-fill {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: var(--accent2);
-    border-radius: 2px;
-    transition: height 0.4s;
-  }
-
-  .thread-fill.active { background: var(--orange); }
-
-  .thread-label {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--mono);
-    font-size: 9px;
-    color: var(--text-dim);
-    z-index: 1;
-  }
-
-  /* Response log */
-  .response-log {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 20px;
-  }
-
-  .log-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .log-entry {
-    margin-bottom: 16px;
-    border-left: 2px solid var(--border);
-    padding-left: 12px;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-
-  .log-entry.latest { border-left-color: var(--accent); }
-
-  .log-meta {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--text-dim);
-    margin-bottom: 5px;
-    display: flex;
-    gap: 10px;
-  }
-
-  .log-meta .lat { color: var(--accent2); }
-
-  .log-text {
-    font-size: 13px;
-    line-height: 1.65;
-    color: var(--text);
-  }
-
-  .log-thumb {
-    width: 48px; height: 36px;
-    object-fit: cover;
-    border-radius: 3px;
-    float: right;
-    margin-left: 8px;
-    border: 1px solid var(--border);
-  }
-
-  .empty-log {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-dim);
-    text-align: center;
-    padding: 40px 0;
-    line-height: 2;
-  }
-
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">VLM <span>//</span> CPU DEMO</div>
+  <div class="logo">VLM<span>.</span>CPU<span>.</span>DEMO</div>
   <div class="header-right">
-    <span><span class="dot" id="camDot"></span><span id="camStatus">camera off</span></span>
-    <span><span class="dot" id="modelDot"></span><span id="modelStatus">no model</span></span>
-    <span style="font-family:var(--mono);font-size:10px;color:var(--text-dim)">4 × ARM @ 2.80GHz</span>
+    <div class="status-pill">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">connecting…</span>
+    </div>
+    <span id="threadInfo" style="opacity:0.5"></span>
   </div>
 </header>
 
 <div class="app">
-
-  <!-- ── Camera ── -->
-  <div class="camera-panel">
-    <div class="cam-wrap">
-      <div class="cam-overlay" id="camOverlay">
-        <p>Camera not started</p>
-        <button class="cam-btn" onclick="startCamera()">START CAMERA</button>
+  <!-- ── Left: Camera + Controls ── -->
+  <div class="left-panel">
+    <div class="frame-area" id="frameArea">
+      <div class="cam-placeholder" id="camPlaceholder">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <rect x="4" y="12" width="40" height="28" rx="4" stroke="#888" stroke-width="2"/>
+          <circle cx="24" cy="26" r="9" stroke="#888" stroke-width="2"/>
+          <circle cx="24" cy="26" r="4" fill="#888"/>
+          <path d="M16 12v-2a2 2 0 012-2h12a2 2 0 012 2v2" stroke="#888" stroke-width="2"/>
+        </svg>
+        <span>NO FEED</span>
       </div>
-      <video id="video" autoplay playsinline></video>
-      <canvas id="canvas"></canvas>
-      <div class="flash" id="flash"></div>
-      <div class="inferring-badge" id="inferBadge">
-        <div class="mini-spin"></div>
-        INFERRING
-      </div>
+      <video id="video" autoplay playsinline style="display:none; width:100%; height:100%; object-fit:contain;"></video>
+      <img id="snapshot" style="display:none; width:100%; height:100%; object-fit:contain;" alt="frame"/>
+      <div class="inference-flash" id="flash"></div>
+      <div class="frame-badge" id="frameBadge" style="display:none">● LIVE</div>
     </div>
 
-    <div class="cam-controls">
-      <button class="capture-btn" id="captureBtn" onclick="captureAndInfer()" disabled title="Capture & infer">
-        📷
-      </button>
-
-      <div class="prompt-area">
-        <textarea class="prompt-input" id="promptInput" rows="1"
-          placeholder="What do you see?">What do you see?</textarea>
+    <div class="controls">
+      <!-- Row 1: Base API + Load -->
+      <div class="controls-row">
+        <div class="field-group" style="flex:1; min-width:160px;">
+          <label class="field-label">Base API</label>
+          <input type="text" id="apiBase" value="http://localhost:8080"/>
+        </div>
+        <button class="btn btn-primary" id="btnLoad" onclick="loadModel()">LOAD</button>
+        <button class="btn btn-danger" id="btnUnload" onclick="unloadModel()" style="display:none;">UNLOAD</button>
       </div>
 
-      <div class="auto-wrap">
+      <!-- Row 2: Camera + Capture + Auto -->
+      <div class="controls-row">
+        <button class="btn" id="btnCamera" onclick="toggleCamera()">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="7.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 3V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V3" stroke="currentColor" stroke-width="1.3"/></svg>
+          START CAMERA
+        </button>
+        <button class="btn" id="btnCapture" onclick="captureAndInfer()" disabled>
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="7" r="2.5" fill="currentColor"/></svg>
+          CAPTURE
+        </button>
+        <button class="btn btn-accent" id="btnAuto" onclick="toggleAuto()" disabled>AUTO</button>
         <select class="interval-select" id="intervalSelect">
-          <option value="2000">2s</option>
-          <option value="4000" selected>4s</option>
-          <option value="8000">8s</option>
+          <option value="5000">5s</option>
+          <option value="10000">10s</option>
           <option value="15000">15s</option>
+          <option value="30000" selected>30s</option>
+          <option value="60000">60s</option>
         </select>
-        <button class="toggle-auto" id="autoBtn" onclick="toggleAuto()">AUTO</button>
+        <button class="btn btn-danger btn-sm" id="btnStop" onclick="stopAuto()" style="display:none;">■ STOP</button>
+      </div>
+
+      <!-- Row 3: Prompt -->
+      <div class="field-group">
+        <label class="field-label">Instruction</label>
+        <textarea id="prompt" rows="2" placeholder="What do you see?">What do you see?</textarea>
       </div>
     </div>
   </div>
 
-  <!-- ── Right panel ── -->
+  <!-- ── Right: Models + Log ── -->
   <div class="right-panel">
+    <div class="right-header">
+      <h2>Inference Log</h2>
+      <button class="btn btn-sm" onclick="clearLog()">CLEAR</button>
+    </div>
 
-    <!-- Model panel -->
-    <div class="model-status">
-      <div class="model-label">Model</div>
-      <div class="model-row">
-        <div class="model-info">
-          <div class="model-name">SmolVLM2-2.2B</div>
-          <div class="model-sub" id="modelSub">Not loaded — ~8GB RAM, float32</div>
-        </div>
-        <button class="load-btn" id="loadBtn" onclick="toggleModel()">LOAD</button>
-      </div>
-
-      <div class="cpu-meter">
-        <div class="cpu-row">
-          <span>CPU Cores (4 × ARM)</span>
-          <span id="threadCount">4 threads</span>
-        </div>
-        <div class="thread-bars" id="threadBars">
-          <div class="thread-bar"><div class="thread-fill" id="t0" style="height:0%"></div><div class="thread-label">0</div></div>
-          <div class="thread-bar"><div class="thread-fill" id="t1" style="height:0%"></div><div class="thread-label">1</div></div>
-          <div class="thread-bar"><div class="thread-fill" id="t2" style="height:0%"></div><div class="thread-label">2</div></div>
-          <div class="thread-bar"><div class="thread-fill" id="t3" style="height:0%"></div><div class="thread-label">3</div></div>
-        </div>
+    <div class="model-panel">
+      <div class="model-panel-title">Models — click to select (runs simultaneously)</div>
+      <div class="model-chips" id="modelChips">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text-dim)">connect to server…</span>
       </div>
     </div>
 
-    <!-- Response log -->
-    <div class="response-log" id="responseLog">
-      <div class="log-label">Responses</div>
-      <div class="empty-log" id="emptyLog">
-        Load the model<br>start the camera<br>hit capture
-      </div>
+    <div class="log" id="log">
+      <div class="log-empty" id="logEmpty">— awaiting inference —</div>
     </div>
-
   </div>
 </div>
 
 <script>
-const API = '';
+// ── State ──────────────────────────────────────────────────────────────────────
 let stream = null;
 let autoTimer = null;
-let autoRunning = false;
-let modelLoaded = false;
+let loadedModel = null;
 let modelLoading = false;
-let inferring = false;
-let threadAnimTimer = null;
+let availableModels = {};
+let selectedModels = new Set(['smolvlm']);
 
-// ── Camera ────────────────────────────────────────────────────────────────────
+// ── Status polling ─────────────────────────────────────────────────────────────
+async function pollStatus() {
+  try {
+    const base = document.getElementById('apiBase').value.replace(/\/$/, '');
+    const r = await fetch(`${base}/api/status`, { signal: AbortSignal.timeout(3000) });
+    if (!r.ok) throw new Error();
+    const data = await r.json();
+    availableModels = data.available_models || {};
+    loadedModel = data.loaded_model;
+    modelLoading = !!data.loading;
+    renderModelChips();
+    updateStatusUI(data);
+  } catch {
+    document.getElementById('statusDot').className = 'dot err';
+    document.getElementById('statusText').textContent = 'offline';
+  }
+}
+
+function updateStatusUI(data) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  if (data.loading) {
+    dot.className = 'dot busy'; txt.textContent = 'loading model…';
+  } else if (data.loaded_model) {
+    dot.className = 'dot on'; txt.textContent = data.loaded_model;
+  } else {
+    dot.className = 'dot'; txt.textContent = 'ready';
+  }
+  if (data.threads) document.getElementById('threadInfo').textContent = `${data.threads}T · CPU · 8GB`;
+  document.getElementById('btnUnload').style.display = data.loaded_model ? '' : 'none';
+  document.getElementById('btnLoad').style.display = data.loaded_model ? 'none' : '';
+  const ok = !!data.loaded_model && !!stream;
+  document.getElementById('btnCapture').disabled = !ok;
+  document.getElementById('btnAuto').disabled = !ok;
+}
+
+// ── Model chips ────────────────────────────────────────────────────────────────
+function renderModelChips() {
+  const c = document.getElementById('modelChips');
+  if (!Object.keys(availableModels).length) {
+    c.innerHTML = '<span style="font-family:var(--mono);font-size:10px;color:var(--text-dim)">no models found</span>';
+    return;
+  }
+  c.innerHTML = '';
+  for (const [key, info] of Object.entries(availableModels)) {
+    const chip = document.createElement('div');
+    const sel = selectedModels.has(key);
+    chip.className = `model-chip${sel ? ' selected' : ''}${modelLoading && sel ? ' loading-chip' : ''}`;
+    chip.innerHTML = `<span class="chip-dot"></span>${info.label}`;
+    chip.title = info.note || info.full_name || '';
+    chip.onclick = () => {
+      if (selectedModels.has(key)) { if (selectedModels.size > 1) selectedModels.delete(key); }
+      else selectedModels.add(key);
+      renderModelChips();
+    };
+    c.appendChild(chip);
+  }
+}
+
+// ── Load / Unload ──────────────────────────────────────────────────────────────
+async function loadModel() {
+  const base = document.getElementById('apiBase').value.replace(/\/$/, '');
+  const btn = document.getElementById('btnLoad');
+  btn.disabled = true; btn.textContent = 'LOADING…';
+  try {
+    const r = await fetch(`${base}/api/load`, { method: 'POST' });
+    const d = await r.json();
+    if (!r.ok) alert(d.detail || 'Load failed');
+  } catch(e) { alert('Cannot reach server: ' + e.message); }
+  btn.disabled = false; btn.textContent = 'LOAD';
+}
+
+async function unloadModel() {
+  const base = document.getElementById('apiBase').value.replace(/\/$/, '');
+  await fetch(`${base}/api/unload`, { method: 'POST' });
+  loadedModel = null;
+}
+
+// ── Camera ─────────────────────────────────────────────────────────────────────
+async function toggleCamera() {
+  if (stream) { stopCamera(); } else { await startCamera(); }
+}
+
 async function startCamera() {
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }
+      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+      audio: false
     });
     const video = document.getElementById('video');
     video.srcObject = stream;
-    document.getElementById('camOverlay').style.display = 'none';
-    document.getElementById('camDot').className = 'dot on';
-    document.getElementById('camStatus').textContent = 'camera on';
-    updateCaptureBtn();
-  } catch(e) {
-    alert('Camera access denied: ' + e.message);
-  }
+    video.style.display = 'block';
+    document.getElementById('camPlaceholder').style.display = 'none';
+    document.getElementById('snapshot').style.display = 'none';
+    document.getElementById('frameBadge').style.display = '';
+    document.getElementById('btnCamera').innerHTML = `
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="10" rx="1" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.15"/></svg>
+      STOP CAMERA`;
+    if (loadedModel) {
+      document.getElementById('btnCapture').disabled = false;
+      document.getElementById('btnAuto').disabled = false;
+    }
+  } catch(e) { alert('Camera error: ' + e.message); }
 }
 
+function stopCamera() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  const video = document.getElementById('video');
+  video.style.display = 'none'; video.srcObject = null;
+  document.getElementById('camPlaceholder').style.display = 'flex';
+  document.getElementById('frameBadge').style.display = 'none';
+  document.getElementById('btnCamera').innerHTML = `
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="7.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 3V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V3" stroke="currentColor" stroke-width="1.3"/></svg>
+    START CAMERA`;
+  document.getElementById('btnCapture').disabled = true;
+  document.getElementById('btnAuto').disabled = true;
+  stopAuto();
+}
+
+// ── Capture ────────────────────────────────────────────────────────────────────
 function captureFrame() {
   const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.save();
-  ctx.scale(-1, 1);  // mirror to match video
-  ctx.drawImage(video, -canvas.width, 0);
-  ctx.restore();
-  return canvas.toDataURL('image/jpeg', 0.7);
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  const snap = document.getElementById('snapshot');
+  snap.src = canvas.toDataURL('image/jpeg', 0.85);
+  snap.style.display = 'block';
+  return new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.85));
 }
 
-// ── Model ─────────────────────────────────────────────────────────────────────
-async function toggleModel() {
-  if (modelLoading) return;
-  if (modelLoaded) {
-    await fetch(`${API}/api/unload`, { method: 'POST' });
-    modelLoaded = false;
-    setModelUI(false);
-  } else {
-    setModelUI(null); // loading state
-    const res = await fetch(`${API}/api/load`, { method: 'POST' });
-    const data = await res.json();
-    if (data.status === 'loading' || data.status === 'already_loaded') {
-      pollModelStatus();
-    }
-  }
-}
-
-async function pollModelStatus() {
-  modelLoading = true;
-  while (true) {
-    await sleep(1500);
-    try {
-      const res = await fetch(`${API}/api/status`);
-      const data = await res.json();
-      if (data.model_loaded && !data.loading) {
-        modelLoaded = true;
-        modelLoading = false;
-        setModelUI(true);
-        break;
-      }
-      if (!data.loading && !data.model_loaded) {
-        modelLoading = false;
-        setModelUI(false);
-        break;
-      }
-    } catch(e) { break; }
-  }
-}
-
-function setModelUI(state) {
-  // state: true=loaded, false=unloaded, null=loading
-  const btn = document.getElementById('loadBtn');
-  const sub = document.getElementById('modelSub');
-  const dot = document.getElementById('modelDot');
-  const statusEl = document.getElementById('modelStatus');
-
-  if (state === true) {
-    btn.textContent = 'UNLOAD';
-    btn.className = 'load-btn unload';
-    btn.disabled = false;
-    sub.textContent = 'Loaded — float32 · 4 threads';
-    dot.className = 'dot on';
-    statusEl.textContent = 'model ready';
-  } else if (state === false) {
-    btn.textContent = 'LOAD';
-    btn.className = 'load-btn';
-    btn.disabled = false;
-    sub.textContent = 'Not loaded — ~8GB RAM, float32';
-    dot.className = 'dot';
-    statusEl.textContent = 'no model';
-  } else {
-    btn.textContent = 'LOADING...';
-    btn.disabled = true;
-    sub.textContent = 'Loading weights into RAM...';
-    dot.className = 'dot busy';
-    statusEl.textContent = 'loading...';
-  }
-  updateCaptureBtn();
-}
-
-// ── Inference ─────────────────────────────────────────────────────────────────
 async function captureAndInfer() {
-  if (inferring || !modelLoaded || !stream) return;
-  inferring = true;
-
-  // Flash effect
+  if (!stream) return;
   const flash = document.getElementById('flash');
   flash.classList.add('active');
-  setTimeout(() => flash.classList.remove('active'), 150);
+  setTimeout(() => flash.classList.remove('active'), 200);
+  const blob = await captureFrame();
+  const thumbUrl = document.getElementById('snapshot').src;
+  const prompt = document.getElementById('prompt').value.trim() || 'What do you see?';
+  const base = document.getElementById('apiBase').value.replace(/\/$/, '');
+  const models = [...selectedModels];
+  await Promise.allSettled(models.map(k => runInference(base, blob, prompt, thumbUrl, k)));
+}
 
-  // Show badge
-  document.getElementById('inferBadge').classList.add('show');
-  document.getElementById('captureBtn').disabled = true;
-  animateThreads(true);
-
-  const frameData = captureFrame();
-  const prompt = document.getElementById('promptInput').value || 'What do you see?';
-
-  // Convert base64 to blob
-  const blob = await (await fetch(frameData)).blob();
+async function runInference(base, blob, prompt, thumbUrl, modelKey) {
+  const label = availableModels[modelKey]?.label || modelKey;
+  const id = `e-${Date.now()}-${modelKey}`;
+  addLogEntry(id, label, prompt, thumbUrl);
   const form = new FormData();
   form.append('image', blob, 'frame.jpg');
   form.append('prompt', prompt);
-
-  const t0 = Date.now();
+  form.append('model_key', modelKey);
   try {
-    const res = await fetch(`${API}/api/infer`, { method: 'POST', body: form });
-    const data = await res.json();
-    addLogEntry(data.response, data.latency_ms, frameData);
+    const t0 = performance.now();
+    const r = await fetch(`${base}/api/infer`, { method: 'POST', body: form });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail || 'failed');
+    updateLogEntry(id, data.response, data.latency_ms || Math.round(performance.now() - t0));
   } catch(e) {
-    addLogEntry('Error: ' + e.message, Date.now()-t0, frameData);
+    updateLogEntry(id, 'Error: ' + e.message, null);
   }
-
-  document.getElementById('inferBadge').classList.remove('show');
-  animateThreads(false);
-  inferring = false;
-  document.getElementById('captureBtn').disabled = false;
 }
 
-function addLogEntry(text, latencyMs, thumbData) {
-  const log = document.getElementById('responseLog');
-  document.getElementById('emptyLog')?.remove();
-
-  // Remove 'latest' from previous
-  document.querySelectorAll('.log-entry.latest').forEach(e => e.classList.remove('latest'));
-
-  const entry = document.createElement('div');
-  entry.className = 'log-entry latest';
-
-  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  entry.innerHTML = `
-    <div class="log-meta">
-      <span>${time}</span>
-      <span class="lat">${latencyMs}ms</span>
-      <span>SmolVLM2</span>
+// ── Log ────────────────────────────────────────────────────────────────────────
+function addLogEntry(id, modelLabel, prompt, thumbUrl) {
+  document.getElementById('logEmpty').style.display = 'none';
+  const log = document.getElementById('log');
+  const now = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const el = document.createElement('div');
+  el.className = 'log-entry'; el.id = id;
+  el.innerHTML = `
+    <div class="log-entry-header">
+      <span class="log-model-badge">${esc(modelLabel)}</span>
+      <span class="log-time">${now}</span>
+      <span class="log-latency" id="${id}-lat"></span>
     </div>
-    <div class="log-text">
-      <img class="log-thumb" src="${thumbData}">
-      ${text}
+    <div class="log-entry-body">
+      <img class="log-thumb" src="${esc(thumbUrl)}" alt="frame"/>
+      <div class="log-text-area">
+        <div class="log-prompt">${esc(prompt)}</div>
+        <div class="log-response loading" id="${id}-resp"><div class="spinner"></div><span>inferring…</span></div>
+      </div>
     </div>`;
-
-  log.insertBefore(entry, log.children[1] || null);
-
-  // Keep last 20 entries
-  const entries = log.querySelectorAll('.log-entry');
-  if (entries.length > 20) entries[entries.length - 1].remove();
+  log.insertBefore(el, log.firstChild);
 }
 
-// ── Auto mode ─────────────────────────────────────────────────────────────────
+function updateLogEntry(id, response, latencyMs) {
+  const resp = document.getElementById(`${id}-resp`);
+  const lat = document.getElementById(`${id}-lat`);
+  if (resp) { resp.className = 'log-response'; resp.textContent = response; }
+  if (lat && latencyMs != null) lat.textContent = latencyMs + 'ms';
+}
+
+function clearLog() {
+  document.getElementById('log').innerHTML = '<div class="log-empty" id="logEmpty">— awaiting inference —</div>';
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Auto mode ──────────────────────────────────────────────────────────────────
 function toggleAuto() {
-  autoRunning = !autoRunning;
-  const btn = document.getElementById('autoBtn');
-  if (autoRunning) {
-    btn.classList.add('running');
-    btn.textContent = 'STOP';
-    scheduleAuto();
-  } else {
-    btn.classList.remove('running');
-    btn.textContent = 'AUTO';
-    clearTimeout(autoTimer);
-  }
+  if (autoTimer) { stopAuto(); } else { startAuto(); }
+}
+function startAuto() {
+  const interval = parseInt(document.getElementById('intervalSelect').value, 10);
+  document.getElementById('btnAuto').textContent = 'AUTO ●';
+  document.getElementById('btnStop').style.display = '';
+  document.getElementById('btnCapture').disabled = true;
+  captureAndInfer();
+  autoTimer = setInterval(captureAndInfer, interval);
+}
+function stopAuto() {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  document.getElementById('btnAuto').textContent = 'AUTO';
+  document.getElementById('btnStop').style.display = 'none';
+  if (stream && loadedModel) document.getElementById('btnCapture').disabled = false;
 }
 
-function scheduleAuto() {
-  if (!autoRunning) return;
-  const interval = parseInt(document.getElementById('intervalSelect').value);
-  autoTimer = setTimeout(async () => {
-    if (autoRunning && modelLoaded && stream && !inferring) {
-      await captureAndInfer();
-    }
-    scheduleAuto();
-  }, interval);
-}
-
-// ── Thread animation (simulate CPU load during inference) ─────────────────────
-function animateThreads(active) {
-  clearInterval(threadAnimTimer);
-  if (active) {
-    threadAnimTimer = setInterval(() => {
-      for (let i = 0; i < 4; i++) {
-        const fill = document.getElementById(`t${i}`);
-        const h = active ? Math.round(60 + Math.random() * 35) : 0;
-        fill.style.height = h + '%';
-        fill.className = 'thread-fill active';
-      }
-    }, 300);
-  } else {
-    for (let i = 0; i < 4; i++) {
-      const fill = document.getElementById(`t${i}`);
-      fill.style.height = '0%';
-      fill.className = 'thread-fill';
-    }
-  }
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function updateCaptureBtn() {
-  const btn = document.getElementById('captureBtn');
-  btn.disabled = !(stream && modelLoaded);
-}
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-// ── Poll server status on load ────────────────────────────────────────────────
-async function checkInitialStatus() {
-  try {
-    const res = await fetch(`${API}/api/status`);
-    const data = await res.json();
-    if (data.model_loaded) {
-      modelLoaded = true;
-      setModelUI(true);
-    } else if (data.loading) {
-      setModelUI(null);
-      pollModelStatus();
-    }
-  } catch(e) {}
-}
-
-checkInitialStatus();
+// ── Init ───────────────────────────────────────────────────────────────────────
+pollStatus();
+setInterval(pollStatus, 3000);
 </script>
 </body>
 </html>
