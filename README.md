@@ -1,5 +1,83 @@
 # Unified VLM Eval Framework
 
+A lightweight, extensible benchmarking framework for vision-language models (VLMs). Models run locally on GPU and are evaluated using two methods — a VQA benchmark where GPT generates questions and acts as its own baseline, and a captioning benchmark for quick comparisons.
+
+---
+
+## Results
+
+### VQA Benchmark — GPT-Generated Questions + GPT Baseline
+
+GPT generates 5 targeted questions per image with reference answers. All models answer the same questions and are scored 0–100 against GPT's reference. GPT itself is scored as the theoretical ceiling.
+
+| Model | Params | dtype | Avg Score | vs GPT | Avg Latency | N |
+|-------|--------|-------|-----------|--------|-------------|---|
+| GPT Baseline (gpt-5.4-mini) | — | — | 90.9 / 100 | baseline | 1064ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | bfloat16 | 88.6 / 100 | −2.3 | 2547ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | bfloat16 | 88.3 / 100 | −2.6 | 3267ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | int8 | 87.5 / 100 | −3.5 | 10843ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | int8 | 87.4 / 100 | −3.5 | 13460ms | 100 |
+| SmolVLM2-2.2B-Instruct | 2.2B | bfloat16 | 72.0 / 100 | −18.9 | 315ms | 100 |
+| InternVL3-4B-HF | 4B | bfloat16 | 65.3 / 100 | −25.6 | 1400ms | 100 |
+| InternVL3-4B-HF | 4B | int8 | 62.9 / 100 | −28.0 | 5415ms | 100 |
+
+**Key findings:**
+- Qwen3-VL (4B and 8B) scores within 2–3 points of the GPT ceiling — best instruction-following at this size class
+- InternVL3 underperforms significantly on VQA despite being the top captioning model — captioning is a poor proxy for task performance
+- int8 Qwen3-VL loses only 1 point vs bfloat16 — quantization barely hurts quality
+- SmolVLM2 is 4–10x faster than all other models at 315ms with competitive quality for its size
+- int8 models are slower on GPU in our setup — bitsandbytes dequantizes during inference rather than using native int8 kernels; use GGUF int4 via llama.cpp for real speedups
+
+---
+
+## Quick Start
+
+Replace `<yourname>` with your username throughout.
+
+```bash
+# 1. Clone
+git clone https://github.com/axel-slid/unified_eval_framework.git
+cd unified_eval_framework
+
+# 2. Shared server — redirect caches away from home dir quota
+export HF_HOME=/mnt/shared/<yourname>/hf_cache
+export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache
+echo 'export HF_HOME=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
+echo 'export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
+mkdir -p /mnt/shared/<yourname>/envs /mnt/shared/<yourname>/conda_pkgs
+conda config --add envs_dirs /mnt/shared/<yourname>/envs
+conda config --add pkgs_dirs /mnt/shared/<yourname>/conda_pkgs
+
+# 3. Download all models (~41GB total)
+bash scripts/download_smolvlm.sh         # SmolVLM2-2.2B   (~5GB)
+bash scripts/download_internv3.sh        # InternVL3.5-4B  (~9GB)
+bash scripts/download_qwen3vl_4b.sh      # Qwen3-VL-4B     (~9GB)
+bash scripts/download_qwen3vl_8b.sh      # Qwen3-VL-8B     (~18GB)
+
+# 4. Update model_path in benchmark/benchmark_config.yaml to your local paths
+
+# 5. Download 100 test images
+cd benchmark
+conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
+python test_sets/download_test_images.py --count 100
+
+# 6. Run VQA benchmark (all models + GPT baseline)
+mkdir -p logs
+nohup bash -c '
+export PYTHON=/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python
+export OPENAI_API_KEY=sk-...
+export HF_HOME=/mnt/shared/<yourname>/hf_cache
+export PYTORCH_ALLOC_CONF=expandable_segments:True
+cd /path/to/unified_eval_framework/benchmark
+CUDA_VISIBLE_DEVICES=0 $PYTHON run_benchmark_vqa.py \
+    --test-set test_sets/captioning_100.json --all
+' >> logs/vqa_run.log 2>&1 &
+
+tail -f logs/vqa_run.log
+```
+
+Results saved to `benchmark/results/vqa_report_<timestamp>.html` — open in any browser.
+
 ---
 
 ## Repo Structure
@@ -18,145 +96,61 @@ unified_eval_framework/
 │   ├── Qwen3VL-8B.py                 ← standalone test inference for Qwen3-VL 8B
 │   └── images/                       ← sample images for test inferences
 ├── benchmark/
-│   ├── benchmark_config.yaml         ← all model/judge/run settings live here
+│   ├── benchmark_config.yaml         ← all model/judge/run settings (edit paths here)
 │   ├── config.py                     ← loads + validates YAML into dataclasses
-│   ├── run_benchmark.py              ← entry point
+│   ├── run_benchmark.py              ← captioning benchmark entry point
+│   ├── run_benchmark_vqa.py          ← VQA benchmark entry point
 │   ├── run_all_models.sh             ← runs all models + merges into one report
-│   ├── judge.py                      ← LLM-as-judge scorer (OpenAI API)
+│   ├── judge.py                      ← LLM-as-judge scorer (OpenAI API, 0–100)
 │   ├── models/
 │   │   ├── __init__.py               ← MODEL_REGISTRY (class name → class)
 │   │   ├── base.py                   ← BaseVLMModel interface
-│   │   ├── smolvlm.py
-│   │   ├── internvl.py
-│   │   └── qwen3vl.py
+│   │   ├── smolvlm.py                ← SmolVLM2 runner (bfloat16 + int8)
+│   │   ├── internvl.py               ← InternVL3 runner (bfloat16 + int8)
+│   │   └── qwen3vl.py                ← Qwen3-VL runner (bfloat16 + int8)
 │   ├── test_sets/
-│   │   ├── sample.json               ← small hand-written test set (3 items)
-│   │   ├── captioning_100.json       ← auto-generated 100-image captioning test set
+│   │   ├── sample.json               ← 3-image smoke test
+│   │   ├── captioning_100.json       ← 100-image diverse test set
 │   │   ├── generate_test_set.py      ← build a test set from a local image folder
 │   │   └── download_test_images.py   ← download images from Wikimedia Commons
-│   └── results/                      ← auto-created; JSON + HTML report per run
-└── models/                           ← downloaded model weights (gitignored)
+│   └── results/                      ← auto-created; JSON + HTML reports
+├── quantize/
+│   ├── quantize.py                   ← quantize models to int8 and save to disk
+│   └── README.md
+├── demo/
+│   ├── server.py                     ← CPU-only FastAPI backend for webcam inference
+│   ├── frontend/index.html           ← webcam UI with auto-capture + response log
+│   └── README.md
+├── docs/
+│   └── report_preview.png
+└── models/                           ← downloaded weights (gitignored)
 ```
-
----
-
-## Prerequisites
-
-- [Miniconda or Anaconda](https://docs.conda.io/en/latest/miniconda.html)
-- An OpenAI API key (used by the LLM judge)
-- A GPU with at least 8GB VRAM (16GB+ for Qwen3-VL 8B)
-- Sufficient disk space — model weights are 5–18GB each
-
-> **Shared server tip:** If your home directory has a disk quota, redirect everything to a larger partition before doing anything else:
-> ```bash
-> export HF_HOME=/mnt/shared/<yourname>/hf_cache
-> export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache
-> echo 'export HF_HOME=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
-> echo 'export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
-> mkdir -p /mnt/shared/<yourname>/envs /mnt/shared/<yourname>/conda_pkgs
-> conda config --add envs_dirs /mnt/shared/<yourname>/envs
-> conda config --add pkgs_dirs /mnt/shared/<yourname>/conda_pkgs
-> ```
-> The Qwen3-VL download scripts handle this automatically using explicit env paths.
-
----
-
-## Quick Start
-
-Everything from clone to benchmark results, copy-paste top to bottom:
-
-```bash
-# 1. Clone
-git clone https://github.com/axel-slid/unified_eval_framework.git
-cd unified_eval_framework
-
-# 2. Shared server only: redirect caches to avoid home dir quota
-export HF_HOME=/mnt/shared/<yourname>/hf_cache
-export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache
-echo 'export HF_HOME=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
-echo 'export HUGGINGFACE_HUB_CACHE=/mnt/shared/<yourname>/hf_cache' >> ~/.bashrc
-
-# 3. Download all models
-bash scripts/download_smolvlm.sh         # SmolVLM2-2.2B   (~5GB)
-bash scripts/download_internv3.sh        # InternVL3.5-4B  (~9GB)
-bash scripts/download_qwen3vl_4b.sh      # Qwen3-VL-4B     (~9GB)
-bash scripts/download_qwen3vl_8b.sh      # Qwen3-VL-8B     (~18GB)
-
-# 4. Verify each model loads
-conda activate SmolVLM-env
-python inferences/SmolVLM2-2.2B-Base.py
-
-conda activate InternV3-env
-python inferences/InternV3_5-4B.py
-
-conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
-python inferences/Qwen3VL-4B.py
-python inferences/Qwen3VL-8B.py
-
-# 5. Download 100 test images
-cd benchmark
-python test_sets/download_test_images.py --count 100
-
-# 6. Run all models and generate combined report
-export OPENAI_API_KEY=sk-...
-bash run_all_models.sh
-```
-
-Results are saved to `benchmark/results/` — open `report_all_models_<timestamp>.html` in any browser.
-
----
-
-## Report that I got:
-
-100-image captioning benchmark, scored by `gpt-5.4-mini` as judge:
-
-| Model | Params | Avg Score | Avg Latency | N |
-|-------|--------|-----------|-------------|---|
-| SmolVLM2-2.2B-Instruct | 2.2B | 3.68 / 5 | 3460ms | 100 |
-| InternVL3-4B-HF | 4B | 3.97 / 5 | 7777ms | 100 |
-| Qwen3-VL-4B-Instruct | 4B | 3.80 / 5 | 9152ms | 100 |
-| Qwen3-VL-8B-Instruct | 8B | 3.93 / 5 | 5136ms | 100 |
-
-Full results: [results.html](results.html)
-
-![Benchmark report screenshot](docs/report_preview.png)
 
 ---
 
 ## Full Workflow
 
-### Step 1 — Clone the repo
-
-```bash
-git clone https://github.com/axel-slid/unified_eval_framework.git
-cd unified_eval_framework
-```
-
----
-
-### Step 2 — Download models
-
-| Model | Script | Env | Size |
-|-------|--------|-----|------|
-| SmolVLM2-2.2B-Instruct | `download_smolvlm.sh` | `SmolVLM-env` | ~5GB |
-| InternVL3.5-4B-HF | `download_internv3.sh` | `InternV3-env` | ~9GB |
-| Qwen3-VL-4B-Instruct | `download_qwen3vl_4b.sh` | `/mnt/shared/<you>/envs/Qwen3VL-env` | ~9GB |
-| Qwen3-VL-8B-Instruct | `download_qwen3vl_8b.sh` | `/mnt/shared/<you>/envs/Qwen3VL-env` | ~18GB |
+### Step 1 — Download models
 
 ```bash
 bash scripts/download_smolvlm.sh
 bash scripts/download_internv3.sh
-bash scripts/download_qwen3vl_4b.sh   # creates shared env + downloads 4B
-bash scripts/download_qwen3vl_8b.sh   # reuses same env, downloads 8B weights
+bash scripts/download_qwen3vl_4b.sh
+bash scripts/download_qwen3vl_8b.sh
 ```
 
-> **Note on Qwen3-VL:** The env is created at `/mnt/shared/<yourname>/envs/Qwen3VL-env` to avoid home dir quota issues. Activate with the full path: `conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env`
+| Model | Conda Env | Disk |
+|-------|-----------|------|
+| SmolVLM2-2.2B-Instruct | `SmolVLM-env` | ~5GB |
+| InternVL3.5-4B-HF | `InternV3-env` | ~9GB |
+| Qwen3-VL-4B-Instruct | `/mnt/shared/<you>/envs/Qwen3VL-env` | ~9GB |
+| Qwen3-VL-8B-Instruct | `/mnt/shared/<you>/envs/Qwen3VL-env` | ~18GB |
 
-> **Gated models:** `export HF_TOKEN=hf_...` before running the script.
+> Qwen3-VL env is created on the shared disk to avoid home quota issues. Activate with full path: `conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env`
 
 ---
 
-### Step 3 — Verify inference works
+### Step 2 — Verify inference
 
 ```bash
 conda activate SmolVLM-env
@@ -172,9 +166,9 @@ python inferences/Qwen3VL-8B.py    # needs 16GB+ VRAM
 
 ---
 
-### Step 4 — Configure the benchmark
+### Step 3 — Configure `benchmark_config.yaml`
 
-Open `benchmark/benchmark_config.yaml` and update `model_path` to your local downloads:
+Update `model_path` for each model to your local download location:
 
 ```yaml
 models:
@@ -187,7 +181,7 @@ models:
   internvl:
     enabled: true
     class: InternVLModel
-    model_path: OpenGVLab/InternVL3_5-4B-HF
+    model_path: OpenGVLab/InternVL3_5-4B-HF    # or local path
     dtype: bfloat16
 
   qwen3vl_4b:
@@ -201,29 +195,46 @@ models:
     class: Qwen3VLModel
     model_path: /mnt/shared/<yourname>/models/Qwen3-VL-8B-Instruct
     dtype: bfloat16
+
+  # int8 variants (after running quantize/quantize.py)
+  internvl_int8:
+    enabled: true
+    class: InternVLModel
+    model_path: /mnt/shared/<yourname>/models/InternVL3_5-4B-HF-int8
+    dtype: bfloat16    # weights already int8 on disk
+
+  qwen3vl_4b_int8:
+    enabled: true
+    class: Qwen3VLModel
+    model_path: /mnt/shared/<yourname>/models/Qwen3-VL-4B-Instruct-int8
+    dtype: bfloat16
+
+  qwen3vl_8b_int8:
+    enabled: true
+    class: Qwen3VLModel
+    model_path: /mnt/shared/<yourname>/models/Qwen3-VL-8B-Instruct-int8
+    dtype: bfloat16
 ```
 
 Set `enabled: false` to skip a model without removing its config.
 
 ---
 
-### Step 5 — Prepare a test set
+### Step 4 — Prepare a test set
 
-**Option A — Built-in sample (3 images, smoke test)**
-
-`benchmark/test_sets/sample.json`
-
-**Option B — Download 100 diverse images from the web**
+**Option A — Download 100 diverse images (recommended)**
 
 ```bash
 cd benchmark
 python test_sets/download_test_images.py --count 100
-# options:
-python test_sets/download_test_images.py --count 100 --query "product packaging"
-python test_sets/download_test_images.py --count 100 --delay 2.5
+# generates test_sets/captioning_100.json automatically
 ```
 
-**Option C — Build from your own images**
+**Option B — Built-in 3-image smoke test**
+
+`benchmark/test_sets/sample.json` — use first to verify the pipeline works end to end.
+
+**Option C — Your own images**
 
 ```bash
 python test_sets/generate_test_set.py \
@@ -240,77 +251,141 @@ python test_sets/generate_test_set.py \
     "image": "test_sets/images/001.jpg",
     "question": "What text is visible in this image?",
     "reference_answer": "EXIT",
-    "rubric": "Award full marks if all visible text is correctly identified. Penalize hallucinated text."
+    "rubric": "Award full marks if all visible text is identified. Penalize hallucinated text."
   }
 ]
 ```
 
-`reference_answer` can be `""` — the judge scores from the image directly.
+---
+
+### Step 5 — Quantize models to int8
+
+Quantizes and saves int8 versions of all models to disk. Only needs to be done once — quantized models load like any normal local model afterwards.
+
+```bash
+cd quantize
+/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/pip install bitsandbytes
+
+# quantize all models
+/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python quantize.py --all
+
+# or specific models
+/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python quantize.py \
+    --models internvl qwen3vl_4b qwen3vl_8b
+```
+
+Saves to `models/InternVL3_5-4B-HF-int8/`, `models/Qwen3-VL-4B-Instruct-int8/`, etc. Then set the int8 entries in `benchmark_config.yaml` to `enabled: true`.
+
+| Model | bfloat16 | int8 |
+|-------|----------|------|
+| InternVL3-4B | ~8GB | ~4GB |
+| Qwen3-VL-4B | ~8GB | ~4GB |
+| Qwen3-VL-8B | ~16GB | ~8GB |
 
 ---
 
-### Step 6 — Run the benchmark
-
-**Run all 4 models (recommended):**
+### Step 6 — Run VQA benchmark (recommended)
 
 ```bash
 cd benchmark
-conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
+mkdir -p logs
+
+nohup bash -c '
+export PYTHON=/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python
 export OPENAI_API_KEY=sk-...
-bash run_all_models.sh
+export HF_HOME=/mnt/shared/<yourname>/hf_cache
+export PYTORCH_ALLOC_CONF=expandable_segments:True
+cd /path/to/benchmark
+
+CUDA_VISIBLE_DEVICES=0 $PYTHON run_benchmark_vqa.py \
+    --test-set test_sets/captioning_100.json --all
+' >> logs/vqa_run.log 2>&1 &
+
+tail -f logs/vqa_run.log
 ```
 
-Runs each model sequentially, unloads between runs, then merges into one `report_all_models_<timestamp>.html`.
-
-**Run individual models:**
-
+Skip GPT baseline to save API cost:
 ```bash
-nvidia-smi   # check free GPUs first
-
-CUDA_VISIBLE_DEVICES=0 python run_benchmark.py \
-    --test-set test_sets/captioning_100.json \
-    --models smolvlm internvl qwen3vl_4b
-
-# 8B needs 16GB+ VRAM
-CUDA_VISIBLE_DEVICES=1 python run_benchmark.py \
-    --test-set test_sets/captioning_100.json \
-    --models qwen3vl_8b
+$PYTHON run_benchmark_vqa.py --models smolvlm internvl --no-gpt-baseline
 ```
 
 ---
 
-### Step 7 — View results
+### Step 7 — Run captioning benchmark
 
-Results land in `benchmark/results/`:
+```bash
+nohup bash -c '
+export PYTHON=/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python
+export OPENAI_API_KEY=sk-...
+export HF_HOME=/mnt/shared/<yourname>/hf_cache
+export PYTORCH_ALLOC_CONF=expandable_segments:True
+cd /path/to/benchmark
 
-- `results_<timestamp>.json` — raw scores, responses, latencies, judge reasons
-- `report_<timestamp>.html` — side-by-side comparison table
-- `report_all_models_<timestamp>.html` — combined report from `run_all_models.sh`
+CUDA_VISIBLE_DEVICES=0 $PYTHON run_benchmark.py --test-set test_sets/captioning_100.json --models smolvlm
+CUDA_VISIBLE_DEVICES=0 $PYTHON run_benchmark.py --test-set test_sets/captioning_100.json --models internvl
+CUDA_VISIBLE_DEVICES=0 $PYTHON run_benchmark.py --test-set test_sets/captioning_100.json --models qwen3vl_4b
+CUDA_VISIBLE_DEVICES=1 $PYTHON run_benchmark.py --test-set test_sets/captioning_100.json --models qwen3vl_8b
+
+# merge all results into one combined HTML report
+$PYTHON - << EOF
+import json, sys, statistics
+from pathlib import Path
+from datetime import datetime
+sys.path.insert(0, ".")
+from run_benchmark import save_html_report
+
+results_dir = Path("results")
+all_results = {}
+for f in sorted(results_dir.glob("results_*.json")):
+    if "merged" in f.name: continue
+    data = json.loads(f.read_text())
+    for key, val in data.items():
+        all_results[key] = val
+
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+html_path = results_dir / f"report_all_models_{timestamp}.html"
+save_html_report(all_results, html_path, timestamp)
+print(f"Combined report → {html_path}")
+EOF
+' >> logs/benchmark_run.log 2>&1 &
+
+tail -f logs/benchmark_run.log
+```
+
+---
+
+### Step 8 — (Optional) CPU webcam demo
+
+```bash
+cd demo
+pip install fastapi uvicorn python-multipart
+python server.py
+# open http://localhost:8080
+```
+
+Webcam demo optimised for CPU-only inference (no GPU). Uses SmolVLM2 in float32 locked to 4 threads to simulate edge hardware. Features: live webcam feed, manual capture, auto-capture every 2/4/8/15s, response log with thumbnails and latency per frame.
 
 ---
 
 ## Adding Your Own Model
 
-3 steps, no changes to `run_benchmark.py`.
+3 steps, no changes to the benchmark runners.
 
 ### 1. Create `benchmark/models/yourmodel.py`
 
 ```python
 from __future__ import annotations
-import time
-import torch
+import time, torch
 from PIL import Image
 from transformers import AutoProcessor, YourModelClass
 from models.base import BaseVLMModel, InferenceResult
 from config import ModelConfig
 
 class YourModel(BaseVLMModel):
-
     def __init__(self, cfg: ModelConfig):
         self.cfg = cfg
         self.name = f"YourModel ({cfg.model_path.split('/')[-1]})"
-        self.model = None
-        self.processor = None
+        self.model = self.processor = None
 
     def load(self) -> None:
         self.processor = AutoProcessor.from_pretrained(self.cfg.model_path)
@@ -325,15 +400,12 @@ class YourModel(BaseVLMModel):
             image = Image.open(image_path).convert("RGB")
             t0 = time.perf_counter()
             # outputs = self.model.generate(...)
-            latency_ms = (time.perf_counter() - t0) * 1000
-            response = "..."
-            return InferenceResult(response=response, latency_ms=latency_ms)
+            return InferenceResult(response="...", latency_ms=(time.perf_counter()-t0)*1000)
         except Exception as e:
             return InferenceResult(response="", latency_ms=0.0, error=str(e))
 
     def unload(self) -> None:
-        del self.model
-        self.model = None
+        del self.model; self.model = None
         torch.cuda.empty_cache()
 ```
 
@@ -341,7 +413,6 @@ class YourModel(BaseVLMModel):
 
 ```python
 from .yourmodel import YourModel
-
 MODEL_REGISTRY = {
     "SmolVLMModel": SmolVLMModel,
     "InternVLModel": InternVLModel,
@@ -350,81 +421,57 @@ MODEL_REGISTRY = {
 }
 ```
 
-### 3. Add to `benchmark/benchmark_config.yaml`
+### 3. Add to `benchmark_config.yaml`
 
 ```yaml
-models:
-  yourmodel:
-    enabled: true
-    class: YourModel
-    model_path: /path/to/your/model
-    dtype: bfloat16
-    generation:
-      max_new_tokens: 256
-```
-
-```bash
-CUDA_VISIBLE_DEVICES=0 python run_benchmark.py --models yourmodel
+yourmodel:
+  enabled: true
+  class: YourModel
+  model_path: /path/to/model
+  dtype: bfloat16
+  generation:
+    max_new_tokens: 256
 ```
 
 ---
 
-## Scoring
+## Full Results
 
-| Score | Meaning |
-|-------|---------|
-| 5 | Fully correct and complete |
-| 4 | Mostly correct, minor issues |
-| 3 | Partially correct, missing key details |
-| 2 | Mostly wrong, minor correct elements |
-| 1 | Completely wrong or refused to answer |
+### VQA Benchmark (0–100, GPT-generated questions, GPT baseline)
 
-The judge sees the image directly so it can verify accuracy without needing a reference answer. **Estimated API cost:** ~$0.05 per 100 images with `gpt-5.4-mini`.
+| Model | Params | dtype | GPU | Avg Score | vs GPT | Latency | N |
+|-------|--------|-------|-----|-----------|--------|---------|---|
+| GPT Baseline (gpt-5.4-mini) | — | — | — | 90.9 / 100 | baseline | 1064ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | bfloat16 | RTX PRO 6000 (97GB) | 88.6 / 100 | −2.3 | 2547ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | bfloat16 | RTX PRO 6000 (97GB) | 88.3 / 100 | −2.6 | 3267ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | int8 | RTX PRO 6000 (97GB) | 87.5 / 100 | −3.5 | 10843ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | int8 | RTX PRO 6000 (97GB) | 87.4 / 100 | −3.5 | 13460ms | 100 |
+| SmolVLM2-2.2B-Instruct | 2.2B | bfloat16 | RTX 4060 Ti (16GB) | 72.0 / 100 | −18.9 | 315ms | 100 |
+| InternVL3-4B-HF | 4B | bfloat16 | RTX 4060 Ti (16GB) | 65.3 / 100 | −25.6 | 1400ms | 100 |
+| InternVL3-4B-HF | 4B | int8 | RTX PRO 6000 (97GB) | 62.9 / 100 | −28.0 | 5415ms | 100 |
 
----
+### Captioning Benchmark (0–100, GPT judge, free-form description)
 
-## Model Results
+| Model | Params | dtype | GPU | Avg Score | Latency | N |
+|-------|--------|-------|-----|-----------|---------|---|
+| InternVL3-4B-HF | 4B | bfloat16 | RTX 4060 Ti (16GB) | 82.2 / 100 | 4760ms | 100 |
+| InternVL3-4B-HF | 4B | int8 | RTX PRO 6000 (97GB) | 79.7 / 100 | 16058ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | int8 | RTX PRO 6000 (97GB) | 79.6 / 100 | 21167ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | bfloat16 | RTX 4060 Ti (16GB) | 78.6 / 100 | 6195ms | 100 |
+| Qwen3-VL-4B-Instruct | 4B | int8 | RTX PRO 6000 (97GB) | 78.5 / 100 | 21506ms | 100 |
+| Qwen3-VL-8B-Instruct | 8B | bfloat16 | RTX PRO 6000 (97GB) | 77.0 / 100 | 5254ms | 100 |
+| SmolVLM2-2.2B-Instruct | 2.2B | bfloat16 | RTX 4060 Ti (16GB) | 73.6 / 100 | 2879ms | 100 |
 
-100-image captioning benchmark on diverse Wikimedia Commons images, judged by `gpt-5.4-mini`:
+### Published Benchmark Scores
 
-| Model | Params | Avg Score (/ 5) | Avg Latency | N |
-|-------|--------|-----------------|-------------|---|
-| SmolVLM2-2.2B-Instruct | 2.2B | 3.68 | 3460ms | 100 |
-| Qwen3-VL-4B-Instruct | 4B | 3.80 | 9152ms | 100 |
-| Qwen3-VL-8B-Instruct | 8B | 3.93 | 5136ms | 100 |
-| InternVL3.5-4B-HF | 4B | 3.97 | 7777ms | 100 |
+| Model | MMMU | MathVista | DocVQA | ChartQA | TextVQA | OCRBench | AI2D | ScienceQA |
+|-------|------|-----------|--------|---------|---------|----------|------|-----------|
+| SmolVLM2-2.2B | 42.0 | 51.5 | 80.0 | 68.7 | 73.0 | 72.9 | 70.0 | 89.6 |
+| InternVL3.5-4B | 56.6 | 67.2 | 91.6 | 86.0 | 78.4 | — | 82.6 | — |
+| Qwen3-VL-4B | ~58 | ~72 | ~94 | ~85 | — | — | — | — |
+| Qwen3-VL-8B | ~65 | 85.8 | ~97 | ~89 | — | — | — | — |
 
-**Key observations:**
-- InternVL3.5-4B scores highest overall despite equal parameter count to Qwen3-VL-4B
-- Qwen3-VL-8B is faster than 4B despite being larger — better GPU utilization on the RTX Pro 6000
-- SmolVLM2 is the fastest by ~2x with competitive quality for its size
-- All models cluster between 3.68–3.97, suggesting captioning is well-matched to current 2–8B VLMs
-
----
-
-## Configuration Reference
-
-```yaml
-output_dir: results
-
-judge:
-  model: gpt-5.4-mini
-  max_tokens: 256
-  timeout_seconds: 30
-
-generation_defaults:
-  max_new_tokens: 256
-  do_sample: false
-
-models:
-  smolvlm:
-    enabled: true
-    class: SmolVLMModel
-    model_path: /path/to/model
-    dtype: bfloat16
-    generation:
-      max_new_tokens: 256
-```
+> Sources: SmolVLM2 [arXiv:2504.05299](https://arxiv.org/abs/2504.05299) · InternVL3.5 [arXiv:2508.18265](https://arxiv.org/abs/2508.18265) · Qwen3-VL [arXiv:2511.21631](https://arxiv.org/abs/2511.21631)
 
 ---
 
@@ -435,13 +482,18 @@ models:
 nvidia-smi && kill <pid>
 ```
 
-**Disk quota exceeded** — redirect HF cache and conda envs (see Prerequisites).
+**`CondaError: Run conda init before conda activate`** — use the explicit Python path in nohup scripts instead of `conda activate`:
+```bash
+export PYTHON=/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python
+$PYTHON run_benchmark.py ...
+```
 
 **`ImportError: cannot import name X from transformers`**
 ```bash
-pip install --upgrade "transformers>=4.52.1"
-# Qwen3-VL needs source build:
+# Qwen3-VL needs transformers from source:
 pip install git+https://github.com/huggingface/transformers
+# Others:
+pip install --upgrade "transformers>=4.52.1"
 ```
 
 **`ImportError: Package num2words is required`**
@@ -449,60 +501,13 @@ pip install git+https://github.com/huggingface/transformers
 /mnt/shared/<yourname>/envs/Qwen3VL-env/bin/pip install num2words
 ```
 
-**Judge scores all 0** — `OPENAI_API_KEY` not set. Benchmark still saves responses — add key and re-run.
+**Judge scores all 0** — `OPENAI_API_KEY` not set. The benchmark still saves responses — export the key and re-run just the judging.
 
-**Model ignores the image** — use `-Instruct` variant, not `-Base`.
+**Model ignores the image** — use the `-Instruct` variant not `-Base`.
+
+**int8 models slower than bfloat16 on GPU** — expected with bitsandbytes. It dequantizes weights to float16 during inference rather than using native int8 kernels. Memory savings are real but speed savings are not on GPU. For actual inference speedup on CPU/edge use GGUF int4 via llama.cpp.
 
 **Qwen3-VL env not found** — activate by full path:
 ```bash
 conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 ```
-
-
----
-
-## Full Results Table
-
-Our benchmark results alongside published scores from official papers and leaderboards. All external scores sourced from official model technical reports and HuggingFace model cards.
-
-### Our Benchmark (100-image captioning, gpt-5.4-mini judge)
-
-| Model | Full Name | Params | GPU | Our Score (/ 5) | Latency |
-|-------|-----------|--------|-----|-----------------|---------|
-| SmolVLM2 | HuggingFaceTB/SmolVLM2-2.2B-Instruct | 2.2B | NVIDIA RTX 4060 Ti (16GB) | 3.68 | 3460ms |
-| InternVL3 | OpenGVLab/InternVL3_5-4B-HF | 4B | NVIDIA RTX 4060 Ti (16GB) | 3.97 | 7777ms |
-| Qwen3-VL-4B | Qwen/Qwen3-VL-4B-Instruct | 4B | NVIDIA RTX 4060 Ti (16GB) | 3.80 | 9152ms |
-| Qwen3-VL-8B | Qwen/Qwen3-VL-8B-Instruct | 8B | NVIDIA RTX PRO 6000 Blackwell (97GB) | 3.93 | 5136ms |
-
-### Published Benchmark Scores
-
-| Model | MMMU | MathVista | DocVQA | ChartQA | TextVQA | OCRBench | AI2D | ScienceQA | Video-MME |
-|-------|------|-----------|--------|---------|---------|----------|------|-----------|-----------|
-| SmolVLM2-2.2B-Instruct | 42.0 | 51.5 | 80.0 | 68.7 | 73.0 | 72.9 | 70.0 | 89.6 | 52.1 |
-| InternVL3.5-4B-HF | 56.6 | 67.2 | 91.6 | 86.0 | 78.4 | — | 82.6 | — | — |
-| Qwen3-VL-4B-Instruct | ~58 | ~72 | ~94 | ~85 | — | — | — | — | — |
-| Qwen3-VL-8B-Instruct | ~65 | 85.8 | ~97 | ~89 | — | — | — | — | — |
-
-> **Sources:**
-> - SmolVLM2: [arXiv:2504.05299](https://arxiv.org/abs/2504.05299) (Marafioti et al., 2025)
-> - InternVL3.5: [arXiv:2508.18265](https://arxiv.org/abs/2508.18265) (InternVL3.5 Technical Report, 2025)
-> - Qwen3-VL: [arXiv:2511.21631](https://arxiv.org/abs/2511.21631) (Qwen3-VL Technical Report, 2025); 8B MathVista from [InsiderLLM](https://insiderllm.com/guides/vision-models-locally/)
-> - Scores marked `~` are approximate, sourced from third-party analysis. `—` = not officially reported for this model size.
->
-> **Benchmark definitions:**
-> - **MMMU** — college-level multidisciplinary reasoning (higher = better)
-> - **MathVista** — math problem solving from images
-> - **DocVQA** — document question answering (ANLS metric)
-> - **ChartQA** — chart understanding and reasoning
-> - **TextVQA** — reading text within images
-> - **OCRBench** — OCR and text recognition
-> - **AI2D** — science diagram understanding
-> - **ScienceQA** — high-school science questions
-> - **Video-MME** — general video understanding
-
-### Key Takeaways
-
-- **Best overall quality:** InternVL3.5-4B and Qwen3-VL-8B lead on most published benchmarks
-- **Best efficiency:** SmolVLM2-2.2B runs in ~2GB VRAM and is ~2x faster than InternVL, making it ideal for constrained deployments
-- **Best math/OCR:** Qwen3-VL-8B scores 85.8 on MathVista — significantly stronger than the other models at this size class
-- **Our captioning task:** All models cluster between 3.68–3.97/5, suggesting the task is well-matched to current 2–8B VLMs and doesn't strongly differentiate them
