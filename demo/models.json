@@ -1,0 +1,41 @@
+[
+  {
+    "key": "smolvlm",
+    "label": "SmolVLM2-2.2B",
+    "full_name": "HuggingFaceTB/SmolVLM2-2.2B-Instruct",
+    "arch": "smolvlm",
+    "dtype": "float32",
+    "tile_size": 378,
+    "max_tokens": 64,
+    "note": "Recommended — fits in 8 GB RAM",
+    "color": "#3db870",
+    "cpu_freq_mhz": 2800,
+    "cpu_min_mhz": 490
+  },
+  {
+    "key": "qwen3vl_4b",
+    "label": "Qwen3-VL-4B",
+    "full_name": "Qwen/Qwen3-VL-4B-Instruct",
+    "arch": "qwen3vl",
+    "dtype": "bfloat16",
+    "tile_size": 448,
+    "max_tokens": 64,
+    "note": "bfloat16 — good balance",
+    "color": "#4a9eff",
+    "cpu_freq_mhz": 2800,
+    "cpu_min_mhz": 490
+  },
+  {
+    "key": "internvl_4b",
+    "label": "InternVL3.5-4B",
+    "full_name": "OpenGVLab/InternVL3_5-4B-HF",
+    "arch": "internvl",
+    "dtype": "bfloat16",
+    "tile_size": 448,
+    "max_tokens": 64,
+    "note": "bfloat16 — strong benchmark",
+    "color": "#e8a82a",
+    "cpu_freq_mhz": 2800,
+    "cpu_min_mhz": 490
+  }
+]

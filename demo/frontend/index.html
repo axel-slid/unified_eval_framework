@@ -3,782 +3,1094 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VLM CPU Demo</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>VLM · CPU Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f0ede8;
-    --surface: #e8e4de;
-    --surface2: #ddd8d0;
-    --border: #c8c2b8;
-    --text: #1a1714;
-    --text-muted: #7a736a;
-    --text-dim: #aaa49c;
-    --accent: #c84b2f;
-    --accent2: #2f7ac8;
-    --green: #2a8a4a;
-    --orange: #c87a2f;
-    --mono: 'DM Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
-  }
+:root {
+  --bg:        #0e0d0b;
+  --surface:   #161410;
+  --surface2:  #1e1c18;
+  --surface3:  #262420;
+  --border:    #2e2c26;
+  --border2:   #3a3830;
+  --text:      #e8e4dc;
+  --muted:     #7a7568;
+  --dim:       #45433c;
+  --accent:    #e8542a;
+  --accent2:   rgba(232,84,42,0.12);
+  --green:     #3db870;
+  --green2:    rgba(61,184,112,0.12);
+  --amber:     #e8a82a;
+  --amber2:    rgba(232,168,42,0.12);
+  --blue:      #4a9eff;
+  --blue2:     rgba(74,158,255,0.12);
+  --mono:      'IBM Plex Mono', monospace;
+  --sans:      'IBM Plex Sans', sans-serif;
+  --r:         8px;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+/* ── Header ──────────────────────────────────────────────────────────────── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.logo {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: var(--text);
+  text-transform: uppercase;
+}
+.logo .accent { color: var(--accent); }
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+}
+.sys-badge {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dot { width:6px; height:6px; border-radius:50%; background:var(--dim); flex-shrink:0; }
+.dot.on  { background:var(--green); box-shadow:0 0 6px var(--green); }
+.dot.busy{ background:var(--amber); animation: blink 1s infinite; }
+.dot.err { background:var(--accent); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  header {
-    padding: 16px 28px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--bg);
-  }
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.app {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: calc(100vh - 42px);
+  overflow: hidden;
+}
 
-  .logo {
-    font-family: var(--mono);
-    font-size: 13px;
-    letter-spacing: 2px;
-    font-weight: 500;
-    color: var(--text);
-  }
+/* ── Left sidebar ─────────────────────────────────────────────────────────── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sidebar::-webkit-scrollbar { width:3px; }
+.sidebar::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
 
-  .logo span { color: var(--accent); }
+.sidebar-section {
+  border-bottom: 1px solid var(--border);
+  padding: 14px;
+}
+.section-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-muted);
-  }
+/* Camera area */
+.cam-box {
+  aspect-ratio: 16/10;
+  background: #050505;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.cam-box video, .cam-box img.snap {
+  width: 100%; height: 100%; object-fit: cover; display: none;
+}
+.cam-placeholder {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 9px; color: var(--dim);
+}
+.cam-overlay {
+  position: absolute; bottom: 6px; left: 6px;
+  background: rgba(0,0,0,.7);
+  font-family: var(--mono); font-size: 9px; color: var(--green);
+  padding: 2px 7px; border-radius: 3px; display: none;
+}
+.flash { position:absolute;inset:0;background:rgba(232,84,42,.2);pointer-events:none;opacity:0;transition:opacity .15s; }
+.flash.on { opacity:1; }
 
-  .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 5px;
-    background: var(--border);
-    transition: background 0.3s;
-  }
+/* Buttons */
+.btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 7px 12px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  background: var(--surface2);
+  color: var(--text);
+  transition: all .15s;
+  display: inline-flex; align-items:center; gap:5px;
+  letter-spacing: .5px;
+  white-space: nowrap;
+}
+.btn:hover  { background:var(--surface3); border-color:var(--border2); }
+.btn:active { transform:scale(.97); }
+.btn:disabled { opacity:.35; cursor:not-allowed; transform:none; }
+.btn.primary { background:var(--text); color:var(--bg); border-color:var(--text); }
+.btn.primary:hover { background:#ccc8be; }
+.btn.accent  { background:var(--accent); color:#fff; border-color:var(--accent); }
+.btn.accent:hover { background:#c73f15; }
+.btn.danger  { color:var(--accent); border-color:#4a2820; }
+.btn.danger:hover { background:var(--accent2); border-color:var(--accent); }
+.btn.sm { padding:5px 9px; font-size:9px; }
+.btn-row { display:flex; gap:6px; flex-wrap:wrap; }
 
-  .dot.on { background: var(--green); box-shadow: 0 0 5px var(--green); }
-  .dot.busy { background: var(--orange); animation: blink 1s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+/* Text input */
+.field { display:flex; flex-direction:column; gap:4px; }
+.label { font-family:var(--mono); font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+textarea, input[type=text], select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 7px 9px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s;
+  width: 100%;
+}
+textarea:focus, input:focus, select:focus { border-color:var(--border2); }
+textarea { resize:vertical; min-height:52px; max-height:100px; line-height:1.5; }
+select {
+  appearance:none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 5 5-5z' fill='%23555'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 8px center;
+  padding-right:24px; cursor:pointer;
+}
 
-  /* ── Main layout ── */
-  .app {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 0;
-    height: calc(100vh - 54px);
-  }
+/* Interval row */
+.row { display:flex; gap:6px; align-items:flex-end; }
+.row select { width:auto; padding:6px 22px 6px 8px; font-size:10px; }
 
-  /* ── Camera panel ── */
-  .camera-panel {
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid var(--border);
-    overflow: hidden;
-  }
+/* ── Model cards grid ─────────────────────────────────────────────────────── */
+.main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.models-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  overflow: hidden;
+}
+.models-grid.count-1 { grid-template-columns: 1fr; }
+.models-grid.count-2 { grid-template-columns: repeat(2, 1fr); }
 
-  .cam-wrap {
-    flex: 1;
-    background: #1a1714;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+/* ── Model card ───────────────────────────────────────────────────────────── */
+.model-card {
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  transition: opacity .3s;
+}
+.model-card:last-child { border-right: none; }
+.model-card.disabled { opacity: .35; pointer-events: none; }
 
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transform: scaleX(-1);  /* mirror like a real webcam */
-  }
+/* Card header */
+.card-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.card-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  flex: 1;
+  color: var(--text);
+}
+.card-badge {
+  font-family: var(--mono);
+  font-size: 8px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.card-toggle {
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  background: var(--surface2);
+  color: var(--muted);
+  transition: all .15s;
+}
+.card-toggle:hover { border-color:var(--border2); color:var(--text); }
+.card-toggle.active { background:var(--green2); border-color:var(--green); color:var(--green); }
+.card-toggle.running { background:var(--amber2); border-color:var(--amber); color:var(--amber); }
 
-  canvas { display: none; }
+/* CPU / RAM telemetry bar */
+.telemetry {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.telem-item { display:flex; flex-direction:column; gap:3px; }
+.telem-label { font-family:var(--mono); font-size:8px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+.telem-val { font-family:var(--mono); font-size:10px; color:var(--text); }
+.telem-bar-bg { height:3px; background:var(--surface3); border-radius:2px; overflow:hidden; }
+.telem-bar    { height:3px; border-radius:2px; transition:width .5s ease; background:var(--green); }
+.telem-bar.amber { background:var(--amber); }
+.telem-bar.red   { background:var(--accent); }
 
-  .cam-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 12px;
-    background: #1a1714;
-  }
+/* CPU freq display */
+.freq-row {
+  display: flex; align-items: center; justify-content:space-between;
+}
+.freq-cores {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--dim);
+}
 
-  .cam-overlay p {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: #666;
-    text-align: center;
-  }
+/* Load/Unload area */
+.card-actions {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.load-status {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--muted);
+  flex: 1;
+}
+.load-status.ok  { color: var(--green); }
+.load-status.err { color: var(--accent); }
+.load-status.busy{ color: var(--amber); }
 
-  .cam-btn {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 2px;
-    padding: 10px 24px;
-    background: transparent;
-    border: 1px solid #444;
-    color: #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+/* Inference log per card */
+.card-log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg);
+}
+.card-log::-webkit-scrollbar { width:3px; }
+.card-log::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
-  .cam-btn:hover { border-color: #ccc; color: #fff; }
+.log-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 1px;
+}
 
-  /* Capture flash */
-  .flash {
-    position: absolute;
-    inset: 0;
-    background: white;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.05s;
-  }
+.entry {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  animation: fadein .2s ease;
+}
+@keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.entry-head {
+  padding: 6px 10px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.entry-time    { font-family:var(--mono); font-size:9px; color:var(--muted); flex:1; }
+.entry-latency { font-family:var(--mono); font-size:9px; color:var(--dim); }
+.entry-body {
+  padding: 8px 10px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.entry-thumb {
+  width:48px; height:48px; border-radius:4px;
+  object-fit:cover; flex-shrink:0;
+  background:var(--surface2);
+}
+.entry-text { flex:1; min-width:0; }
+.entry-prompt {
+  font-family:var(--mono); font-size:9px; color:var(--muted);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  margin-bottom:4px;
+}
+.entry-response { font-size:12px; color:var(--text); line-height:1.5; }
+.entry-response.loading {
+  color:var(--muted); display:flex; align-items:center; gap:6px; font-style:italic;
+}
 
-  .flash.active { opacity: 0.6; }
+/* Continuous badge */
+.continuous-badge {
+  position: absolute; top:8px; right:8px;
+  background: var(--amber2); border:1px solid var(--amber);
+  color: var(--amber); font-family:var(--mono); font-size:8px;
+  padding: 2px 6px; border-radius: 3px; letter-spacing: 1px;
+  animation: blink 2s infinite;
+  display: none;
+}
 
-  /* Inference indicator overlay */
-  .inferring-badge {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    background: rgba(0,0,0,0.7);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 4px;
-    padding: 6px 12px;
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--orange);
-    letter-spacing: 2px;
-    display: none;
-    align-items: center;
-    gap: 8px;
-  }
+/* spinner */
+.spinner {
+  width:12px; height:12px;
+  border:1.5px solid var(--border);
+  border-top-color:var(--amber);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+  flex-shrink:0;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
 
-  .inferring-badge.show { display: flex; }
+/* ── Bottom bar ───────────────────────────────────────────────────────────── */
+.bottom-bar {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--muted);
+}
+.bottom-bar .stat { display:flex; align-items:center; gap:5px; }
+.bottom-bar .stat span { color:var(--text); }
 
-  .mini-spin {
-    width: 10px; height: 10px;
-    border: 1.5px solid rgba(255,255,255,.2);
-    border-top-color: var(--orange);
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-  }
+/* Colors per model — dynamic via JS inline style now */
 
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── Add Model modal ──────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.65);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999;
+  display: none;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  width: 420px;
+  max-width: 95vw;
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.modal-title {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; color: var(--text); text-transform: uppercase;
+}
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 
-  /* Camera controls */
-  .cam-controls {
-    padding: 14px 20px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--surface);
-  }
-
-  .capture-btn {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: none;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    transition: transform 0.1s, opacity 0.2s;
-    flex-shrink: 0;
-  }
-
-  .capture-btn:hover { transform: scale(1.05); }
-  .capture-btn:active { transform: scale(0.95); }
-  .capture-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-  .auto-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  .interval-select {
-    font-family: var(--mono);
-    font-size: 11px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    color: var(--text);
-    padding: 4px 8px;
-    cursor: pointer;
-  }
-
-  .toggle-auto {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 1px;
-    padding: 5px 12px;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .toggle-auto.running {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(200,75,47,0.06);
-  }
-
-  .prompt-area {
-    flex: 1;
-  }
-
-  .prompt-input {
-    width: 100%;
-    font-family: var(--mono);
-    font-size: 11px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    color: var(--text);
-    padding: 6px 10px;
-    resize: none;
-    height: 34px;
-    line-height: 1.4;
-  }
-
-  .prompt-input:focus { outline: 1px solid var(--accent2); }
-
-  /* ── Right panel ── */
-  .right-panel {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* Model status */
-  .model-status {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-  }
-
-  .model-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .model-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .model-info { flex: 1; }
-  .model-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
-  .model-sub { font-family: var(--mono); font-size: 10px; color: var(--text-muted); }
-
-  .load-btn {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 2px;
-    padding: 7px 16px;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  .load-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .load-btn.unload { border-color: var(--text-dim); color: var(--text-dim); }
-  .load-btn.unload:hover { border-color: var(--accent); color: var(--accent); }
-  .load-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  /* CPU meter */
-  .cpu-meter {
-    margin-top: 12px;
-  }
-
-  .cpu-row {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--text-muted);
-    margin-bottom: 5px;
-  }
-
-  .thread-bars {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
-  }
-
-  .thread-bar {
-    background: var(--surface2);
-    border-radius: 2px;
-    height: 18px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .thread-fill {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: var(--accent2);
-    border-radius: 2px;
-    transition: height 0.4s;
-  }
-
-  .thread-fill.active { background: var(--orange); }
-
-  .thread-label {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--mono);
-    font-size: 9px;
-    color: var(--text-dim);
-    z-index: 1;
-  }
-
-  /* Response log */
-  .response-log {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 20px;
-  }
-
-  .log-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .log-entry {
-    margin-bottom: 16px;
-    border-left: 2px solid var(--border);
-    padding-left: 12px;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-
-  .log-entry.latest { border-left-color: var(--accent); }
-
-  .log-meta {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--text-dim);
-    margin-bottom: 5px;
-    display: flex;
-    gap: 10px;
-  }
-
-  .log-meta .lat { color: var(--accent2); }
-
-  .log-text {
-    font-size: 13px;
-    line-height: 1.65;
-    color: var(--text);
-  }
-
-  .log-thumb {
-    width: 48px; height: 36px;
-    object-fit: cover;
-    border-radius: 3px;
-    float: right;
-    margin-left: 8px;
-    border: 1px solid var(--border);
-  }
-
-  .empty-log {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-dim);
-    text-align: center;
-    padding: 40px 0;
-    line-height: 2;
-  }
-
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">VLM <span>//</span> CPU DEMO</div>
-  <div class="header-right">
-    <span><span class="dot" id="camDot"></span><span id="camStatus">camera off</span></span>
-    <span><span class="dot" id="modelDot"></span><span id="modelStatus">no model</span></span>
-    <span style="font-family:var(--mono);font-size:10px;color:var(--text-dim)">4 × ARM @ 2.80GHz</span>
+  <div class="logo">VLM<span class="accent">·</span>CPU<span class="accent">·</span>SIM</div>
+  <div class="header-meta">
+    <div class="sys-badge">
+      <span class="dot" id="sysStatusDot"></span>
+      <span id="sysStatusText">connecting…</span>
+    </div>
+    <span id="sysInfo"></span>
   </div>
 </header>
 
 <div class="app">
 
-  <!-- ── Camera ── -->
-  <div class="camera-panel">
-    <div class="cam-wrap">
-      <div class="cam-overlay" id="camOverlay">
-        <p>Camera not started</p>
-        <button class="cam-btn" onclick="startCamera()">START CAMERA</button>
+  <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+  <div class="sidebar">
+
+    <div class="sidebar-section">
+      <div class="section-title">Camera Feed</div>
+      <div class="cam-box" id="camBox">
+        <div class="cam-placeholder" id="camPlaceholder">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="2" y="8" width="28" height="18" rx="3" stroke="#333" stroke-width="1.5"/>
+            <circle cx="16" cy="17" r="5" stroke="#333" stroke-width="1.5"/>
+            <circle cx="16" cy="17" r="2" fill="#333"/>
+            <path d="M11 8V7a2 2 0 012-2h6a2 2 0 012 2v1" stroke="#333" stroke-width="1.5"/>
+          </svg>
+          <span>NO FEED</span>
+        </div>
+        <video id="video" autoplay playsinline></video>
+        <img id="snap" class="snap" alt="frame"/>
+        <div class="flash" id="flash"></div>
+        <div class="cam-overlay" id="liveLabel">● LIVE</div>
       </div>
-      <video id="video" autoplay playsinline></video>
-      <canvas id="canvas"></canvas>
-      <div class="flash" id="flash"></div>
-      <div class="inferring-badge" id="inferBadge">
-        <div class="mini-spin"></div>
-        INFERRING
+      <div class="btn-row">
+        <button class="btn" id="btnCamera" onclick="toggleCamera()">▶ START CAMERA</button>
+        <button class="btn" id="btnCapture" onclick="captureOnce()" disabled>⊙ CAPTURE</button>
       </div>
     </div>
 
-    <div class="cam-controls">
-      <button class="capture-btn" id="captureBtn" onclick="captureAndInfer()" disabled title="Capture & infer">
-        📷
-      </button>
+    <div class="sidebar-section">
+      <div class="section-title">Continuous Mode</div>
+      <div style="margin-bottom:8px;font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.6;">
+        Select models to run continuously. Each enabled model fires independently at the chosen interval.
+      </div>
+      <div class="row" style="margin-bottom:8px;">
+        <div class="field" style="flex:1">
+          <label class="label">Interval</label>
+          <select id="intervalSelect">
+            <option value="3000">3s</option>
+            <option value="5000" selected>5s</option>
+            <option value="10000">10s</option>
+            <option value="15000">15s</option>
+            <option value="30000">30s</option>
+            <option value="60000">1min</option>
+          </select>
+        </div>
+        <button class="btn accent" id="btnStartAll" onclick="startAllContinuous()">▶ ALL</button>
+        <button class="btn danger" id="btnStopAll" onclick="stopAllContinuous()">■ STOP</button>
+      </div>
+    </div>
 
-      <div class="prompt-area">
-        <textarea class="prompt-input" id="promptInput" rows="1"
-          placeholder="What do you see?">What do you see?</textarea>
+    <div class="sidebar-section" style="flex:1">
+      <div class="section-title">Instruction</div>
+      <div class="field">
+        <textarea id="prompt" rows="3" placeholder="What do you see?">What do you see?</textarea>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-title">RAM Budget</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.7;">
+        <div id="ramBudgetInfo">Loading…</div>
+        <div style="margin-top:6px;color:var(--dim);">
+          System RAM: <span id="ramPerModel" style="color:var(--text)">—</span> available
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-title">Models</div>
+      <button class="btn" style="width:100%" onclick="openAddModal()">+ Add Model</button>
+    </div>
+
+  </div>
+
+  <!-- ── Add Model Modal ────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="addModal" onclick="if(event.target===this)closeAddModal()">
+    <div class="modal">
+      <div class="modal-title">+ Add Model</div>
+
+      <div class="modal-grid">
+        <div class="field">
+          <label class="label">Key (slug) *</label>
+          <input type="text" id="mKey" placeholder="my_model"/>
+        </div>
+        <div class="field">
+          <label class="label">Display Name *</label>
+          <input type="text" id="mLabel" placeholder="My Model 7B"/>
+        </div>
       </div>
 
-      <div class="auto-wrap">
-        <select class="interval-select" id="intervalSelect">
-          <option value="2000">2s</option>
-          <option value="4000" selected>4s</option>
-          <option value="8000">8s</option>
-          <option value="15000">15s</option>
-        </select>
-        <button class="toggle-auto" id="autoBtn" onclick="toggleAuto()">AUTO</button>
+      <div class="field">
+        <label class="label">HuggingFace Repo ID *</label>
+        <input type="text" id="mFullName" placeholder="org/model-name"/>
+      </div>
+
+      <div class="modal-grid">
+        <div class="field">
+          <label class="label">Architecture *</label>
+          <select id="mArch">
+            <option value="smolvlm">smolvlm</option>
+            <option value="qwen3vl">qwen3vl</option>
+            <option value="internvl">internvl</option>
+            <option value="auto">auto (generic)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label">Dtype</label>
+          <select id="mDtype">
+            <option value="float32">float32</option>
+            <option value="bfloat16">bfloat16</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-grid">
+        <div class="field">
+          <label class="label">Tile Size (px)</label>
+          <input type="text" id="mTile" placeholder="378"/>
+        </div>
+        <div class="field">
+          <label class="label">Max Tokens</label>
+          <input type="text" id="mTokens" placeholder="64"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Note (optional)</label>
+        <input type="text" id="mNote" placeholder="e.g. bfloat16 — fits in 6 GB"/>
+      </div>
+
+      <div id="mError" style="font-family:var(--mono);font-size:9px;color:var(--accent);display:none"></div>
+
+      <div class="modal-footer">
+        <button class="btn" onclick="closeAddModal()">Cancel</button>
+        <button class="btn primary" onclick="submitAddModel()">Add Model</button>
       </div>
     </div>
   </div>
 
-  <!-- ── Right panel ── -->
-  <div class="right-panel">
-
-    <!-- Model panel -->
-    <div class="model-status">
-      <div class="model-label">Model</div>
-      <div class="model-row">
-        <div class="model-info">
-          <div class="model-name">SmolVLM2-2.2B</div>
-          <div class="model-sub" id="modelSub">Not loaded — ~8GB RAM, float32</div>
-        </div>
-        <button class="load-btn" id="loadBtn" onclick="toggleModel()">LOAD</button>
-      </div>
-
-      <div class="cpu-meter">
-        <div class="cpu-row">
-          <span>CPU Cores (4 × ARM)</span>
-          <span id="threadCount">4 threads</span>
-        </div>
-        <div class="thread-bars" id="threadBars">
-          <div class="thread-bar"><div class="thread-fill" id="t0" style="height:0%"></div><div class="thread-label">0</div></div>
-          <div class="thread-bar"><div class="thread-fill" id="t1" style="height:0%"></div><div class="thread-label">1</div></div>
-          <div class="thread-bar"><div class="thread-fill" id="t2" style="height:0%"></div><div class="thread-label">2</div></div>
-          <div class="thread-bar"><div class="thread-fill" id="t3" style="height:0%"></div><div class="thread-label">3</div></div>
-        </div>
-      </div>
+  <!-- ── Main: model cards ──────────────────────────────────────────────── -->
+  <div class="main">
+    <div class="models-grid" id="modelsGrid">
+      <!-- cards injected by JS -->
     </div>
-
-    <!-- Response log -->
-    <div class="response-log" id="responseLog">
-      <div class="log-label">Responses</div>
-      <div class="empty-log" id="emptyLog">
-        Load the model<br>start the camera<br>hit capture
-      </div>
+    <div class="bottom-bar">
+      <div class="stat">MODELS ACTIVE: <span id="statActive">0</span></div>
+      <div class="stat">RUNNING CONTINUOUSLY: <span id="statRunning">0</span></div>
+      <div class="stat">TOTAL INFERENCES: <span id="statTotal">0</span></div>
     </div>
-
   </div>
+
 </div>
 
 <script>
-const API = '';
-let stream = null;
-let autoTimer = null;
-let autoRunning = false;
-let modelLoaded = false;
-let modelLoading = false;
-let inferring = false;
-let threadAnimTimer = null;
+// ── Config & palette ────────────────────────────────────────────────────────
+const COLOR_PALETTE = ['#3db870','#4a9eff','#e8a82a','#c07eee','#ff6b6b','#4ecdc4','#ffd166','#ff9f43'];
 
-// ── Camera ────────────────────────────────────────────────────────────────────
-async function startCamera() {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }
-    });
-    const video = document.getElementById('video');
-    video.srcObject = stream;
-    document.getElementById('camOverlay').style.display = 'none';
-    document.getElementById('camDot').className = 'dot on';
-    document.getElementById('camStatus').textContent = 'camera on';
-    updateCaptureBtn();
-  } catch(e) {
-    alert('Camera access denied: ' + e.message);
+// ── State ───────────────────────────────────────────────────────────────────
+let MODELS         = [];   // populated from /api/models
+let camStream      = null;
+let modelState     = {};   // key → { loaded, loading, error, continuous, timer, inferCount, … }
+let globalInferCount = 0;
+
+// ── DOM helpers ─────────────────────────────────────────────────────────────
+const $   = id => document.getElementById(id);
+const esc = s  => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function _ensureState(key) {
+  if (!modelState[key]) {
+    modelState[key] = {
+      loaded: false, loading: false, error: null,
+      continuous: false, timer: null, inferCount: 0,
+      cpuFreq: 0, cpuLoad: 0, ramUsed: 0, ramLimit: 0,
+    };
   }
 }
 
-function captureFrame() {
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.save();
-  ctx.scale(-1, 1);  // mirror to match video
-  ctx.drawImage(video, -canvas.width, 0);
-  ctx.restore();
-  return canvas.toDataURL('image/jpeg', 0.7);
+// ── Fetch models from server and sync ───────────────────────────────────────
+async function fetchModels() {
+  try {
+    const r    = await fetch('/api/models', { signal: AbortSignal.timeout(4000) });
+    const data = await r.json();
+    // Assign colours to any new model
+    let colIdx = MODELS.length;
+    const prevKeys = new Set(MODELS.map(m => m.key));
+    data.forEach(cfg => {
+      if (!cfg.color) cfg.color = COLOR_PALETTE[colIdx++ % COLOR_PALETTE.length];
+      cfg.apiBase = `/api/${cfg.key}`;
+    });
+    // Detect changes
+    const newKeys  = new Set(data.map(m => m.key));
+    const added    = data.filter(m => !prevKeys.has(m.key));
+    const removed  = MODELS.filter(m => !newKeys.has(m.key));
+    const changed  = added.length > 0 || removed.length > 0;
+    MODELS = data;
+    MODELS.forEach(m => _ensureState(m.key));
+    // Stop continuous mode for removed models
+    removed.forEach(m => { if (modelState[m.key]?.continuous) stopContinuous(m.key); });
+    if (changed) renderGrid();
+  } catch { /* server unreachable */ }
 }
 
-// ── Model ─────────────────────────────────────────────────────────────────────
-async function toggleModel() {
-  if (modelLoading) return;
-  if (modelLoaded) {
-    await fetch(`${API}/api/unload`, { method: 'POST' });
-    modelLoaded = false;
-    setModelUI(false);
-  } else {
-    setModelUI(null); // loading state
-    const res = await fetch(`${API}/api/load`, { method: 'POST' });
-    const data = await res.json();
-    if (data.status === 'loading' || data.status === 'already_loaded') {
-      pollModelStatus();
+// ── Render model cards ──────────────────────────────────────────────────────
+function renderGrid() {
+  const grid = $('modelsGrid');
+  grid.innerHTML = '';
+  grid.className = `models-grid count-${Math.max(1, MODELS.length)}`;
+
+  if (MODELS.length === 0) {
+    grid.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;
+      font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:1px;height:100%">
+      — no models registered — click "+ Add Model" to get started —
+    </div>`;
+    return;
+  }
+
+  MODELS.forEach(m => {
+    const card = document.createElement('div');
+    card.className = `model-card`;
+    card.id = `card-${m.key}`;
+    card.innerHTML = `
+      <div class="continuous-badge" id="cbadge-${m.key}">● CONTINUOUS</div>
+
+      <div class="card-header">
+        <span class="dot" id="cdot-${m.key}"></span>
+        <span class="card-title" style="color:${esc(m.color||'var(--text)')}">${esc(m.label)}</span>
+        <span class="card-badge">${esc(m.dtype||'')}</span>
+        <button class="card-toggle" id="ctoggle-${m.key}" onclick="toggleContinuous('${m.key}')">AUTO</button>
+        <button class="btn sm danger" title="Remove model" onclick="removeModel('${m.key}')" style="padding:3px 6px;font-size:9px">✕</button>
+      </div>
+
+      <div class="telemetry">
+        <div class="telem-item">
+          <div class="telem-label">CPU</div>
+          <div class="freq-row">
+            <div class="telem-val" id="cfreq-${m.key}">— MHz</div>
+            <div class="freq-cores" id="cload-${m.key}">—%</div>
+          </div>
+          <div class="telem-bar-bg"><div class="telem-bar" id="cbar-cpu-${m.key}" style="width:0%"></div></div>
+        </div>
+        <div class="telem-item">
+          <div class="telem-label">RAM Alloc</div>
+          <div class="freq-row">
+            <div class="telem-val" id="cram-${m.key}">— MB</div>
+            <div class="freq-cores" id="cram-lim-${m.key}">/ — MB</div>
+          </div>
+          <div class="telem-bar-bg"><div class="telem-bar" id="cbar-ram-${m.key}" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <span class="load-status" id="cstatus-${m.key}">not loaded</span>
+        <button class="btn sm" id="cbtnLoad-${m.key}" onclick="loadModel('${m.key}')">LOAD</button>
+        <button class="btn sm danger" id="cbtnUnload-${m.key}" onclick="unloadModel('${m.key}')" style="display:none">UNLOAD</button>
+      </div>
+
+      <div class="card-log" id="clog-${m.key}">
+        <div class="log-empty" id="cempty-${m.key}">— awaiting inference —</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ── Status polling ─────────────────────────────────────────────────────────
+async function pollAll() {
+  let anyLoaded = false;
+  let totalLimMb = 0;
+  let modelCount = 0;
+
+  for (const m of MODELS) {
+    try {
+      const r = await fetch(`${m.apiBase}/status`, { signal: AbortSignal.timeout(3000) });
+      if (!r.ok) throw new Error();
+      const d = await r.json();
+      const st = modelState[m.key];
+      st.loaded  = d.model_loaded;
+      st.loading = d.loading;
+      st.error   = d.load_error;
+      st.cpuFreq = d.cpu?.freq_mhz ?? 0;
+      st.cpuLoad = d.cpu?.load_pct ?? 0;
+      st.ramUsed = d.ram?.used_mb  ?? 0;
+      st.ramLimit= d.ram?.limit_mb ?? 0;
+      updateCardUI(m.key);
+      if (d.model_loaded) anyLoaded = true;
+      if (d.ram?.limit_mb) { totalLimMb += d.ram.limit_mb; modelCount++; }
+    } catch {
+      // container unreachable — mark offline
+      const dot = $(`cdot-${m.key}`);
+      if (dot) { dot.className = 'dot err'; }
+      $(`cstatus-${m.key}`).textContent = 'offline';
+      $(`cstatus-${m.key}`).className   = 'load-status err';
     }
   }
-}
 
-async function pollModelStatus() {
-  modelLoading = true;
-  while (true) {
-    await sleep(1500);
-    try {
-      const res = await fetch(`${API}/api/status`);
-      const data = await res.json();
-      if (data.model_loaded && !data.loading) {
-        modelLoaded = true;
-        modelLoading = false;
-        setModelUI(true);
-        break;
-      }
-      if (!data.loading && !data.model_loaded) {
-        modelLoading = false;
-        setModelUI(false);
-        break;
-      }
-    } catch(e) { break; }
+  // header dot
+  $('sysStatusDot').className = anyLoaded ? 'dot on' : 'dot';
+  $('sysStatusText').textContent = anyLoaded
+    ? `${MODELS.filter(m=>modelState[m.key].loaded).length} model(s) loaded`
+    : 'servers ready';
+
+  // RAM budget info from latest status response
+  if (modelCount > 0 && totalLimMb > 0) {
+    $('ramBudgetInfo').innerHTML = `
+      System RAM: <span style="color:var(--text)">${totalLimMb} MB</span> total<br>
+      Models loaded: <span style="color:var(--text)">${modelCount}</span>
+    `;
+    const freeMb = totalLimMb - MODELS.reduce((s,m)=>s+(modelState[m.key]?.ramUsed||0),0);
+    $('ramPerModel').textContent = `~${Math.round(freeMb)} MB`;
   }
+
+  updateBottomBar();
 }
 
-function setModelUI(state) {
-  // state: true=loaded, false=unloaded, null=loading
-  const btn = document.getElementById('loadBtn');
-  const sub = document.getElementById('modelSub');
-  const dot = document.getElementById('modelDot');
-  const statusEl = document.getElementById('modelStatus');
+function updateCardUI(key) {
+  const m  = MODELS.find(x=>x.key===key);
+  if (!m) return;
+  const st = modelState[key];
 
-  if (state === true) {
-    btn.textContent = 'UNLOAD';
-    btn.className = 'load-btn unload';
-    btn.disabled = false;
-    sub.textContent = 'Loaded — float32 · 4 threads';
-    dot.className = 'dot on';
-    statusEl.textContent = 'model ready';
-  } else if (state === false) {
-    btn.textContent = 'LOAD';
-    btn.className = 'load-btn';
-    btn.disabled = false;
-    sub.textContent = 'Not loaded — ~8GB RAM, float32';
-    dot.className = 'dot';
-    statusEl.textContent = 'no model';
+  const dot       = $(`cdot-${key}`);
+  const status    = $(`cstatus-${key}`);
+  const btnLoad   = $(`cbtnLoad-${key}`);
+  const btnUnload = $(`cbtnUnload-${key}`);
+  const toggle    = $(`ctoggle-${key}`);
+  const badge     = $(`cbadge-${key}`);
+  if (!dot) return;
+
+  // Dot
+  if (st.loading)      dot.className = 'dot busy';
+  else if (st.error)   dot.className = 'dot err';
+  else if (st.loaded)  dot.className = 'dot on';
+  else                 dot.className = 'dot';
+
+  // Status text
+  if (st.loading)     { status.textContent='loading…';                              status.className='load-status busy'; }
+  else if (st.error)  { status.textContent=`error: ${st.error.slice(0,40)}`;        status.className='load-status err'; }
+  else if (st.loaded) { status.textContent='loaded ✓';                              status.className='load-status ok'; }
+  else                { status.textContent='not loaded';                             status.className='load-status'; }
+
+  // Buttons
+  btnLoad.style.display   = st.loaded ? 'none' : '';
+  btnUnload.style.display = st.loaded ? '' : 'none';
+  btnLoad.disabled = st.loading;
+
+  // Continuous toggle
+  if (st.continuous) {
+    toggle.className   = 'card-toggle running';
+    toggle.textContent = '■ STOP';
+    badge.style.display = '';
   } else {
-    btn.textContent = 'LOADING...';
-    btn.disabled = true;
-    sub.textContent = 'Loading weights into RAM...';
-    dot.className = 'dot busy';
-    statusEl.textContent = 'loading...';
+    toggle.className   = 'card-toggle' + (st.loaded ? ' active' : '');
+    toggle.textContent = 'AUTO';
+    badge.style.display = 'none';
   }
-  updateCaptureBtn();
+
+  // CPU telemetry
+  const freq    = st.cpuFreq || 0;
+  const load    = st.cpuLoad || 0;
+  const maxMhz  = m.cpu_freq_mhz || 2800;
+  const freqPct = Math.min(100, (freq / maxMhz) * 100);
+  $(`cfreq-${key}`).textContent = freq ? `${freq.toFixed(0)} MHz` : '— MHz';
+  $(`cload-${key}`).textContent = freq ? `${load.toFixed(0)}%`    : '—%';
+  const cpuBar = $(`cbar-cpu-${key}`);
+  cpuBar.style.width = freqPct + '%';
+  cpuBar.className   = 'telem-bar' + (load > 80 ? ' red' : load > 50 ? ' amber' : '');
+  cpuBar.style.background = m.color || 'var(--green)';
+
+  // RAM telemetry
+  const ramPct = st.ramLimit ? (st.ramUsed / st.ramLimit * 100) : 0;
+  $(`cram-${key}`).textContent     = st.ramUsed  ? `${st.ramUsed} MB`    : '— MB';
+  $(`cram-lim-${key}`).textContent = st.ramLimit ? `/ ${st.ramLimit} MB` : '/ — MB';
+  const ramBar = $(`cbar-ram-${key}`);
+  ramBar.style.width = Math.min(100, ramPct) + '%';
+  ramBar.className   = 'telem-bar' + (ramPct > 85 ? ' red' : ramPct > 65 ? ' amber' : '');
 }
 
-// ── Inference ─────────────────────────────────────────────────────────────────
-async function captureAndInfer() {
-  if (inferring || !modelLoaded || !stream) return;
-  inferring = true;
+// ── Load / Unload ───────────────────────────────────────────────────────────
+async function loadModel(key) {
+  const m   = MODELS.find(x=>x.key===key);
+  const btn = $(`cbtnLoad-${key}`);
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${m.apiBase}/load`, { method: 'POST' });
+    const d = await r.json();
+    if (!r.ok) alert(d.detail || 'Load failed');
+  } catch(e) { alert('Cannot reach server: ' + e.message); }
+  btn.disabled = false;
+}
 
-  // Flash effect
-  const flash = document.getElementById('flash');
-  flash.classList.add('active');
-  setTimeout(() => flash.classList.remove('active'), 150);
+async function unloadModel(key) {
+  const m = MODELS.find(x=>x.key===key);
+  stopContinuous(key);
+  await fetch(`${m.apiBase}/unload`, { method: 'POST' }).catch(()=>{});
+  modelState[key].loaded = false;
+  updateCardUI(key);
+}
 
-  // Show badge
-  document.getElementById('inferBadge').classList.add('show');
-  document.getElementById('captureBtn').disabled = true;
-  animateThreads(true);
+// ── Remove model from registry ──────────────────────────────────────────────
+async function removeModel(key) {
+  const m = MODELS.find(x=>x.key===key);
+  if (!confirm(`Remove "${m?.label || key}" from registry?`)) return;
+  stopContinuous(key);
+  try {
+    const r = await fetch(`/api/models/${key}`, { method: 'DELETE' });
+    if (!r.ok) { const d=await r.json(); alert(d.detail||'Remove failed'); return; }
+    await fetchModels();   // re-render
+  } catch(e) { alert('Error: ' + e.message); }
+}
 
-  const frameData = captureFrame();
-  const prompt = document.getElementById('promptInput').value || 'What do you see?';
+// ── Camera ──────────────────────────────────────────────────────────────────
+async function toggleCamera() {
+  if (camStream) stopCamera(); else await startCamera();
+}
 
-  // Convert base64 to blob
-  const blob = await (await fetch(frameData)).blob();
+async function startCamera() {
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video: { width:{ideal:1280}, height:{ideal:720} }, audio: false
+    });
+    const vid = $('video');
+    vid.srcObject = camStream;
+    vid.style.display = 'block';
+    $('camPlaceholder').style.display = 'none';
+    $('liveLabel').style.display = '';
+    $('btnCamera').textContent = '■ STOP CAMERA';
+    $('btnCapture').disabled = false;
+  } catch(e) { alert('Camera error: ' + e.message); }
+}
+
+function stopCamera() {
+  if (camStream) { camStream.getTracks().forEach(t=>t.stop()); camStream = null; }
+  $('video').style.display = 'none';
+  $('video').srcObject = null;
+  $('snap').style.display = 'none';
+  $('camPlaceholder').style.display = 'flex';
+  $('liveLabel').style.display = 'none';
+  $('btnCamera').textContent = '▶ START CAMERA';
+  $('btnCapture').disabled = true;
+  stopAllContinuous();
+}
+
+// ── Capture ─────────────────────────────────────────────────────────────────
+function captureFrame() {
+  const vid = $('video');
+  const c   = document.createElement('canvas');
+  c.width   = vid.videoWidth  || 640;
+  c.height  = vid.videoHeight || 480;
+  c.getContext('2d').drawImage(vid, 0, 0);
+  const snap = $('snap');
+  snap.src = c.toDataURL('image/jpeg', .85);
+  snap.style.display = 'block';
+  return new Promise(res => c.toBlob(res, 'image/jpeg', .85));
+}
+
+async function captureOnce() {
+  if (!camStream) return;
+  const flash = $('flash');
+  flash.classList.add('on');
+  setTimeout(()=>flash.classList.remove('on'), 200);
+  const blob     = await captureFrame();
+  const thumbUrl = $('snap').src;
+  const prompt   = $('prompt').value.trim() || 'What do you see?';
+  const loaded   = MODELS.filter(m=>modelState[m.key]?.loaded);
+  if (!loaded.length) { alert('Load at least one model first.'); return; }
+  await Promise.allSettled(loaded.map(m => runInfer(m, blob, thumbUrl, prompt)));
+}
+
+// ── Inference ────────────────────────────────────────────────────────────────
+async function runInfer(m, blob, thumbUrl, prompt) {
+  const id   = `e-${Date.now()}-${m.key}`;
+  addEntry(m.key, id, prompt, thumbUrl);
   const form = new FormData();
   form.append('image', blob, 'frame.jpg');
   form.append('prompt', prompt);
-
-  const t0 = Date.now();
   try {
-    const res = await fetch(`${API}/api/infer`, { method: 'POST', body: form });
-    const data = await res.json();
-    addLogEntry(data.response, data.latency_ms, frameData);
+    const t0 = performance.now();
+    const r  = await fetch(`${m.apiBase}/infer`, { method:'POST', body:form });
+    const d  = await r.json();
+    if (!r.ok) throw new Error(d.detail || 'failed');
+    const lat = d.latency_ms || Math.round(performance.now()-t0);
+    updateEntry(m.key, id, d.response, lat);
+    modelState[m.key].inferCount++;
+    globalInferCount++;
+    updateBottomBar();
   } catch(e) {
-    addLogEntry('Error: ' + e.message, Date.now()-t0, frameData);
+    updateEntry(m.key, id, 'Error: ' + e.message, null);
   }
-
-  document.getElementById('inferBadge').classList.remove('show');
-  animateThreads(false);
-  inferring = false;
-  document.getElementById('captureBtn').disabled = false;
 }
 
-function addLogEntry(text, latencyMs, thumbData) {
-  const log = document.getElementById('responseLog');
-  document.getElementById('emptyLog')?.remove();
-
-  // Remove 'latest' from previous
-  document.querySelectorAll('.log-entry.latest').forEach(e => e.classList.remove('latest'));
-
-  const entry = document.createElement('div');
-  entry.className = 'log-entry latest';
-
-  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  entry.innerHTML = `
-    <div class="log-meta">
-      <span>${time}</span>
-      <span class="lat">${latencyMs}ms</span>
-      <span>SmolVLM2</span>
+// ── Log entries ──────────────────────────────────────────────────────────────
+function addEntry(key, id, prompt, thumbUrl) {
+  const log = $(`clog-${key}`);
+  if (!log) return;
+  const empty = $(`cempty-${key}`);
+  if (empty) empty.style.display = 'none';
+  const now = new Date().toLocaleTimeString('en-US',{hour12:false});
+  const el  = document.createElement('div');
+  el.className = 'entry'; el.id = id;
+  el.innerHTML = `
+    <div class="entry-head">
+      <span class="entry-time">${now}</span>
+      <span class="entry-latency" id="${id}-lat"></span>
     </div>
-    <div class="log-text">
-      <img class="log-thumb" src="${thumbData}">
-      ${text}
+    <div class="entry-body">
+      <img class="entry-thumb" src="${esc(thumbUrl)}" alt=""/>
+      <div class="entry-text">
+        <div class="entry-prompt">${esc(prompt)}</div>
+        <div class="entry-response loading" id="${id}-resp">
+          <div class="spinner"></div><span>inferring…</span>
+        </div>
+      </div>
     </div>`;
-
-  log.insertBefore(entry, log.children[1] || null);
-
-  // Keep last 20 entries
-  const entries = log.querySelectorAll('.log-entry');
-  if (entries.length > 20) entries[entries.length - 1].remove();
+  log.insertBefore(el, log.firstChild);
 }
 
-// ── Auto mode ─────────────────────────────────────────────────────────────────
-function toggleAuto() {
-  autoRunning = !autoRunning;
-  const btn = document.getElementById('autoBtn');
-  if (autoRunning) {
-    btn.classList.add('running');
-    btn.textContent = 'STOP';
-    scheduleAuto();
-  } else {
-    btn.classList.remove('running');
-    btn.textContent = 'AUTO';
-    clearTimeout(autoTimer);
-  }
+function updateEntry(key, id, response, latMs) {
+  const resp = document.getElementById(`${id}-resp`);
+  const lat  = document.getElementById(`${id}-lat`);
+  if (resp) { resp.className='entry-response'; resp.textContent=response; }
+  if (lat && latMs) lat.textContent = latMs + 'ms';
 }
 
-function scheduleAuto() {
-  if (!autoRunning) return;
-  const interval = parseInt(document.getElementById('intervalSelect').value);
-  autoTimer = setTimeout(async () => {
-    if (autoRunning && modelLoaded && stream && !inferring) {
-      await captureAndInfer();
-    }
-    scheduleAuto();
-  }, interval);
+// ── Continuous mode ──────────────────────────────────────────────────────────
+function toggleContinuous(key) {
+  if (modelState[key]?.continuous) stopContinuous(key);
+  else startContinuous(key);
 }
 
-// ── Thread animation (simulate CPU load during inference) ─────────────────────
-function animateThreads(active) {
-  clearInterval(threadAnimTimer);
-  if (active) {
-    threadAnimTimer = setInterval(() => {
-      for (let i = 0; i < 4; i++) {
-        const fill = document.getElementById(`t${i}`);
-        const h = active ? Math.round(60 + Math.random() * 35) : 0;
-        fill.style.height = h + '%';
-        fill.className = 'thread-fill active';
-      }
-    }, 300);
-  } else {
-    for (let i = 0; i < 4; i++) {
-      const fill = document.getElementById(`t${i}`);
-      fill.style.height = '0%';
-      fill.className = 'thread-fill';
+function startContinuous(key) {
+  const st = modelState[key];
+  if (!st?.loaded)  { alert('Load the model first.'); return; }
+  if (!camStream)   { alert('Start the camera first.'); return; }
+  st.continuous = true;
+  async function fire() {
+    if (!st.continuous) return;
+    const blob   = await captureFrame();
+    const prompt = $('prompt').value.trim() || 'What do you see?';
+    const m      = MODELS.find(x=>x.key===key);
+    await runInfer(m, blob, $('snap').src, prompt);
+    if (st.continuous) {
+      const interval = parseInt($('intervalSelect').value, 10);
+      st.timer = setTimeout(fire, interval);
     }
   }
+  fire();
+  updateCardUI(key);
+  updateBottomBar();
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function updateCaptureBtn() {
-  const btn = document.getElementById('captureBtn');
-  btn.disabled = !(stream && modelLoaded);
+function stopContinuous(key) {
+  const st = modelState[key];
+  if (!st) return;
+  st.continuous = false;
+  if (st.timer) { clearTimeout(st.timer); st.timer = null; }
+  updateCardUI(key);
+  updateBottomBar();
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function startAllContinuous() {
+  MODELS.forEach(m => {
+    if (modelState[m.key]?.loaded && !modelState[m.key]?.continuous)
+      startContinuous(m.key);
+  });
+}
 
-// ── Poll server status on load ────────────────────────────────────────────────
-async function checkInitialStatus() {
+function stopAllContinuous() { MODELS.forEach(m => stopContinuous(m.key)); }
+
+// ── Bottom bar ────────────────────────────────────────────────────────────────
+function updateBottomBar() {
+  const active  = MODELS.filter(m=>modelState[m.key]?.loaded).length;
+  const running = MODELS.filter(m=>modelState[m.key]?.continuous).length;
+  $('statActive').textContent  = active;
+  $('statRunning').textContent = running;
+  $('statTotal').textContent   = globalInferCount;
+}
+
+// ── Add Model modal ───────────────────────────────────────────────────────────
+function openAddModal()  { $('addModal').classList.add('open'); $('mKey').focus(); }
+function closeAddModal() { $('addModal').classList.remove('open'); $('mError').style.display='none'; }
+
+async function submitAddModel() {
+  const errEl = $('mError');
+  errEl.style.display = 'none';
+
+  const key      = $('mKey').value.trim().replace(/\s+/g,'_');
+  const label    = $('mLabel').value.trim();
+  const fullName = $('mFullName').value.trim();
+  const arch     = $('mArch').value;
+  const dtype    = $('mDtype').value;
+  const tile     = parseInt($('mTile').value||'378',10);
+  const tokens   = parseInt($('mTokens').value||'64',10);
+  const note     = $('mNote').value.trim();
+
+  if (!key || !label || !fullName) {
+    errEl.textContent = 'Key, display name, and repo ID are required.';
+    errEl.style.display = '';
+    return;
+  }
+
+  const body = { key, label, full_name: fullName, arch, dtype,
+                 tile_size: tile, max_tokens: tokens, note,
+                 cpu_freq_mhz: 2800, cpu_min_mhz: 490 };
   try {
-    const res = await fetch(`${API}/api/status`);
-    const data = await res.json();
-    if (data.model_loaded) {
-      modelLoaded = true;
-      setModelUI(true);
-    } else if (data.loading) {
-      setModelUI(null);
-      pollModelStatus();
-    }
-  } catch(e) {}
+    const r = await fetch('/api/models', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body),
+    });
+    const d = await r.json();
+    if (!r.ok) { errEl.textContent = d.detail || 'Failed to add model'; errEl.style.display=''; return; }
+    // clear form
+    ['mKey','mLabel','mFullName','mTile','mTokens','mNote'].forEach(id=>$(id).value='');
+    closeAddModal();
+    await fetchModels();
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message;
+    errEl.style.display = '';
+  }
 }
 
-checkInitialStatus();
+// ── Tick: fetch model list + poll status ──────────────────────────────────────
+async function tick() {
+  await fetchModels();
+  await pollAll();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+tick();
+setInterval(tick, 4000);
 </script>
 </body>
 </html>

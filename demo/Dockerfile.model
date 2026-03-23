@@ -1,0 +1,38 @@
+# ── VLM Model Worker Container ────────────────────────────────────────────────
+# Simulates 4-core ARM CPU @ 2.80 GHz per model instance
+# RAM is split by docker-compose mem_limit across containers
+
+FROM python:3.11-slim
+
+LABEL maintainer="vlm-demo"
+LABEL description="CPU-only VLM model worker — 4-core ARM simulation"
+
+# System deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Python deps — pinned for CPU-only
+COPY requirements.model.txt .
+RUN pip install --no-cache-dir -r requirements.model.txt
+
+# App code
+COPY server_model.py .
+
+# CPU thread count matches simulated core count
+ENV OMP_NUM_THREADS=4
+ENV MKL_NUM_THREADS=4
+ENV OPENBLAS_NUM_THREADS=4
+ENV NUMEXPR_NUM_THREADS=4
+ENV TOKENIZERS_PARALLELISM=false
+
+EXPOSE 8080
+
+# Health check endpoint is /api/status
+HEALTHCHECK --interval=20s --timeout=5s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:8080/api/status || exit 1
+
+CMD ["python", "server_model.py"]

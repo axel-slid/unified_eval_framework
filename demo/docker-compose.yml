@@ -1,0 +1,173 @@
+version: "3.9"
+
+# ── VLM CPU Simulator — Multi-Model Dockerized Demo ──────────────────────────
+# Each model gets its own container with:
+#   - 4 ARM-like CPU cores (simulated at 2.80 GHz)
+#   - RAM split evenly across active containers
+#
+# Usage:
+#   docker compose up --build
+#   open http://localhost:3000
+#
+# To run only specific models:
+#   docker compose up --build nginx frontend smolvlm qwen3vl_4b
+
+x-model-defaults: &model-defaults
+  build:
+    context: .
+    dockerfile: Dockerfile.model
+  restart: unless-stopped
+  environment:
+    - OMP_NUM_THREADS=4
+    - MKL_NUM_THREADS=4
+    - OPENBLAS_NUM_THREADS=4
+    - NUMEXPR_NUM_THREADS=4
+    # HF cache shared via volume
+    - HF_HOME=/mnt/hf_cache
+    - HUGGINGFACE_HUB_CACHE=/mnt/hf_cache
+    - TRANSFORMERS_CACHE=/mnt/hf_cache
+  volumes:
+    - hf_cache:/mnt/hf_cache
+    - model_weights:/mnt/shared/dils
+  # Simulate 4-core ARM CPU at 2.80 GHz
+  cpus: "4.0"
+  cpu_shares: 1024
+  # Each model gets ~2.67 GB if all 3 run (8 GB total / 3 models)
+  # Adjust mem_limit per your available RAM:
+  #   All 3 models: ~2.67g each
+  #   2 models:     ~4g each
+  #   1 model:      ~8g each
+  mem_limit: 2800m
+  memswap_limit: 5600m
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:8080/api/status"]
+    interval: 15s
+    timeout: 5s
+    retries: 3
+    start_period: 30s
+
+services:
+  # ── Model Workers ────────────────────────────────────────────────────────────
+
+  smolvlm:
+    <<: *model-defaults
+    container_name: vlm_smolvlm
+    environment:
+      - OMP_NUM_THREADS=4
+      - MKL_NUM_THREADS=4
+      - OPENBLAS_NUM_THREADS=4
+      - NUMEXPR_NUM_THREADS=4
+      - HF_HOME=/mnt/hf_cache
+      - HUGGINGFACE_HUB_CACHE=/mnt/hf_cache
+      - TRANSFORMERS_CACHE=/mnt/hf_cache
+      - MODEL_KEY=smolvlm
+      - MODEL_LABEL=SmolVLM2-2.2B
+      - MODEL_FULL_NAME=HuggingFaceTB/SmolVLM2-2.2B-Instruct
+      - MODEL_ARCH=smolvlm
+      - MODEL_DTYPE=float32
+      - MODEL_TILE_SIZE=378
+      - MODEL_MAX_TOKENS=64
+      - SERVER_PORT=8080
+      # CPU simulation params (display only — cosmetic telemetry)
+      - CPU_CORES=4
+      - CPU_FREQ_MHZ=2800
+      - CPU_MIN_MHZ=490
+    ports:
+      - "8081:8080"
+    networks:
+      - vlm_net
+
+  qwen3vl_4b:
+    <<: *model-defaults
+    container_name: vlm_qwen3vl
+    environment:
+      - OMP_NUM_THREADS=4
+      - MKL_NUM_THREADS=4
+      - OPENBLAS_NUM_THREADS=4
+      - NUMEXPR_NUM_THREADS=4
+      - HF_HOME=/mnt/hf_cache
+      - HUGGINGFACE_HUB_CACHE=/mnt/hf_cache
+      - TRANSFORMERS_CACHE=/mnt/hf_cache
+      - MODEL_KEY=qwen3vl_4b
+      - MODEL_LABEL=Qwen3-VL-4B
+      - MODEL_FULL_NAME=Qwen/Qwen3-VL-4B-Instruct
+      - MODEL_ARCH=qwen3vl
+      - MODEL_DTYPE=bfloat16
+      - MODEL_TILE_SIZE=448
+      - MODEL_MAX_TOKENS=64
+      - SERVER_PORT=8080
+      - CPU_CORES=4
+      - CPU_FREQ_MHZ=2800
+      - CPU_MIN_MHZ=490
+    ports:
+      - "8082:8080"
+    networks:
+      - vlm_net
+
+  internvl_4b:
+    <<: *model-defaults
+    container_name: vlm_internvl
+    environment:
+      - OMP_NUM_THREADS=4
+      - MKL_NUM_THREADS=4
+      - OPENBLAS_NUM_THREADS=4
+      - NUMEXPR_NUM_THREADS=4
+      - HF_HOME=/mnt/hf_cache
+      - HUGGINGFACE_HUB_CACHE=/mnt/hf_cache
+      - TRANSFORMERS_CACHE=/mnt/hf_cache
+      - MODEL_KEY=internvl_4b
+      - MODEL_LABEL=InternVL3.5-4B
+      - MODEL_FULL_NAME=OpenGVLab/InternVL3_5-4B-HF
+      - MODEL_ARCH=internvl
+      - MODEL_DTYPE=bfloat16
+      - MODEL_TILE_SIZE=448
+      - MODEL_MAX_TOKENS=64
+      - SERVER_PORT=8080
+      - CPU_CORES=4
+      - CPU_FREQ_MHZ=2800
+      - CPU_MIN_MHZ=490
+    ports:
+      - "8083:8080"
+    networks:
+      - vlm_net
+
+  # ── Frontend + Proxy ─────────────────────────────────────────────────────────
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: vlm_frontend
+    restart: unless-stopped
+    networks:
+      - vlm_net
+    depends_on:
+      - smolvlm
+      - qwen3vl_4b
+      - internvl_4b
+
+  nginx:
+    image: nginx:alpine
+    container_name: vlm_nginx
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - vlm_net
+    depends_on:
+      - frontend
+      - smolvlm
+      - qwen3vl_4b
+      - internvl_4b
+
+networks:
+  vlm_net:
+    driver: bridge
+
+volumes:
+  hf_cache:
+    driver: local
+  model_weights:
+    driver: local
