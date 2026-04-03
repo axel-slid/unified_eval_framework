@@ -1,8 +1,13 @@
 /models/
 benchmark/test_sets/images/
 benchmark/results/
+benchmark/logs/
 __pycache__/
 **/__pycache__/
 *.pyc
 .DS_Store
-**/.DS_Storebenchmark/logs/
+**/.DS_Store
+
+# Generated plot images
+benchmark/*.png
+*.png
