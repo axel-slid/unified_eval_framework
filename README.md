@@ -6,6 +6,8 @@ A lightweight, extensible benchmarking framework for vision-language models (VLM
 
 ## Results
 
+![Demo](docs/report_preview.png)
+
 ### VQA Benchmark — GPT-Generated Questions + GPT Baseline
 
 GPT generates 5 targeted questions per image with reference answers. All models answer the same questions and are scored 0–100 against GPT's reference. GPT itself is scored as the theoretical ceiling.
