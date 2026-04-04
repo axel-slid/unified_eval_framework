@@ -1,6 +1,29 @@
 # Unified VLM Eval Framework
 
-A lightweight, extensible benchmarking framework for vision-language models (VLMs). Models run locally on GPU and are evaluated using two methods — a VQA benchmark where GPT generates questions and acts as its own baseline, and a captioning benchmark for quick comparisons.
+A lightweight, extensible benchmarking framework for vision-language models (VLMs). Models run locally on GPU and are evaluated across three benchmark types — a VQA benchmark driven by GPT-generated questions, a free-form captioning benchmark, and a domain-specific meeting room readiness benchmark requiring no API at all.
+
+---
+
+## Architecture Overview
+
+```
+unified_eval_framework/
+│
+├── BENCHMARKS (GPU server)
+│   │
+│   ├── VQA Benchmark          ← GPT generates Qs, GPT judges answers  (OpenAI API)
+│   ├── Captioning Benchmark   ← GPT judges free-form descriptions      (OpenAI API)
+│   └── Meeting Room Benchmark ← binary checklist vs ground truth       (no API)
+│
+├── DEMO (local machine / CPU)
+│   └── Desktop GUI            ← llama.cpp Docker + GGUF models, tkinter UI
+│
+└── SHARED COMPONENTS
+    ├── benchmark_config.yaml  ← all model paths and settings
+    ├── models/                ← model runner classes (one file per model)
+    ├── config.py              ← YAML → dataclasses
+    └── judge.py               ← GPT-as-judge (captioning benchmark)
+```
 
 ---
 
@@ -90,7 +113,8 @@ unified_eval_framework/
 │   ├── download_smolvlm.sh           ← env setup + model download for SmolVLM2
 │   ├── download_internv3.sh          ← env setup + model download for InternVL3.5
 │   ├── download_qwen3vl_4b.sh        ← env setup + model download for Qwen3-VL 4B
-│   └── download_qwen3vl_8b.sh        ← env setup + model download for Qwen3-VL 8B
+│   ├── download_qwen3vl_8b.sh        ← env setup + model download for Qwen3-VL 8B
+│   └── infer.sh                      ← one-off inference helper
 ├── inferences/
 │   ├── SmolVLM2-2.2B-Base.py        ← standalone test inference for SmolVLM2
 │   ├── InternV3_5-4B.py              ← standalone test inference for InternVL3.5
@@ -102,6 +126,7 @@ unified_eval_framework/
 │   ├── config.py                     ← loads + validates YAML into dataclasses
 │   ├── run_benchmark.py              ← captioning benchmark entry point
 │   ├── run_benchmark_vqa.py          ← VQA benchmark entry point
+│   ├── run_benchmark_meeting_room.py ← meeting room readiness benchmark entry point
 │   ├── run_all_models.sh             ← runs all models + merges into one report
 │   ├── judge.py                      ← LLM-as-judge scorer (OpenAI API, 0–100)
 │   ├── models/
@@ -113,6 +138,7 @@ unified_eval_framework/
 │   ├── test_sets/
 │   │   ├── sample.json               ← 3-image smoke test
 │   │   ├── captioning_100.json       ← 100-image diverse test set
+│   │   ├── meeting_room_sample.json  ← meeting room readiness sample test set
 │   │   ├── generate_test_set.py      ← build a test set from a local image folder
 │   │   └── download_test_images.py   ← download images from Wikimedia Commons
 │   └── results/                      ← auto-created; JSON + HTML reports
@@ -120,9 +146,10 @@ unified_eval_framework/
 │   ├── quantize.py                   ← quantize models to int8 and save to disk
 │   └── README.md
 ├── demo/
-│   ├── server.py                     ← CPU-only FastAPI backend for webcam inference
-│   ├── frontend/index.html           ← webcam UI with auto-capture + response log
-│   └── README.md
+│   ├── app.py                        ← desktop GUI (tkinter + llama.cpp Docker)
+│   ├── prepare_ggufs.py              ← download/convert GGUF assets from HuggingFace
+│   ├── models.json                   ← GGUF model registry for the demo
+│   └── requirements.txt              ← demo dependencies
 ├── docs/
 │   └── report_preview.png
 └── models/                           ← downloaded weights (gitignored)
@@ -130,7 +157,45 @@ unified_eval_framework/
 
 ---
 
-## Full Workflow
+## Full Pipeline
+
+### The Three Benchmarks at a Glance
+
+```
+                        ┌─────────────────────────────────┐
+                        │         Test Images              │
+                        │   (Wikimedia / your own / rooms) │
+                        └──────────────┬──────────────────┘
+                                       │
+              ┌────────────────────────┼────────────────────────┐
+              ▼                        ▼                         ▼
+   ┌─────────────────┐      ┌──────────────────┐     ┌──────────────────────┐
+   │  VQA Benchmark  │      │   Captioning     │     │  Meeting Room        │
+   │                 │      │   Benchmark      │     │  Benchmark           │
+   │ GPT generates   │      │                  │     │                      │
+   │ 5 Qs per image  │      │ VLMs caption     │     │ VLMs evaluate a      │
+   │                 │      │ freely           │     │ predefined checklist │
+   │ VLMs answer Qs  │      │                  │     │                      │
+   │                 │      │ GPT judges       │     │ Binary compare vs    │
+   │ GPT judges all  │      │ (0–100)          │     │ human ground truth   │
+   │ (0–100)         │      │                  │     │                      │
+   │                 │      │                  │     │ No API required      │
+   │ GPT as baseline │      │                  │     │                      │
+   └────────┬────────┘      └────────┬─────────┘     └──────────┬───────────┘
+            │                        │                           │
+            └────────────────────────┴───────────────────────────┘
+                                       │
+                              ┌────────▼────────┐
+                              │   HTML Report   │
+                              │  + JSON Results │
+                              │  benchmark/     │
+                              │  results/       │
+                              └─────────────────┘
+```
+
+---
+
+## Step-by-Step Onboarding
 
 ### Step 1 — Download models
 
@@ -140,6 +205,8 @@ bash scripts/download_internv3.sh
 bash scripts/download_qwen3vl_4b.sh
 bash scripts/download_qwen3vl_8b.sh
 ```
+
+Each script creates a dedicated conda environment and downloads the model to `/mnt/shared/<yourname>/models/`.
 
 | Model | Conda Env | Disk |
 |-------|-----------|------|
@@ -153,6 +220,8 @@ bash scripts/download_qwen3vl_8b.sh
 ---
 
 ### Step 2 — Verify inference
+
+Smoke-test each model with a single image before running the full benchmark.
 
 ```bash
 conda activate SmolVLM-env
@@ -169,6 +238,30 @@ python inferences/Qwen3VL-8B.py    # needs 16GB+ VRAM
 ---
 
 ### Step 3 — Configure `benchmark_config.yaml`
+
+`benchmark/benchmark_config.yaml` is the single source of truth for all paths, model settings, and judge config. Edit it before running any benchmark.
+
+```
+benchmark_config.yaml
+│
+├── output_dir          ← where HTML + JSON results are written
+│
+├── judge
+│   ├── model           ← OpenAI model used for judging (e.g. gpt-5.4-mini)
+│   ├── max_tokens
+│   └── timeout_seconds
+│
+├── generation_defaults ← max_new_tokens, do_sample (applied to all models unless overridden)
+│
+└── models
+    ├── smolvlm         ← enabled: true/false, class, model_path, dtype, generation{}
+    ├── internvl
+    ├── qwen3vl_4b
+    ├── qwen3vl_8b
+    ├── internvl_int8   ← int8 variants (after running quantize/quantize.py)
+    ├── qwen3vl_4b_int8
+    └── qwen3vl_8b_int8
+```
 
 Update `model_path` for each model to your local download location:
 
@@ -200,19 +293,19 @@ models:
 
   # int8 variants (after running quantize/quantize.py)
   internvl_int8:
-    enabled: true
+    enabled: false
     class: InternVLModel
     model_path: /mnt/shared/<yourname>/models/InternVL3_5-4B-HF-int8
     dtype: bfloat16    # weights already int8 on disk
 
   qwen3vl_4b_int8:
-    enabled: true
+    enabled: false
     class: Qwen3VLModel
     model_path: /mnt/shared/<yourname>/models/Qwen3-VL-4B-Instruct-int8
     dtype: bfloat16
 
   qwen3vl_8b_int8:
-    enabled: true
+    enabled: false
     class: Qwen3VLModel
     model_path: /mnt/shared/<yourname>/models/Qwen3-VL-8B-Instruct-int8
     dtype: bfloat16
@@ -232,6 +325,16 @@ python test_sets/download_test_images.py --count 100
 # generates test_sets/captioning_100.json automatically
 ```
 
+Images are sourced from Wikimedia Commons across 10 categories (street scenes, animals, food, cityscapes, sports, interiors, cars, offices, landscapes, markets). No API key needed.
+
+```bash
+# throttle if you hit 429s
+python test_sets/download_test_images.py --count 100 --delay 2.0
+
+# single topic
+python test_sets/download_test_images.py --count 100 --query "cats"
+```
+
 **Option B — Built-in 3-image smoke test**
 
 `benchmark/test_sets/sample.json` — use first to verify the pipeline works end to end.
@@ -246,6 +349,7 @@ python test_sets/generate_test_set.py \
 
 **Option D — Write manually**
 
+For the captioning / VQA benchmarks, each entry needs:
 ```json
 [
   {
@@ -258,9 +362,11 @@ python test_sets/generate_test_set.py \
 ]
 ```
 
+For the meeting room benchmark, see [Meeting Room Test Set Format](#meeting-room-test-set-format).
+
 ---
 
-### Step 5 — Quantize models to int8
+### Step 5 — Quantize models to int8 (optional)
 
 Quantizes and saves int8 versions of all models to disk. Only needs to be done once — quantized models load like any normal local model afterwards.
 
@@ -274,19 +380,52 @@ cd quantize
 # or specific models
 /mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python quantize.py \
     --models internvl qwen3vl_4b qwen3vl_8b
+
+# list available models
+/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python quantize.py --list
 ```
 
 Saves to `models/InternVL3_5-4B-HF-int8/`, `models/Qwen3-VL-4B-Instruct-int8/`, etc. Then set the int8 entries in `benchmark_config.yaml` to `enabled: true`.
 
-| Model | bfloat16 | int8 |
-|-------|----------|------|
+| Model | bfloat16 VRAM | int8 VRAM |
+|-------|--------------|-----------|
 | InternVL3-4B | ~8GB | ~4GB |
 | Qwen3-VL-4B | ~8GB | ~4GB |
 | Qwen3-VL-8B | ~16GB | ~8GB |
 
+> **Note:** int8 with bitsandbytes saves VRAM but does NOT speed up GPU inference — it dequantizes weights to float16 on the fly. For real inference speedup on CPU or edge hardware, use GGUF int4 via llama.cpp (see the demo section).
+
 ---
 
-### Step 6 — Run VQA benchmark (recommended)
+### Step 6 — Run VQA Benchmark (recommended)
+
+```
+VQA Pipeline
+─────────────────────────────────────────────────────────────
+
+ Phase 1: Question Generation
+ ┌──────────┐     GPT generates 5 targeted Qs     ┌──────────────────────┐
+ │  Image   │ ──────────────────────────────────► │ {questions + ref     │
+ │  (x100)  │     + reference answers per image   │  answers} cached JSON│
+ └──────────┘                                     └──────────┬───────────┘
+                                                             │
+ Phase 2: GPT Baseline                                       │
+ ┌──────────┐     GPT answers its own questions    ┌─────────▼───────────┐
+ │  Image   │ ──────────────────────────────────► │ GPT answers scored  │
+ │          │     judged by GPT (~90–95/100)       │ as ceiling baseline │
+ └──────────┘                                     └──────────┬───────────┘
+                                                             │
+ Phase 3: VLM Inference + Judging                            │
+ ┌──────────┐     Each VLM answers the same 5 Qs  ┌─────────▼───────────┐
+ │  Image   │ ──────────────────────────────────► │ VLM answer          │
+ │          │     one model at a time              │ GPT scores it 0–100 │
+ └──────────┘                                     └──────────┬───────────┘
+                                                             │
+                                                  ┌──────────▼───────────┐
+                                                  │  vqa_report_*.html   │
+                                                  │  vqa_results_*.json  │
+                                                  └──────────────────────┘
+```
 
 ```bash
 cd benchmark
@@ -297,7 +436,7 @@ export PYTHON=/mnt/shared/<yourname>/envs/Qwen3VL-env/bin/python
 export OPENAI_API_KEY=sk-...
 export HF_HOME=/mnt/shared/<yourname>/hf_cache
 export PYTORCH_ALLOC_CONF=expandable_segments:True
-cd /path/to/benchmark
+cd /path/to/unified_eval_framework/benchmark
 
 CUDA_VISIBLE_DEVICES=0 $PYTHON run_benchmark_vqa.py \
     --test-set test_sets/captioning_100.json --all
@@ -311,9 +450,34 @@ Skip GPT baseline to save API cost:
 $PYTHON run_benchmark_vqa.py --models smolvlm internvl --no-gpt-baseline
 ```
 
+The VQA report shows a per-image table with the GPT-generated questions, each model's answer, the per-question scores (0–100), and an inline score bar. Questions cache is saved to `results/vqa_questions_<timestamp>.json` so you can reuse it.
+
 ---
 
-### Step 7 — Run captioning benchmark
+### Step 7 — Run Captioning Benchmark
+
+Free-form image description. Each VLM generates a caption; GPT judges it against the image (0–100). Simpler than VQA but less discriminative — InternVL and Qwen3-VL cluster closely here despite large gaps on VQA.
+
+```
+Captioning Pipeline
+────────────────────────────────────────────
+
+ ┌──────────┐    "Describe this image"    ┌──────────────────┐
+ │  Image   │ ──────────────────────────► │  VLM caption     │
+ │          │    one model at a time      │  (free text)     │
+ └──────────┘                             └────────┬─────────┘
+                                                   │
+                                          ┌────────▼─────────┐
+                                          │  GPT judge       │
+                                          │  scores 0–100    │
+                                          │  with reason     │
+                                          └────────┬─────────┘
+                                                   │
+                                          ┌────────▼──────────────┐
+                                          │  report_*.html        │
+                                          │  results_*.json       │
+                                          └───────────────────────┘
+```
 
 ```bash
 nohup bash -c '
@@ -356,16 +520,228 @@ tail -f logs/benchmark_run.log
 
 ---
 
-### Step 8 — (Optional) CPU webcam demo
+### Step 8 — Run Meeting Room Readiness Benchmark
+
+Evaluates VLMs on a domain-specific task: given a photo of a meeting room, the model goes through a predefined checklist and reports whether each item is satisfied and whether the room is ready overall. Ground truth is human-labelled — evaluation is purely binary with no OpenAI API required.
+
+```
+Meeting Room Pipeline
+──────────────────────────────────────────────────────────────
+
+                    ┌─────────────────────────────┐
+                    │   meeting_room_test_set.json │
+                    │                              │
+                    │   checklist: [               │
+                    │     {id:1, item:"chairs..."},│
+                    │     {id:2, item:"table..."}  │
+                    │   ]                          │
+                    │   samples: [                 │
+                    │     {id, image, ground_truth}│
+                    │   ]                          │
+                    └───────────────┬─────────────┘
+                                    │
+              ┌─────────────────────▼──────────────────────┐
+              │  Prompt (auto-built from checklist)         │
+              │  "You are inspecting a meeting room...      │
+              │   Return JSON: {items:{1:bool,...},          │
+              │   room_ready:bool, reasoning:str}"          │
+              └─────────────────────┬──────────────────────┘
+                                    │
+              ┌─────────────────────▼──────────────────────┐
+              │  VLM (image + prompt) → JSON response       │
+              │  Parsed with regex fallback for md fences   │
+              └─────────────────────┬──────────────────────┘
+                                    │
+              ┌─────────────────────▼──────────────────────┐
+              │  Binary compare vs ground_truth             │
+              │  per item (image × item pairs)              │
+              │  + room_ready verdict                       │
+              └─────────────────────┬──────────────────────┘
+                                    │
+              ┌─────────────────────▼──────────────────────┐
+              │  meeting_room_report_*.html                 │
+              │  meeting_room_results_*.json                │
+              └────────────────────────────────────────────┘
+```
+
+#### Meeting Room Test Set Format
+
+```json
+{
+  "checklist": [
+    {"id": 1, "item": "All chairs are tucked in under the table"},
+    {"id": 2, "item": "Table surface is completely clear (no items left on it)"},
+    {"id": 3, "item": "Whiteboard or display screen is clean / turned off"},
+    {"id": 4, "item": "No personal belongings visible (bags, jackets, cups, etc.)"},
+    {"id": 5, "item": "Room appears tidy with no visible clutter or trash"}
+  ],
+  "samples": [
+    {
+      "id": "room_001",
+      "image": "test_sets/images/meeting_rooms/room_001.jpg",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": false,
+          "3": true,
+          "4": false,
+          "5": false
+        },
+        "room_ready": false
+      }
+    }
+  ]
+}
+```
+
+- `checklist` — define as many items as needed; `id` values must be unique integers
+- `ground_truth.items` — one boolean per item id, labelled by a human
+- `ground_truth.room_ready` — should be `true` only if every item passes
+- A pre-filled 3-room sample is at `benchmark/test_sets/meeting_room_sample.json`
+
+#### Running the benchmark
+
+```bash
+cd benchmark
+conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
+
+# all enabled models
+python run_benchmark_meeting_room.py \
+    --test-set test_sets/meeting_room_sample.json --all
+
+# specific models only
+python run_benchmark_meeting_room.py \
+    --test-set test_sets/meeting_room_sample.json \
+    --models smolvlm internvl
+```
+
+No `OPENAI_API_KEY` needed.
+
+#### Metrics reported
+
+| Metric | Description |
+|--------|-------------|
+| **Item accuracy** | Fraction of (image × item) pairs where model matches ground truth |
+| **Room accuracy** | Fraction of images where the `room_ready` verdict is correct |
+| **Room F1** | F1 score for `room_ready` (treating "ready" as the positive class) |
+| **Per-item accuracy** | Per-checklist-item breakdown across all images |
+| **Precision / Recall** | For the `room_ready` verdict |
+
+The HTML report shows: summary table, per-item accuracy grid, and per-image detail with embedded thumbnails and predictions colour-coded green/red by correctness.
+
+---
+
+### Step 9 — Desktop Demo (GGUF + llama.cpp)
+
+The demo is a local desktop app for running side-by-side inference across multiple VLMs. It uses quantized GGUF models served by llama.cpp inside Docker containers, with a tkinter GUI for image input and live comparison.
+
+```
+Demo Architecture
+────────────────────────────────────────────────────────
+
+  ┌─────────────────────────────────────────────────┐
+  │              Desktop GUI (app.py)               │
+  │              customtkinter / tkinter             │
+  │                                                 │
+  │  [Upload Image]  [Run Inference]  [Deploy ▼]    │
+  │                                                 │
+  │  SmolVLM2     Qwen3-VL-4B    InternVL3.5-4B    │
+  │  ──────────   ────────────   ────────────────   │
+  │  response...  response...    response...        │
+  └────────┬────────────┬─────────────┬─────────────┘
+           │            │             │
+     HTTP POST    HTTP POST     HTTP POST
+     /completion  /completion   /completion
+           │            │             │
+  ┌────────▼──┐  ┌──────▼────┐  ┌────▼──────────┐
+  │ llama.cpp │  │ llama.cpp │  │  llama.cpp    │
+  │ Docker    │  │ Docker    │  │  Docker       │
+  │ :8100     │  │ :8101     │  │  :8102        │
+  │ SmolVLM   │  │ Qwen3-VL  │  │  InternVL     │
+  │ Q8 GGUF   │  │ Q4_K_M    │  │  Q4_K_M       │
+  └───────────┘  └───────────┘  └───────────────┘
+           │            │             │
+    ┌──────▼────────────▼─────────────▼──────┐
+    │         models/ directory              │
+    │  SmolVLM2-2.2B-Instruct-Q8_0.gguf      │
+    │  mmproj-SmolVLM2-2.2B-Instruct-Q8_0.gguf│
+    │  Qwen3-VL-4B-Instruct-Q4_K_M.gguf      │
+    │  mmproj-Qwen3-VL-4B-Instruct-F16.gguf  │
+    │  ...                                   │
+    └────────────────────────────────────────┘
+```
+
+#### Prerequisites
+
+- Docker Desktop installed and running
+- Python 3.10+
 
 ```bash
 cd demo
-pip install fastapi uvicorn python-multipart
-python server.py
-# open http://localhost:8080
+pip install -r requirements.txt
 ```
 
-Webcam demo optimised for CPU-only inference (no GPU). Uses SmolVLM2 in float32 locked to 4 threads to simulate edge hardware. Features: live webcam feed, manual capture, auto-capture every 2/4/8/15s, response log with thumbnails and latency per frame.
+#### Step 1: Prepare GGUF assets
+
+`prepare_ggufs.py` downloads GGUF files from HuggingFace (or converts local safetensors via llama.cpp Docker if no HF repo is specified) and optionally validates them by spinning up a temporary llama-server container.
+
+```bash
+cd demo
+
+# download + validate all models defined in models.json
+python prepare_ggufs.py --all --validate
+
+# specific models only
+python prepare_ggufs.py --models qwen3vl_4b internvl_4b
+
+# list what's in models.json
+python prepare_ggufs.py --list
+```
+
+GGUF files are saved to `models/<model-dir>/`. The quantization preference order is: `Q8_0 > Q6_K > Q5_K_M > Q4_K_M > Q4_0`.
+
+#### Step 2: Launch the GUI
+
+```bash
+python app.py
+```
+
+The GUI lets you:
+- **Deploy** a model — starts a llama.cpp Docker container for that model
+- **Upload an image** — pick any JPG/PNG from disk
+- **Run Inference** — sends the image to all deployed containers in parallel and shows responses side-by-side
+- **Adjust per-model settings** — CPU count and memory limit per container
+
+#### `models.json` reference
+
+Each entry in `demo/models.json` defines one model for the demo:
+
+```json
+{
+  "key": "qwen3vl_4b",
+  "label": "Qwen3-VL-4B",
+  "color": "#4a9eff",
+  "model_dir": "models/Qwen3-VL-4B-Instruct",
+  "gguf_hf_repo": "lmstudio-community/Qwen3-VL-4B-Instruct-GGUF",
+  "ctx_size": 4096,
+  "default_cpus": 4,
+  "default_memory_mb": 8192,
+  "enabled": true,
+  "model_path": "models/Qwen3-VL-4B-Instruct/Qwen3-VL-4B-Instruct-Q4_K_M.gguf",
+  "mmproj_path": "models/Qwen3-VL-4B-Instruct/mmproj-Qwen3-VL-4B-Instruct-F16.gguf"
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `key` | Unique identifier |
+| `gguf_hf_repo` | HuggingFace repo to pull GGUFs from (optional — omit if converting locally) |
+| `ctx_size` | Context window size passed to llama-server |
+| `default_cpus` | Thread count for the Docker container |
+| `default_memory_mb` | Memory limit for the Docker container |
+| `model_path` | Path to the main GGUF weights file (relative to project root) |
+| `mmproj_path` | Path to the multimodal projector GGUF file |
+| `enabled` | Whether the model appears in the GUI by default |
 
 ---
 
@@ -435,6 +811,8 @@ yourmodel:
     max_new_tokens: 256
 ```
 
+The `class` field must match the class name string you registered in `MODEL_REGISTRY`. No other files need to change — all three benchmark runners pick it up automatically.
+
 ---
 
 ## Full Results
@@ -503,13 +881,17 @@ pip install --upgrade "transformers>=4.52.1"
 /mnt/shared/<yourname>/envs/Qwen3VL-env/bin/pip install num2words
 ```
 
-**Judge scores all 0** — `OPENAI_API_KEY` not set. The benchmark still saves responses — export the key and re-run just the judging.
+**Judge scores all 0** — `OPENAI_API_KEY` not set. The benchmark still saves model responses — export the key and re-run.
 
 **Model ignores the image** — use the `-Instruct` variant not `-Base`.
 
-**int8 models slower than bfloat16 on GPU** — expected with bitsandbytes. It dequantizes weights to float16 during inference rather than using native int8 kernels. Memory savings are real but speed savings are not on GPU. For actual inference speedup on CPU/edge use GGUF int4 via llama.cpp.
+**int8 models slower than bfloat16 on GPU** — expected with bitsandbytes. It dequantizes weights to float16 during inference rather than using native int8 kernels. Memory savings are real but speed savings are not on GPU. For actual inference speedup on CPU/edge use GGUF int4 via llama.cpp (the demo).
 
 **Qwen3-VL env not found** — activate by full path:
 ```bash
 conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 ```
+
+**Demo: Docker container fails to start** — ensure Docker Desktop is running and the GGUF files exist at the paths in `models.json`. Run `prepare_ggufs.py --validate` to test each asset.
+
+**Demo: `mmproj` not found** — the multimodal projector GGUF must be downloaded separately from the main weights. `prepare_ggufs.py` handles this automatically when `gguf_hf_repo` is set in `models.json`.

@@ -1,0 +1,53 @@
+{
+  "checklist": [
+    {"id": 1, "item": "All chairs are tucked in under the table"},
+    {"id": 2, "item": "Table surface is completely clear (no items left on it)"},
+    {"id": 3, "item": "Whiteboard or display screen is clean / turned off"},
+    {"id": 4, "item": "No personal belongings visible (bags, jackets, cups, etc.)"},
+    {"id": 5, "item": "Room appears tidy with no visible clutter or trash"}
+  ],
+  "samples": [
+    {
+      "id": "room_001",
+      "image": "test_sets/images/meeting_rooms/room_001.jpg",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": false,
+          "3": true,
+          "4": false,
+          "5": false
+        },
+        "room_ready": false
+      }
+    },
+    {
+      "id": "room_002",
+      "image": "test_sets/images/meeting_rooms/room_002.jpg",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true
+        },
+        "room_ready": true
+      }
+    },
+    {
+      "id": "room_003",
+      "image": "test_sets/images/meeting_rooms/room_003.jpg",
+      "ground_truth": {
+        "items": {
+          "1": false,
+          "2": true,
+          "3": false,
+          "4": true,
+          "5": true
+        },
+        "room_ready": false
+      }
+    }
+  ]
+}
