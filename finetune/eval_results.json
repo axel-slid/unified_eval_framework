@@ -1,0 +1,22 @@
+{
+  "base": {
+    "parse_success": 1.0,
+    "count_error": 4.0,
+    "mean_iou": 0.0,
+    "bbox_valid": 0.0,
+    "latency_ms": 4415.6325010582805,
+    "n_people_gt": 4.0,
+    "n_people_pred": 0.0,
+    "n_evaluated": 5
+  },
+  "finetuned": {
+    "parse_success": 1.0,
+    "count_error": 0.0,
+    "mean_iou": 0.8237745549196005,
+    "bbox_valid": 1.0,
+    "latency_ms": 6259.6351384185255,
+    "n_people_gt": 4.0,
+    "n_people_pred": 4.0,
+    "n_evaluated": 5
+  }
+}

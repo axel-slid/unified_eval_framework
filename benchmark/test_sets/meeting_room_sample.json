@@ -1,29 +1,50 @@
 {
+  "reference_images": [
+    {
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/blinds/00000-410117009_png.rf.imc3mvUcDu3ehOsfGslM_clean.png",
+      "label": "ready"
+    },
+    {
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/blinds/00000-410117009_png.rf.imc3mvUcDu3ehOsfGslM_messy.png",
+      "label": "not_ready"
+    }
+  ],
   "checklist": [
-    {"id": 1, "item": "All chairs are tucked in under the table"},
-    {"id": 2, "item": "Table surface is completely clear (no items left on it)"},
-    {"id": 3, "item": "Whiteboard or display screen is clean / turned off"},
-    {"id": 4, "item": "No personal belongings visible (bags, jackets, cups, etc.)"},
-    {"id": 5, "item": "Room appears tidy with no visible clutter or trash"}
+    {
+      "id": 1,
+      "item": "All chairs are tucked in under the table",
+      "question": "Look at each chair in the room one by one. For every chair you can see, check whether it is oriented toward the table — seat facing in, back facing out. Answer Yes if every visible chair faces the table, No if any chair is pulled out, turned sideways, or facing away.",
+      "yes_means_met": true
+    },
+    {
+      "id": 2,
+      "item": "Table surface is completely clear",
+      "question": "Are there any objects, items, or clutter left on the table surface?",
+      "yes_means_met": false
+    },
+    {
+      "id": 3,
+      "item": "Whiteboard or display screen is clean / turned off",
+      "question": "Are there any markings or writing visible on the whiteboard?",
+      "yes_means_met": false
+    },
+    {
+      "id": 4,
+      "item": "No personal belongings visible",
+      "question": "Are there any personal belongings visible such as bags, jackets, bottles, or cups?",
+      "yes_means_met": false
+    },
+    {
+      "id": 5,
+      "item": "Room is tidy with no clutter or trash",
+      "question": "Is there any visible clutter, trash, or disorder in the room?",
+      "yes_means_met": false
+    }
   ],
   "samples": [
     {
-      "id": "room_001",
-      "image": "test_sets/images/meeting_rooms/room_001.jpg",
-      "ground_truth": {
-        "items": {
-          "1": true,
-          "2": false,
-          "3": true,
-          "4": false,
-          "5": false
-        },
-        "room_ready": false
-      }
-    },
-    {
-      "id": "room_002",
-      "image": "test_sets/images/meeting_rooms/room_002.jpg",
+      "id": "room_001_clean",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/blinds/00001-1866509_png.rf.VjrgVmO5xYyvqxOBGJNt_clean.png",
       "ground_truth": {
         "items": {
           "1": true,
@@ -36,15 +57,239 @@
       }
     },
     {
-      "id": "room_003",
-      "image": "test_sets/images/meeting_rooms/room_003.jpg",
+      "id": "room_001_messy",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/blinds/00001-1866509_png.rf.VjrgVmO5xYyvqxOBGJNt_messy.png",
       "ground_truth": {
         "items": {
-          "1": false,
-          "2": true,
+          "1": true,
+          "2": false,
           "3": false,
+          "4": false,
+          "5": false
+        },
+        "room_ready": false
+      }
+    },
+    {
+      "id": "room_002_clean",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/blinds/00006-1933215363_png.rf.qBnVDgWccaLAD4Xt7jXy_clean.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": true,
+          "3": true,
           "4": true,
           "5": true
+        },
+        "room_ready": true
+      }
+    },
+    {
+      "id": "room_002_messy",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/blinds/00006-1933215363_png.rf.qBnVDgWccaLAD4Xt7jXy_messy.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false
+        },
+        "room_ready": false
+      }
+    },
+    {
+      "id": "room_003_clean",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/blinds/10_jpg.rf.aRosGkJHxDVu4yqmh4wT_clean.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true
+        },
+        "room_ready": true
+      }
+    },
+    {
+      "id": "room_003_messy",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/blinds/10_jpg.rf.aRosGkJHxDVu4yqmh4wT_messy.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false
+        },
+        "room_ready": false
+      }
+    },
+    {
+      "id": "room_004_clean",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/whiteboard/21_jpg.rf.c76JubbHVeXKHuEdLZkc_clean.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true
+        },
+        "room_ready": true
+      }
+    },
+    {
+      "id": "room_004_messy",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/whiteboard/21_jpg.rf.c76JubbHVeXKHuEdLZkc_messy.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false
+        },
+        "room_ready": false
+      }
+    },
+    {
+      "id": "room_005_clean",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/blinds/26_jpg.rf.48GohhGYvIkyO2I8aAj1_clean.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true
+        },
+        "room_ready": true
+      }
+    },
+    {
+      "id": "room_005_messy",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/blinds/26_jpg.rf.48GohhGYvIkyO2I8aAj1_messy.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false
+        },
+        "room_ready": false
+      }
+    },
+    {
+      "id": "room_006_clean",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/whiteboard/2_jpg.rf.X3BRXRvqlLrx27NTg0hL_clean.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true
+        },
+        "room_ready": true
+      }
+    },
+    {
+      "id": "room_006_messy",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/whiteboard/2_jpg.rf.X3BRXRvqlLrx27NTg0hL_messy.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false
+        },
+        "room_ready": false
+      }
+    },
+    {
+      "id": "room_007_clean",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/whiteboard/30_jpg.rf.JyaM2cC3Vq1FWJ5Pw5lU_clean.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true
+        },
+        "room_ready": true
+      }
+    },
+    {
+      "id": "room_007_messy",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/whiteboard/30_jpg.rf.JyaM2cC3Vq1FWJ5Pw5lU_messy.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false
+        },
+        "room_ready": false
+      }
+    },
+    {
+      "id": "room_008_clean",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/whiteboard/42_jpg.rf.cWqBi0gTiNifhddalutt_clean.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true
+        },
+        "room_ready": true
+      }
+    },
+    {
+      "id": "room_008_messy",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/whiteboard/42_jpg.rf.cWqBi0gTiNifhddalutt_messy.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false
+        },
+        "room_ready": false
+      }
+    },
+    {
+      "id": "room_009_clean",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/whiteboard/61_jpg.rf.vF0dDiKM5OsX6Arc1E9k_clean.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true
+        },
+        "room_ready": true
+      }
+    },
+    {
+      "id": "room_009_messy",
+      "image": "/mnt/shared/dils/projects/logitech/unified_eval_framework/environment_monitoring_dataset/whiteboard/61_jpg.rf.vF0dDiKM5OsX6Arc1E9k_messy.png",
+      "ground_truth": {
+        "items": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false
         },
         "room_ready": false
       }

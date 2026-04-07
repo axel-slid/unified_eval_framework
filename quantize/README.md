@@ -1,44 +1,49 @@
 # Quantize
 
-Quantizes VLMs to int8 and saves them as standalone models in `/models/`.
-Once saved, quantized models load like any normal local model — no re-quantizing on every run.
+Quantizes VLMs to int8 using bitsandbytes and saves them as standalone models.
 
-## Why save to disk?
+Once saved, quantized models load like any normal local model — no re-quantizing on every run. This is the key advantage over on-the-fly quantization: loading a bfloat16 model and quantizing it at runtime temporarily requires the same RAM as the full model. Saving pre-quantized weights means subsequent loads only use the int8 footprint from the start.
 
-Loading a bfloat16 model and quantizing on-the-fly takes the same RAM as the full model during loading.
-Saving the pre-quantized weights means subsequent loads use only the int8 footprint from the start.
+---
 
-## Memory savings
+## Memory Savings
 
 | Model | bfloat16 | int8 | Saving |
 |-------|----------|------|--------|
-| InternVL3-4B | ~8GB | ~4GB | 50% |
-| Qwen3-VL-4B | ~8GB | ~4GB | 50% |
-| Qwen3-VL-8B | ~16GB | ~8GB | 50% |
+| InternVL3-4B | ~8 GB | ~4 GB | 50% |
+| Qwen3-VL-4B | ~8 GB | ~4 GB | 50% |
+| Qwen3-VL-8B | ~16 GB | ~8 GB | 50% |
+
+**Note on inference speed:** int8 models are often *slower* on GPU in this setup because bitsandbytes dequantizes weights during inference rather than executing native int8 kernels. For real inference speedups, use GGUF int4 models via llama.cpp (see `demo/`).
+
+---
 
 ## Setup
 
 ```bash
-conda activate /mnt/shared/dils/envs/Qwen3VL-env
+conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 pip install bitsandbytes optimum
 ```
+
+---
 
 ## Usage
 
 ```bash
 cd quantize
 
-# list available models and their status
+# list available models and their current status
 python quantize.py --list
 
 # quantize specific models
 python quantize.py --models internvl qwen3vl_4b qwen3vl_8b
 
-# quantize all
+# quantize all supported models
 python quantize.py --all
 ```
 
-Quantized models are saved to:
+Quantized models are saved alongside the originals:
+
 ```
 models/
 ├── InternVL3_5-4B-HF-int8/
@@ -46,51 +51,48 @@ models/
 └── Qwen3-VL-8B-Instruct-int8/
 ```
 
-## Adding to benchmark
+---
 
-After quantizing, add to `benchmark/benchmark_config.yaml`:
+## Adding to the Benchmark
+
+After quantizing, enable the int8 entries in `benchmark/benchmark_config.yaml`:
 
 ```yaml
-  internvl_int8:
-    enabled: true
-    class: InternVLModel
-    model_path: /mnt/shared/dils/projects/logitech/unified_eval_framework/models/InternVL3_5-4B-HF-int8
-    dtype: bfloat16    # weights are already int8 on disk — load normally
-    generation:
-      max_new_tokens: 256
+internvl_int8:
+  enabled: true
+  class: InternVLModel
+  model_path: /mnt/shared/<yourname>/models/InternVL3_5-4B-HF-int8
+  dtype: bfloat16    # weights are already int8 on disk — load normally
 
-  qwen3vl_4b_int8:
-    enabled: true
-    class: Qwen3VLModel
-    model_path: /mnt/shared/dils/projects/logitech/unified_eval_framework/models/Qwen3-VL-4B-Instruct-int8
-    dtype: bfloat16
-    generation:
-      max_new_tokens: 256
+qwen3vl_4b_int8:
+  enabled: true
+  class: Qwen3VLModel
+  model_path: /mnt/shared/<yourname>/models/Qwen3-VL-4B-Instruct-int8
+  dtype: bfloat16
 
-  qwen3vl_8b_int8:
-    enabled: true
-    class: Qwen3VLModel
-    model_path: /mnt/shared/dils/projects/logitech/unified_eval_framework/models/Qwen3-VL-8B-Instruct-int8
-    dtype: bfloat16
-    generation:
-      max_new_tokens: 256
+qwen3vl_8b_int8:
+  enabled: true
+  class: Qwen3VLModel
+  model_path: /mnt/shared/<yourname>/models/Qwen3-VL-8B-Instruct-int8
+  dtype: bfloat16
 ```
 
-Note: use `dtype: bfloat16` in the config — the quantization is baked into the saved weights,
-so the loader treats it like a normal local model.
+Use `dtype: bfloat16` — the quantization is baked into the saved weights, so the loader treats them like a normal local model.
 
-## Run the benchmark
+---
+
+## Running the Benchmark
 
 ```bash
 cd benchmark
-conda activate /mnt/shared/dils/envs/Qwen3VL-env
+conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 export OPENAI_API_KEY=sk-...
 
-CUDA_VISIBLE_DEVICES=0 python run_benchmark.py \
+CUDA_VISIBLE_DEVICES=0 python run_benchmark_vqa.py \
     --test-set test_sets/captioning_100.json \
     --models internvl_int8 qwen3vl_4b_int8
 
-CUDA_VISIBLE_DEVICES=1 python run_benchmark.py \
+CUDA_VISIBLE_DEVICES=1 python run_benchmark_vqa.py \
     --test-set test_sets/captioning_100.json \
     --models qwen3vl_8b_int8
 ```

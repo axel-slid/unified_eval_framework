@@ -1,0 +1,1393 @@
+{
+  "timestamp": "20260406_221234",
+  "device": "cuda",
+  "conf": 0.25,
+  "dilate": 2.0,
+  "images": [
+    "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/download (1).jpeg",
+    "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/download (2).jpeg",
+    "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/download (3).jpeg",
+    "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/download (4).jpeg",
+    "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/download.jpeg",
+    "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/images.jpeg",
+    "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/rally-board-65-rightsight-2-group-view.png"
+  ],
+  "cv_results": {
+    "download (1)": {
+      "image_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/download (1).jpeg",
+      "n_faces": 5,
+      "detections": [
+        {
+          "original_bbox": [
+            204.62167358398438,
+            51.38434600830078,
+            226.52178955078125,
+            81.1731185913086
+          ],
+          "dilated_bbox": [
+            193.67161560058594,
+            36.489959716796875,
+            237.4718475341797,
+            96.0675048828125
+          ],
+          "confidence": 0.9050397276878357,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (1)__face00.png"
+        },
+        {
+          "original_bbox": [
+            141.33021545410156,
+            48.30702209472656,
+            161.18792724609375,
+            74.66170501708984
+          ],
+          "dilated_bbox": [
+            131.40135955810547,
+            35.12968063354492,
+            171.11678314208984,
+            87.83904647827148
+          ],
+          "confidence": 0.8545950651168823,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (1)__face01.png"
+        },
+        {
+          "original_bbox": [
+            37.87038040161133,
+            48.31540298461914,
+            56.09358596801758,
+            79.70267486572266
+          ],
+          "dilated_bbox": [
+            28.758777618408203,
+            32.62176704406738,
+            65.2051887512207,
+            95.39631080627441
+          ],
+          "confidence": 0.8365136384963989,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (1)__face02.png"
+        },
+        {
+          "original_bbox": [
+            239.4832763671875,
+            44.191802978515625,
+            257.6392517089844,
+            75.09956359863281
+          ],
+          "dilated_bbox": [
+            230.40528869628906,
+            28.73792266845703,
+            266.7172393798828,
+            90.5534439086914
+          ],
+          "confidence": 0.7817708849906921,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (1)__face03.png"
+        },
+        {
+          "original_bbox": [
+            69.1217269897461,
+            51.298404693603516,
+            86.94780731201172,
+            86.2880630493164
+          ],
+          "dilated_bbox": [
+            60.20868682861328,
+            33.80357551574707,
+            95.86084747314453,
+            103.78289222717285
+          ],
+          "confidence": 0.6780285835266113,
+          "face_idx": 4,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (1)__face04.png"
+        }
+      ],
+      "latency_ms": 47.29938507080078,
+      "error": null
+    },
+    "download (2)": {
+      "image_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/download (2).jpeg",
+      "n_faces": 5,
+      "detections": [
+        {
+          "original_bbox": [
+            159.94635009765625,
+            45.27302551269531,
+            171.4757537841797,
+            60.11497497558594
+          ],
+          "dilated_bbox": [
+            154.18164825439453,
+            37.85205078125,
+            177.2404556274414,
+            67.53594970703125
+          ],
+          "confidence": 0.7441357374191284,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (2)__face00.png"
+        },
+        {
+          "original_bbox": [
+            226.2803497314453,
+            46.254234313964844,
+            238.5384063720703,
+            66.564208984375
+          ],
+          "dilated_bbox": [
+            220.1513214111328,
+            36.099246978759766,
+            244.6674346923828,
+            76.71919631958008
+          ],
+          "confidence": 0.6849732398986816,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (2)__face01.png"
+        },
+        {
+          "original_bbox": [
+            110.32988739013672,
+            51.82245635986328,
+            118.35324096679688,
+            65.40233612060547
+          ],
+          "dilated_bbox": [
+            106.31821060180664,
+            45.03251647949219,
+            122.36491775512695,
+            72.19227600097656
+          ],
+          "confidence": 0.6357510685920715,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (2)__face02.png"
+        },
+        {
+          "original_bbox": [
+            27.246726989746094,
+            49.40910339355469,
+            39.2274169921875,
+            66.00043487548828
+          ],
+          "dilated_bbox": [
+            21.25638198852539,
+            41.11343765258789,
+            45.2177619934082,
+            74.29610061645508
+          ],
+          "confidence": 0.6030036211013794,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (2)__face03.png"
+        },
+        {
+          "original_bbox": [
+            59.45184326171875,
+            64.22270202636719,
+            72.55963134765625,
+            80.06546783447266
+          ],
+          "dilated_bbox": [
+            52.89794921875,
+            56.30131912231445,
+            79.113525390625,
+            87.98685073852539
+          ],
+          "confidence": 0.30425843596458435,
+          "face_idx": 4,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (2)__face04.png"
+        }
+      ],
+      "latency_ms": 16.30669692531228,
+      "error": null
+    },
+    "download (3)": {
+      "image_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/download (3).jpeg",
+      "n_faces": 3,
+      "detections": [
+        {
+          "original_bbox": [
+            103.68631744384766,
+            77.21914672851562,
+            128.56578063964844,
+            104.85086822509766
+          ],
+          "dilated_bbox": [
+            91.24658584594727,
+            63.40328598022461,
+            141.00551223754883,
+            118.66672897338867
+          ],
+          "confidence": 0.901450514793396,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (3)__face00.png"
+        },
+        {
+          "original_bbox": [
+            225.99160766601562,
+            63.969215393066406,
+            243.0668487548828,
+            86.51089477539062
+          ],
+          "dilated_bbox": [
+            217.45398712158203,
+            52.6983757019043,
+            251.6044692993164,
+            97.78173446655273
+          ],
+          "confidence": 0.7706868648529053,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (3)__face01.png"
+        },
+        {
+          "original_bbox": [
+            63.34031295776367,
+            62.074527740478516,
+            82.32907104492188,
+            93.97892761230469
+          ],
+          "dilated_bbox": [
+            53.84593391418457,
+            46.12232780456543,
+            91.82345008850098,
+            109.93112754821777
+          ],
+          "confidence": 0.748681366443634,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (3)__face02.png"
+        }
+      ],
+      "latency_ms": 4.667593631893396,
+      "error": null
+    },
+    "download (4)": {
+      "image_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/download (4).jpeg",
+      "n_faces": 4,
+      "detections": [
+        {
+          "original_bbox": [
+            142.60791015625,
+            46.063804626464844,
+            157.0383758544922,
+            65.17945861816406
+          ],
+          "dilated_bbox": [
+            135.3926773071289,
+            36.505977630615234,
+            164.25360870361328,
+            74.73728561401367
+          ],
+          "confidence": 0.8144364953041077,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (4)__face00.png"
+        },
+        {
+          "original_bbox": [
+            39.65707778930664,
+            37.95865249633789,
+            53.669979095458984,
+            61.19655990600586
+          ],
+          "dilated_bbox": [
+            32.65062713623047,
+            26.339698791503906,
+            60.676429748535156,
+            72.81551361083984
+          ],
+          "confidence": 0.7714240550994873,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (4)__face01.png"
+        },
+        {
+          "original_bbox": [
+            235.76824951171875,
+            32.851837158203125,
+            254.2467498779297,
+            63.05960464477539
+          ],
+          "dilated_bbox": [
+            226.52899932861328,
+            17.747953414916992,
+            263.48600006103516,
+            78.16348838806152
+          ],
+          "confidence": 0.7529708743095398,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (4)__face02.png"
+        },
+        {
+          "original_bbox": [
+            83.08151245117188,
+            53.699031829833984,
+            94.62786865234375,
+            67.54055786132812
+          ],
+          "dilated_bbox": [
+            77.30833435058594,
+            46.778268814086914,
+            100.40104675292969,
+            74.4613208770752
+          ],
+          "confidence": 0.3952121138572693,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (4)__face03.png"
+        }
+      ],
+      "latency_ms": 3.5983198322355747,
+      "error": null
+    },
+    "download": {
+      "image_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/download.jpeg",
+      "n_faces": 3,
+      "detections": [
+        {
+          "original_bbox": [
+            97.01060485839844,
+            49.90821838378906,
+            107.23981475830078,
+            64.69356536865234
+          ],
+          "dilated_bbox": [
+            91.89599990844727,
+            42.51554489135742,
+            112.35441970825195,
+            72.08623886108398
+          ],
+          "confidence": 0.8534314632415771,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download__face00.png"
+        },
+        {
+          "original_bbox": [
+            190.3949432373047,
+            19.630327224731445,
+            201.77001953125,
+            36.6688117980957
+          ],
+          "dilated_bbox": [
+            184.70740509033203,
+            11.111084938049316,
+            207.45755767822266,
+            45.18805408477783
+          ],
+          "confidence": 0.764285683631897,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download__face01.png"
+        },
+        {
+          "original_bbox": [
+            56.20079803466797,
+            57.703407287597656,
+            69.35822296142578,
+            75.3477783203125
+          ],
+          "dilated_bbox": [
+            49.62208557128906,
+            48.881221771240234,
+            75.93693542480469,
+            84.16996383666992
+          ],
+          "confidence": 0.7454186677932739,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download__face02.png"
+        }
+      ],
+      "latency_ms": 3.3904770389199257,
+      "error": null
+    },
+    "images": {
+      "image_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/images.jpeg",
+      "n_faces": 4,
+      "detections": [
+        {
+          "original_bbox": [
+            65.77191162109375,
+            67.42081451416016,
+            81.2346420288086,
+            86.69786834716797
+          ],
+          "dilated_bbox": [
+            58.04054641723633,
+            57.78228759765625,
+            88.96600723266602,
+            96.33639526367188
+          ],
+          "confidence": 0.9049499034881592,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/images__face00.png"
+        },
+        {
+          "original_bbox": [
+            135.49476623535156,
+            26.827091217041016,
+            147.792236328125,
+            45.94432830810547
+          ],
+          "dilated_bbox": [
+            129.34603118896484,
+            17.26847267150879,
+            153.94097137451172,
+            55.502946853637695
+          ],
+          "confidence": 0.8635289669036865,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/images__face01.png"
+        },
+        {
+          "original_bbox": [
+            215.16769409179688,
+            62.21757507324219,
+            232.1656494140625,
+            89.04510498046875
+          ],
+          "dilated_bbox": [
+            206.66871643066406,
+            48.803810119628906,
+            240.6646270751953,
+            102.45886993408203
+          ],
+          "confidence": 0.7733172178268433,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/images__face02.png"
+        },
+        {
+          "original_bbox": [
+            191.68392944335938,
+            68.44659423828125,
+            206.41000366210938,
+            87.32634735107422
+          ],
+          "dilated_bbox": [
+            184.32089233398438,
+            59.006717681884766,
+            213.77304077148438,
+            96.7662239074707
+          ],
+          "confidence": 0.767466127872467,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/images__face03.png"
+        }
+      ],
+      "latency_ms": 3.65479476749897,
+      "error": null
+    },
+    "rally-board-65-rightsight-2-group-view": {
+      "image_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/rally-board-65-rightsight-2-group-view.png",
+      "n_faces": 7,
+      "detections": [
+        {
+          "original_bbox": [
+            359.48919677734375,
+            95.15544891357422,
+            401.0341491699219,
+            144.8109588623047
+          ],
+          "dilated_bbox": [
+            338.7167205810547,
+            70.32769393920898,
+            421.80662536621094,
+            169.63871383666992
+          ],
+          "confidence": 0.9256038665771484,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face00.png"
+        },
+        {
+          "original_bbox": [
+            503.5140075683594,
+            137.3228759765625,
+            546.9215698242188,
+            192.9651641845703
+          ],
+          "dilated_bbox": [
+            481.8102264404297,
+            109.5017318725586,
+            568.6253509521484,
+            220.78630828857422
+          ],
+          "confidence": 0.9216734170913696,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face01.png"
+        },
+        {
+          "original_bbox": [
+            116.77316284179688,
+            120.83793640136719,
+            163.95054626464844,
+            187.07566833496094
+          ],
+          "dilated_bbox": [
+            93.1844711303711,
+            87.71907043457031,
+            187.53923797607422,
+            220.1945343017578
+          ],
+          "confidence": 0.9176982641220093,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face02.png"
+        },
+        {
+          "original_bbox": [
+            621.5524291992188,
+            106.73564147949219,
+            693.3502197265625,
+            205.2864227294922
+          ],
+          "dilated_bbox": [
+            585.6535339355469,
+            57.46025085449219,
+            729.2491149902344,
+            254.5618133544922
+          ],
+          "confidence": 0.9066199660301208,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face03.png"
+        },
+        {
+          "original_bbox": [
+            563.4241943359375,
+            129.5224609375,
+            575.6989135742188,
+            142.22080993652344
+          ],
+          "dilated_bbox": [
+            557.2868347167969,
+            123.17328643798828,
+            581.8362731933594,
+            148.56998443603516
+          ],
+          "confidence": 0.2932344675064087,
+          "face_idx": 4,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face04.png"
+        },
+        {
+          "original_bbox": [
+            53.96886444091797,
+            93.23655700683594,
+            65.27237701416016,
+            106.51191711425781
+          ],
+          "dilated_bbox": [
+            48.317108154296875,
+            86.598876953125,
+            70.92413330078125,
+            113.14959716796875
+          ],
+          "confidence": 0.276374876499176,
+          "face_idx": 5,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face05.png"
+        },
+        {
+          "original_bbox": [
+            56.165523529052734,
+            94.64851379394531,
+            67.01310729980469,
+            108.03349304199219
+          ],
+          "dilated_bbox": [
+            50.74173164367676,
+            87.95602416992188,
+            72.43689918518066,
+            114.72598266601562
+          ],
+          "confidence": 0.270803838968277,
+          "face_idx": 6,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face06.png"
+        }
+      ],
+      "latency_ms": 15.537146013230085,
+      "error": null
+    }
+  },
+  "vlm_results": {
+    "qwen3vl_4b": {
+      "download (1)": [
+        {
+          "original_bbox": [
+            204.62167358398438,
+            51.38434600830078,
+            226.52178955078125,
+            81.1731185913086
+          ],
+          "dilated_bbox": [
+            193.67161560058594,
+            36.489959716796875,
+            237.4718475341797,
+            96.0675048828125
+          ],
+          "confidence": 0.9050397276878357,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (1)__face00.png",
+          "participant_response": "YES. The cropped face in Image 2 matches the woman seated at the table in Image 1, who is actively engaged in the meeting \u2014 smiling and looking toward the speaker, with her hands clasped as if participating in discussion.",
+          "participant": true,
+          "participant_latency": 1396.4512273669243,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has a smiling mouth and engaged facial expression, and in Image 1, she is leaning forward with her hands clasped, indicating active participation in the conversation.",
+          "talking": true,
+          "talking_latency": 895.3077029436827,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            141.33021545410156,
+            48.30702209472656,
+            161.18792724609375,
+            74.66170501708984
+          ],
+          "dilated_bbox": [
+            131.40135955810547,
+            35.12968063354492,
+            171.11678314208984,
+            87.83904647827148
+          ],
+          "confidence": 0.8545950651168823,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (1)__face01.png",
+          "participant_response": "YES. The cropped face in Image 2 matches the middle-aged man in the meeting room (Image 1), who is seated at the table, gesturing as if speaking, and clearly engaged in the discussion with the other participants.",
+          "participant": true,
+          "participant_latency": 1045.1668822206557,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has an open mouth and a focused, engaged expression, and in Image 1, he is gesturing with his hands while speaking to the group, indicating he is actively talking.",
+          "talking": true,
+          "talking_latency": 988.1284600123763,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            37.87038040161133,
+            48.31540298461914,
+            56.09358596801758,
+            79.70267486572266
+          ],
+          "dilated_bbox": [
+            28.758777618408203,
+            32.62176704406738,
+            65.2051887512207,
+            95.39631080627441
+          ],
+          "confidence": 0.8365136384963989,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (1)__face02.png",
+          "participant_response": "YES \u2014 the person is seated at the table, facing others, and appears engaged in the meeting, as shown in the full context of Image 1.",
+          "participant": true,
+          "participant_latency": 698.3142448589206,
+          "participant_error": null,
+          "talking_response": "YES. The person\u2019s mouth is slightly open, and their facial expression and posture (leaning forward, looking engaged) suggest they are actively speaking or in the middle of a conversation.",
+          "talking": true,
+          "talking_latency": 912.4449421651661,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            239.4832763671875,
+            44.191802978515625,
+            257.6392517089844,
+            75.09956359863281
+          ],
+          "dilated_bbox": [
+            230.40528869628906,
+            28.73792266845703,
+            266.7172393798828,
+            90.5534439086914
+          ],
+          "confidence": 0.7817708849906921,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (1)__face03.png",
+          "participant_response": "YES \u2014 the person is seated at the table, smiling and looking toward others, indicating active engagement in the meeting.",
+          "participant": true,
+          "participant_latency": 686.0243091359735,
+          "participant_error": null,
+          "talking_response": "YES. The person\u2019s mouth is slightly open, and their facial expression and posture suggest active engagement in conversation, consistent with speaking.",
+          "talking": true,
+          "talking_latency": 694.0642311237752,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            69.1217269897461,
+            51.298404693603516,
+            86.94780731201172,
+            86.2880630493164
+          ],
+          "dilated_bbox": [
+            60.20868682861328,
+            33.80357551574707,
+            95.86084747314453,
+            103.78289222717285
+          ],
+          "confidence": 0.6780285835266113,
+          "face_idx": 4,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (1)__face04.png",
+          "participant_response": "YES. The cropped face in Image 2 is clearly part of the group seated around the table in Image 1, and their posture and context indicate active participation in the meeting.",
+          "participant": true,
+          "participant_latency": 920.6159501336515,
+          "participant_error": null,
+          "talking_response": "YES. The person\u2019s mouth is slightly open and their facial expression is engaged, with a slight smile and focused gaze, suggesting they are actively speaking or in the middle of a conversation.",
+          "talking": true,
+          "talking_latency": 917.4487199634314,
+          "talking_error": null
+        }
+      ],
+      "download (2)": [
+        {
+          "original_bbox": [
+            159.94635009765625,
+            45.27302551269531,
+            171.4757537841797,
+            60.11497497558594
+          ],
+          "dilated_bbox": [
+            154.18164825439453,
+            37.85205078125,
+            177.2404556274414,
+            67.53594970703125
+          ],
+          "confidence": 0.7441357374191284,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (2)__face00.png",
+          "participant_response": "YES. The cropped face in Image 2 matches the man seated at the table in Image 1, who is actively engaged in the meeting (gesturing and looking at others).",
+          "participant": true,
+          "participant_latency": 883.9219068177044,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has an open mouth and an engaged facial expression, and in Image 1, they are gesturing with their hands while speaking, indicating they are actively talking.",
+          "talking": true,
+          "talking_latency": 982.2069299407303,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            226.2803497314453,
+            46.254234313964844,
+            238.5384063720703,
+            66.564208984375
+          ],
+          "dilated_bbox": [
+            220.1513214111328,
+            36.099246978759766,
+            244.6674346923828,
+            76.71919631958008
+          ],
+          "confidence": 0.6849732398986816,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (2)__face01.png",
+          "participant_response": "YES. The cropped face in Image 2 matches a person seated at the table in Image 1, actively engaged in the meeting with others, indicating they are a genuine participant.",
+          "participant": true,
+          "participant_latency": 891.8156386353076,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has their mouth slightly open and their head is tilted, suggesting they are actively speaking or in the middle of a conversation, consistent with the dynamic interaction in Image 1.",
+          "talking": true,
+          "talking_latency": 1028.3862627111375,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            110.32988739013672,
+            51.82245635986328,
+            118.35324096679688,
+            65.40233612060547
+          ],
+          "dilated_bbox": [
+            106.31821060180664,
+            45.03251647949219,
+            122.36491775512695,
+            72.19227600097656
+          ],
+          "confidence": 0.6357510685920715,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (2)__face02.png",
+          "participant_response": "YES. The person in Image 2 is seated at the table in Image 1, facing the group, and appears to be actively engaged in the meeting, as indicated by their posture and the context of the discussion.",
+          "participant": true,
+          "participant_latency": 1076.7209301702678,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 (a cropped view of the man in the center of Image 1) has his mouth slightly open and is gesturing with his hands, which are consistent with someone actively speaking or explaining something during a meeting.",
+          "talking": true,
+          "talking_latency": 1211.934446822852,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            27.246726989746094,
+            49.40910339355469,
+            39.2274169921875,
+            66.00043487548828
+          ],
+          "dilated_bbox": [
+            21.25638198852539,
+            41.11343765258789,
+            45.2177619934082,
+            74.29610061645508
+          ],
+          "confidence": 0.6030036211013794,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (2)__face03.png",
+          "participant_response": "YES. The cropped face in Image 2 matches the man in the blue shirt and tie seated at the table in Image 1, who is actively gesturing and engaged in the discussion, indicating he is a genuine meeting participant.",
+          "participant": true,
+          "participant_latency": 1124.9596611596644,
+          "participant_error": null,
+          "talking_response": "YES. The person in the cropped image (Image 2) has their mouth slightly open and their head is turned toward the group, consistent with someone actively speaking or explaining something during the meeting.",
+          "talking": true,
+          "talking_latency": 968.9178839325905,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            59.45184326171875,
+            64.22270202636719,
+            72.55963134765625,
+            80.06546783447266
+          ],
+          "dilated_bbox": [
+            52.89794921875,
+            56.30131912231445,
+            79.113525390625,
+            87.98685073852539
+          ],
+          "confidence": 0.30425843596458435,
+          "face_idx": 4,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (2)__face04.png",
+          "participant_response": "YES. The cropped face in Image 2 matches the person seated at the table in Image 1, who is actively engaged in the meeting (gesturing and looking at others).",
+          "participant": true,
+          "participant_latency": 897.392941173166,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 (a crop of the man in the center of Image 1) has his mouth slightly open and is gesturing with his hands, which are consistent with someone actively speaking or explaining something during a meeting.",
+          "talking": true,
+          "talking_latency": 1197.6795038208365,
+          "talking_error": null
+        }
+      ],
+      "download (3)": [
+        {
+          "original_bbox": [
+            103.68631744384766,
+            77.21914672851562,
+            128.56578063964844,
+            104.85086822509766
+          ],
+          "dilated_bbox": [
+            91.24658584594727,
+            63.40328598022461,
+            141.00551223754883,
+            118.66672897338867
+          ],
+          "confidence": 0.901450514793396,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (3)__face00.png",
+          "participant_response": "YES. The person is seated at the table with others, actively engaged in the meeting, as shown in the full room context.",
+          "participant": true,
+          "participant_latency": 648.1558000668883,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has their mouth slightly open and is looking forward with an engaged expression, consistent with someone speaking. In Image 1, their body posture and hand gestures also suggest active participation in conversation.",
+          "talking": true,
+          "talking_latency": 1099.8203130438924,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            225.99160766601562,
+            63.969215393066406,
+            243.0668487548828,
+            86.51089477539062
+          ],
+          "dilated_bbox": [
+            217.45398712158203,
+            52.6983757019043,
+            251.6044692993164,
+            97.78173446655273
+          ],
+          "confidence": 0.7706868648529053,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (3)__face01.png",
+          "participant_response": "YES. The person in Image 2 is seated at the table in Image 1, facing the others, with laptops and a whiteboard visible in the meeting context, indicating active participation.",
+          "participant": true,
+          "participant_latency": 939.6221623755991,
+          "participant_error": null,
+          "talking_response": "YES \u2014 In Image 1, the person in the center (whose close-up is in Image 2) has his mouth slightly open and is gesturing with his hands, indicating he is actively speaking or explaining something during the meeting.",
+          "talking": true,
+          "talking_latency": 1151.5210568904877,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            63.34031295776367,
+            62.074527740478516,
+            82.32907104492188,
+            93.97892761230469
+          ],
+          "dilated_bbox": [
+            53.84593391418457,
+            46.12232780456543,
+            91.82345008850098,
+            109.93112754821777
+          ],
+          "confidence": 0.748681366443634,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (3)__face02.png",
+          "participant_response": "YES \u2014 the person is seated at the table, actively engaged in the meeting, as shown in the full room context and confirmed by the close-up crop.",
+          "participant": true,
+          "participant_latency": 777.6788077317178,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has their mouth slightly open and is looking forward, with a focused expression and posture consistent with someone actively speaking or explaining something during a meeting.",
+          "talking": true,
+          "talking_latency": 886.4160617813468,
+          "talking_error": null
+        }
+      ],
+      "download (4)": [
+        {
+          "original_bbox": [
+            142.60791015625,
+            46.063804626464844,
+            157.0383758544922,
+            65.17945861816406
+          ],
+          "dilated_bbox": [
+            135.3926773071289,
+            36.505977630615234,
+            164.25360870361328,
+            74.73728561401367
+          ],
+          "confidence": 0.8144364953041077,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (4)__face00.png",
+          "participant_response": "YES. The cropped face in Image 2 matches the man in the center of Image 1, who is seated at the table, actively engaged in the meeting (looking toward others, gesturing, and appearing to speak).",
+          "participant": true,
+          "participant_latency": 1096.8676237389445,
+          "participant_error": null,
+          "talking_response": "YES, because in Image 2, the person\u2019s mouth is slightly open and their facial expression appears engaged, consistent with someone speaking, and in Image 1, they are positioned centrally at the table with hands gesturing, indicating active participation in the discussion.",
+          "talking": true,
+          "talking_latency": 1260.2623859420419,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            39.65707778930664,
+            37.95865249633789,
+            53.669979095458984,
+            61.19655990600586
+          ],
+          "dilated_bbox": [
+            32.65062713623047,
+            26.339698791503906,
+            60.676429748535156,
+            72.81551361083984
+          ],
+          "confidence": 0.7714240550994873,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (4)__face01.png",
+          "participant_response": "YES. The person is seated at the table, facing the group, and appears engaged in the meeting, as seen in the full room context (Image 1) and confirmed by the close-up (Image 2).",
+          "participant": true,
+          "participant_latency": 1086.8065599352121,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has their mouth slightly open and is looking forward, consistent with someone speaking or in the middle of a conversation, and their posture in Image 1 shows them actively engaged in the meeting, likely speaking.",
+          "talking": true,
+          "talking_latency": 1167.7213590592146,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            235.76824951171875,
+            32.851837158203125,
+            254.2467498779297,
+            63.05960464477539
+          ],
+          "dilated_bbox": [
+            226.52899932861328,
+            17.747953414916992,
+            263.48600006103516,
+            78.16348838806152
+          ],
+          "confidence": 0.7529708743095398,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (4)__face02.png",
+          "participant_response": "YES. The person is seated at the table, facing the group, and appears engaged in the meeting, as shown in the full room context (Image 1) and confirmed by the close-up (Image 2).",
+          "participant": true,
+          "participant_latency": 1100.0181138515472,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has their mouth slightly open and is looking forward, consistent with someone speaking or actively engaged in conversation during the meeting.",
+          "talking": true,
+          "talking_latency": 773.708414286375,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            83.08151245117188,
+            53.699031829833984,
+            94.62786865234375,
+            67.54055786132812
+          ],
+          "dilated_bbox": [
+            77.30833435058594,
+            46.778268814086914,
+            100.40104675292969,
+            74.4613208770752
+          ],
+          "confidence": 0.3952121138572693,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download (4)__face03.png",
+          "participant_response": "YES. The cropped face in Image 2 matches the person seated at the table in Image 1, who is actively engaged in the meeting (looking toward the speaker, with a laptop and notepad nearby).",
+          "participant": true,
+          "participant_latency": 1037.8621402196586,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has their mouth slightly open and their facial expression is engaged, consistent with someone speaking. In Image 1, they are positioned facing the group and gesturing with their hands, which supports the idea they are actively speaking during the meeting.",
+          "talking": true,
+          "talking_latency": 1334.6175719052553,
+          "talking_error": null
+        }
+      ],
+      "download": [
+        {
+          "original_bbox": [
+            97.01060485839844,
+            49.90821838378906,
+            107.23981475830078,
+            64.69356536865234
+          ],
+          "dilated_bbox": [
+            91.89599990844727,
+            42.51554489135742,
+            112.35441970825195,
+            72.08623886108398
+          ],
+          "confidence": 0.8534314632415771,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download__face00.png",
+          "participant_response": "YES. The cropped face in Image 2 matches the woman standing at the head of the table in Image 1, who is actively addressing the group \u2014 a clear indicator of active participation in the meeting.",
+          "participant": true,
+          "participant_latency": 997.4766680970788,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has their mouth slightly open and is looking forward, consistent with someone speaking. In Image 1, their posture is upright and engaged, with one hand gesturing, which further suggests they are actively speaking during the meeting.",
+          "talking": true,
+          "talking_latency": 1278.8618770428002,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            190.3949432373047,
+            19.630327224731445,
+            201.77001953125,
+            36.6688117980957
+          ],
+          "dilated_bbox": [
+            184.70740509033203,
+            11.111084938049316,
+            207.45755767822266,
+            45.18805408477783
+          ],
+          "confidence": 0.764285683631897,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download__face01.png",
+          "participant_response": "YES. The person in Image 2 is standing at the head of the table in Image 1, actively addressing the group, which indicates they are a genuine meeting participant.",
+          "participant": true,
+          "participant_latency": 855.4685362614691,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has their mouth slightly open and is looking forward, consistent with speaking, and in Image 1, their body posture\u2014standing and gesturing with one hand\u2014indicates they are actively presenting or leading the discussion.",
+          "talking": true,
+          "talking_latency": 1245.1731893233955,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            56.20079803466797,
+            57.703407287597656,
+            69.35822296142578,
+            75.3477783203125
+          ],
+          "dilated_bbox": [
+            49.62208557128906,
+            48.881221771240234,
+            75.93693542480469,
+            84.16996383666992
+          ],
+          "confidence": 0.7454186677932739,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/download__face02.png",
+          "participant_response": "YES. The cropped face in Image 2 matches the man seated at the table in Image 1, who is looking toward the speaker and appears engaged in the meeting.",
+          "participant": true,
+          "participant_latency": 836.8992349132895,
+          "participant_error": null,
+          "talking_response": "NO, because in Image 2, the person\u2019s mouth is closed and their expression is neutral, not indicative of speaking.",
+          "talking": false,
+          "talking_latency": 630.1517738029361,
+          "talking_error": null
+        }
+      ],
+      "images": [
+        {
+          "original_bbox": [
+            65.77191162109375,
+            67.42081451416016,
+            81.2346420288086,
+            86.69786834716797
+          ],
+          "dilated_bbox": [
+            58.04054641723633,
+            57.78228759765625,
+            88.96600723266602,
+            96.33639526367188
+          ],
+          "confidence": 0.9049499034881592,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/images__face00.png",
+          "participant_response": "YES. The cropped face in Image 2 matches the man standing at the head of the table in Image 1, who is actively speaking and gesturing \u2014 clearly a participant leading the meeting.",
+          "participant": true,
+          "participant_latency": 953.8424401544034,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has an open mouth and a focused, engaged expression, consistent with speaking. In Image 1, their body posture\u2014standing, gesturing with one hand, and facing the group\u2014also indicates they are actively speaking during the meeting.",
+          "talking": true,
+          "talking_latency": 1334.4572242349386,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            135.49476623535156,
+            26.827091217041016,
+            147.792236328125,
+            45.94432830810547
+          ],
+          "dilated_bbox": [
+            129.34603118896484,
+            17.26847267150879,
+            153.94097137451172,
+            55.502946853637695
+          ],
+          "confidence": 0.8635289669036865,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/images__face01.png",
+          "participant_response": "YES. The person in Image 2 is the standing presenter in Image 1, actively engaging the group during the meeting, which indicates they are a genuine participant.",
+          "participant": true,
+          "participant_latency": 813.7216879986227,
+          "participant_error": null,
+          "talking_response": "YES. The person in Image 2 has a smiling mouth and is looking forward, while in Image 1, he is standing at the head of the table with an open hand gesture, consistent with speaking to the group.",
+          "talking": true,
+          "talking_latency": 1088.0062002688646,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            215.16769409179688,
+            62.21757507324219,
+            232.1656494140625,
+            89.04510498046875
+          ],
+          "dilated_bbox": [
+            206.66871643066406,
+            48.803810119628906,
+            240.6646270751953,
+            102.45886993408203
+          ],
+          "confidence": 0.7733172178268433,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/images__face02.png",
+          "participant_response": "YES. The person in Image 2 is seated at the table in Image 1, facing the speaker, and appears attentive \u2014 consistent with being an active meeting participant.",
+          "participant": true,
+          "participant_latency": 833.1843162886798,
+          "participant_error": null,
+          "talking_response": "NO, because in Image 2, the person\u2019s mouth is closed and their facial expression is neutral, not indicative of speaking.",
+          "talking": false,
+          "talking_latency": 665.833025239408,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            191.68392944335938,
+            68.44659423828125,
+            206.41000366210938,
+            87.32634735107422
+          ],
+          "dilated_bbox": [
+            184.32089233398438,
+            59.006717681884766,
+            213.77304077148438,
+            96.7662239074707
+          ],
+          "confidence": 0.767466127872467,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/images__face03.png",
+          "participant_response": "YES. The cropped face in Image 2 is of a woman seated at the table in Image 1, looking toward the speaker and appearing attentive, which indicates she is an active participant in the meeting.",
+          "participant": true,
+          "participant_latency": 1010.4492069222033,
+          "participant_error": null,
+          "talking_response": "NO. The person\u2019s mouth is closed and their facial expression is neutral, with no active gestures or signs of speech.",
+          "talking": false,
+          "talking_latency": 624.1340800188482,
+          "talking_error": null
+        }
+      ],
+      "rally-board-65-rightsight-2-group-view": [
+        {
+          "original_bbox": [
+            359.48919677734375,
+            95.15544891357422,
+            401.0341491699219,
+            144.8109588623047
+          ],
+          "dilated_bbox": [
+            338.7167205810547,
+            70.32769393920898,
+            421.80662536621094,
+            169.63871383666992
+          ],
+          "confidence": 0.9256038665771484,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face00.png",
+          "participant_response": "YES. The person is seated at the table with laptops and notebooks, smiling toward the camera, and is positioned among other participants in the meeting room, indicating active participation.",
+          "participant": true,
+          "participant_latency": 887.9616828635335,
+          "participant_error": null,
+          "talking_response": "NO, because in both images, the person has a neutral, calm expression with lips closed and hands resting calmly on the table \u2014 no signs of active speech or vocalization.",
+          "talking": false,
+          "talking_latency": 904.3355314061046,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            503.5140075683594,
+            137.3228759765625,
+            546.9215698242188,
+            192.9651641845703
+          ],
+          "dilated_bbox": [
+            481.8102264404297,
+            109.5017318725586,
+            568.6253509521484,
+            220.78630828857422
+          ],
+          "confidence": 0.9216734170913696,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face01.png",
+          "participant_response": "YES. She is seated at the table with laptops and notebooks, smiling toward the camera, indicating active participation in the meeting.",
+          "participant": true,
+          "participant_latency": 655.7028968818486,
+          "participant_error": null,
+          "talking_response": "NO, because in Image 2, the woman\u2019s mouth is closed and her facial expression is neutral, not indicative of speaking.",
+          "talking": false,
+          "talking_latency": 685.1406479254365,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            116.77316284179688,
+            120.83793640136719,
+            163.95054626464844,
+            187.07566833496094
+          ],
+          "dilated_bbox": [
+            93.1844711303711,
+            87.71907043457031,
+            187.53923797607422,
+            220.1945343017578
+          ],
+          "confidence": 0.9176982641220093,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face02.png",
+          "participant_response": "YES. She is seated at the table with her laptop, smiling toward the camera, and appears to be part of the group in the meeting.",
+          "participant": true,
+          "participant_latency": 766.223169863224,
+          "participant_error": null,
+          "talking_response": "YES \u2014 The person\u2019s mouth is slightly open and her facial expression is relaxed and smiling, suggesting she is engaged in conversation or speaking, not just listening.",
+          "talking": true,
+          "talking_latency": 867.207292933017,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            621.5524291992188,
+            106.73564147949219,
+            693.3502197265625,
+            205.2864227294922
+          ],
+          "dilated_bbox": [
+            585.6535339355469,
+            57.46025085449219,
+            729.2491149902344,
+            254.5618133544922
+          ],
+          "confidence": 0.9066199660301208,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face03.png",
+          "participant_response": "YES. He is seated at the table with others, smiling toward the camera, and appears engaged in the meeting environment.",
+          "participant": true,
+          "participant_latency": 815.8496650867164,
+          "participant_error": null,
+          "talking_response": "YES \u2014 In both images, the man has a wide, open-mouthed smile and is looking directly at the camera, suggesting he is actively speaking or engaging in conversation. His relaxed posture and expressive facial features indicate he is in the middle of speaking, not listening or waiting.",
+          "talking": true,
+          "talking_latency": 1553.1504787504673,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            563.4241943359375,
+            129.5224609375,
+            575.6989135742188,
+            142.22080993652344
+          ],
+          "dilated_bbox": [
+            557.2868347167969,
+            123.17328643798828,
+            581.8362731933594,
+            148.56998443603516
+          ],
+          "confidence": 0.2932344675064087,
+          "face_idx": 4,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face04.png",
+          "participant_response": "NO. The person in Image 2 is blurred and appears to be in the background, not seated at the main table with the others, and is not visibly engaged in the meeting.",
+          "participant": false,
+          "participant_latency": 994.8077788576484,
+          "participant_error": null,
+          "talking_response": "NO, because in Image 1, the person is smiling and looking at the camera, not actively speaking or gesturing as if in mid-conversation.",
+          "talking": false,
+          "talking_latency": 894.0900866873562,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            53.96886444091797,
+            93.23655700683594,
+            65.27237701416016,
+            106.51191711425781
+          ],
+          "dilated_bbox": [
+            48.317108154296875,
+            86.598876953125,
+            70.92413330078125,
+            113.14959716796875
+          ],
+          "confidence": 0.276374876499176,
+          "face_idx": 5,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face05.png",
+          "participant_response": "NO. The person in Image 2 is a blurry, cropped side profile of someone in the background, not seated at the main table with the other participants, and appears to be walking or passing by, not engaged in the meeting.",
+          "participant": false,
+          "participant_latency": 1287.5820291228592,
+          "participant_error": null,
+          "talking_response": "NO, because in Image 2, the person\u2019s mouth is closed and their facial expression is neutral, with no visible signs of speaking or active communication.",
+          "talking": false,
+          "talking_latency": 861.453038174659,
+          "talking_error": null
+        },
+        {
+          "original_bbox": [
+            56.165523529052734,
+            94.64851379394531,
+            67.01310729980469,
+            108.03349304199219
+          ],
+          "dilated_bbox": [
+            50.74173164367676,
+            87.95602416992188,
+            72.43689918518066,
+            114.72598266601562
+          ],
+          "confidence": 0.270803838968277,
+          "face_idx": 6,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/pipeline_crops/rally-board-65-rightsight-2-group-view__face06.png",
+          "participant_response": "NO. The person in Image 2 is a blurred, cropped side profile of someone walking in the background of Image 1, not seated or engaged at the main table.",
+          "participant": false,
+          "participant_latency": 983.2638087682426,
+          "participant_error": null,
+          "talking_response": "NO, because in Image 2, the person\u2019s mouth is closed and their facial expression is neutral, with no visible signs of speaking or active communication.",
+          "talking": false,
+          "talking_latency": 857.3248069733381,
+          "talking_error": null
+        }
+      ]
+    }
+  }
+}

@@ -1,13 +1,87 @@
+# =============================================================================
+# Model weights & large binaries
+# =============================================================================
 /models/
+*.pt
+*.safetensors
+*.onnx
+*.gguf
+*.bin
+
+# =============================================================================
+# Datasets & raw images (large, re-downloadable)
+# =============================================================================
+datasets/
+environment_monitoring_dataset/
+people_images/
 benchmark/test_sets/images/
+finetune/data/images/
+finetune/data/coco_train.jsonl
+finetune/data/coco_val.jsonl
+
+# =============================================================================
+# Fine-tuning checkpoints (large; only final/ adapters matter)
+# =============================================================================
+finetune/checkpoints/
+
+# =============================================================================
+# Benchmark outputs (auto-generated; not source code)
+# =============================================================================
 benchmark/results/
 benchmark/logs/
+logs/
+
+# =============================================================================
+# Root-level generated outputs
+# =============================================================================
+vqa_results.json
+demo_test.jpg
+
+# =============================================================================
+# Generated plots & figures
+# (exceptions below for representative demo plots)
+# =============================================================================
+*.png
+*.jpg
+*.jpeg
+
+# Keep curated demo plots committed
+!docs/*.png
+!docs/*.jpg
+!finetune/viz_output/*.png
+!finetune/viz_output/5way/*.png
+!benchmark/face_detection/results/dashboard.png
+!benchmark/face_detection/results/latency_comparison.png
+!benchmark/face_detection/results/faces_per_image.png
+!benchmark/face_detection/results/pipeline_logitech_face_plot.png
+
+# Keep demo/app icon assets if any
+!demo/assets/*.png
+
+# =============================================================================
+# Python cache
+# =============================================================================
 __pycache__/
 **/__pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# =============================================================================
+# OS / editor noise
+# =============================================================================
 .DS_Store
 **/.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# Generated plot images
-benchmark/*.png
-*.png
+# =============================================================================
+# Environment & secrets
+# =============================================================================
+.env
+.env.*
+*.key

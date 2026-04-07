@@ -1,0 +1,19 @@
+{
+  "version": "v3",
+  "meeting_images_train": 6,
+  "meeting_images_val": 1,
+  "meeting_records_with_aug": 126,
+  "coco_regularizer": 8599,
+  "train_total": 8725,
+  "val_total": 1,
+  "output_fields_meeting": [
+    "bbox",
+    "participant",
+    "speaking",
+    "reason"
+  ],
+  "output_fields_coco": [
+    "bbox"
+  ],
+  "n_augments": 20
+}

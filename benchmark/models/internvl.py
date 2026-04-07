@@ -71,9 +71,85 @@ class InternVLModel(BaseVLMModel):
                 )
             latency_ms = (time.perf_counter() - t0) * 1000
 
-            response = self.processor.decode(outputs[0], skip_special_tokens=True)
+            response = self.processor.decode(
+                outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True
+            )
             return InferenceResult(response=response, latency_ms=latency_ms)
 
+        except Exception as e:
+            return InferenceResult(response="", latency_ms=0.0, error=str(e))
+
+    def run_few_shot(
+        self,
+        ref_images: list[tuple[str, str]],
+        test_image_path: str,
+        question: str,
+    ) -> InferenceResult:
+        try:
+            pil_images = []
+            content = []
+            for img_path, label in ref_images:
+                tag = "READY" if label == "ready" else "NOT READY"
+                content.append({"type": "text", "text": f"[{tag}]"})
+                content.append({"type": "image"})
+                pil_images.append(Image.open(img_path).convert("RGB"))
+
+            content.append({"type": "text", "text": question})
+            content.append({"type": "image"})
+            pil_images.append(Image.open(test_image_path).convert("RGB"))
+
+            messages = [{"role": "user", "content": content}]
+            text_prompt = self.processor.apply_chat_template(messages, add_generation_prompt=True)
+
+            device = next(self.model.parameters()).device
+            inputs = self.processor(
+                text=text_prompt,
+                images=pil_images,
+                return_tensors="pt",
+            ).to(device)
+
+            t0 = time.perf_counter()
+            with torch.no_grad():
+                outputs = self.model.generate(**inputs, **self.cfg.generation.to_dict())
+            latency_ms = (time.perf_counter() - t0) * 1000
+
+            response = self.processor.decode(
+                outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True
+            )
+            return InferenceResult(response=response, latency_ms=latency_ms)
+        except Exception as e:
+            return InferenceResult(response="", latency_ms=0.0, error=str(e))
+
+    def run_two_image(self, full_image_path: str, crop_path: str, question: str) -> InferenceResult:
+        try:
+            full_img = Image.open(full_image_path).convert("RGB")
+            crop_img = Image.open(crop_path).convert("RGB")
+
+            messages = [{"role": "user", "content": [
+                {"type": "text", "text": "Image 1: full meeting room."},
+                {"type": "image"},
+                {"type": "text", "text": "Image 2: detected person crop."},
+                {"type": "image"},
+                {"type": "text", "text": question},
+            ]}]
+            text_prompt = self.processor.apply_chat_template(messages, add_generation_prompt=True)
+
+            device = next(self.model.parameters()).device
+            inputs = self.processor(
+                text=text_prompt,
+                images=[full_img, crop_img],
+                return_tensors="pt",
+            ).to(device)
+
+            t0 = time.perf_counter()
+            with torch.no_grad():
+                outputs = self.model.generate(**inputs, **self.cfg.generation.to_dict())
+            latency_ms = (time.perf_counter() - t0) * 1000
+
+            response = self.processor.decode(
+                outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True
+            )
+            return InferenceResult(response=response, latency_ms=latency_ms)
         except Exception as e:
             return InferenceResult(response="", latency_ms=0.0, error=str(e))
 
