@@ -11,23 +11,23 @@ unified_eval_framework/
 │
 ├── benchmark/                  ← All benchmark entry points and evaluation logic
 │   ├── Core benchmarks
-│   │   ├── run_benchmark_vqa.py          VQA:  GPT generates Qs, GPT judges answers
-│   │   ├── run_benchmark.py              Captioning: GPT judges free-form descriptions
-│   │   └── run_benchmark_meeting_room.py Meeting room checklist vs ground truth (no API)
+│   │   ├── runs/run_benchmark_vqa.py          VQA:  GPT generates Qs, GPT judges answers
+│   │   ├── runs/run_benchmark.py              Captioning: GPT judges free-form descriptions
+│   │   └── runs/run_benchmark_meeting_room.py Meeting room checklist vs ground truth (no API)
 │   │
 │   ├── Environment monitoring
-│   │   ├── run_benchmark_env_monitoring.py          Two-stage presence + readiness
-│   │   ├── run_benchmark_env_monitoring_binary.py   Binary clean/messy variant
-│   │   └── run_benchmark_env_monitoring_fewshot.py  Few-shot variant
+│   │   ├── runs/run_benchmark_env_monitoring.py          Two-stage presence + readiness
+│   │   ├── runs/run_benchmark_env_monitoring_binary.py   Binary clean/messy variant
+│   │   └── runs/run_benchmark_env_monitoring_fewshot.py  Few-shot variant
 │   │
 │   ├── People & face detection
-│   │   ├── run_benchmark_people_detection.py  YOLO / MobileNet mAP benchmark
-│   │   ├── run_pipeline_people_analysis.py    CV detection → VLM analysis pipeline
-│   │   ├── run_approach_a_vlm_only.py         VLM-only (no CV pre-processing)
-│   │   └── run_face_detection.py              MTCNN / RetinaFace / YOLOv8-Face
+│   │   ├── runs/run_benchmark_people_detection.py  YOLO / MobileNet mAP benchmark
+│   │   ├── runs/run_pipeline_people_analysis.py    CV detection → VLM analysis pipeline
+│   │   ├── runs/run_approach_a_vlm_only.py         VLM-only (no CV pre-processing)
+│   │   └── runs/run_face_detection.py              MTCNN / RetinaFace / YOLOv8-Face
 │   │
 │   └── Prompting research
-│       └── run_benchmark_prompting_techniques.py  Direct / CoT / few-shot comparison
+│       └── runs/run_benchmark_prompting_techniques.py  Direct / CoT / few-shot comparison
 │
 ├── finetune/                   ← LoRA fine-tuning for Qwen3-VL
 ├── quantize/                   ← int8 quantization (bitsandbytes, save-to-disk)
@@ -103,7 +103,7 @@ nohup bash -c '
   export HF_HOME=/mnt/shared/<yourname>/hf_cache
   export PYTORCH_ALLOC_CONF=expandable_segments:True
   cd /path/to/unified_eval_framework/benchmark
-  CUDA_VISIBLE_DEVICES=0 python run_benchmark_vqa.py \
+  CUDA_VISIBLE_DEVICES=0 python runs/run_benchmark_vqa.py \
       --test-set test_sets/captioning_100.json --all
 ' >> logs/vqa_run.log 2>&1 &
 
@@ -136,42 +136,34 @@ unified_eval_framework/
 │   ├── config.py                     loads + validates YAML into dataclasses
 │   ├── judge.py                      LLM-as-judge scorer (OpenAI API, 0–100)
 │   │
-│   ├── Core benchmarks
+│   ├── runs/                         entry point scripts
 │   │   ├── run_benchmark_vqa.py              VQA with GPT-generated questions
 │   │   ├── run_benchmark.py                  free-form captioning
-│   │   └── run_benchmark_meeting_room.py     structured checklist (no API)
-│   │
-│   ├── Environment monitoring benchmarks
+│   │   ├── run_benchmark_meeting_room.py     structured checklist (no API)
 │   │   ├── run_benchmark_env_monitoring.py          two-stage: presence → readiness
 │   │   ├── run_benchmark_env_monitoring_binary.py   binary clean/messy
-│   │   └── run_benchmark_env_monitoring_fewshot.py  few-shot variant
-│   │
-│   ├── People & face detection
+│   │   ├── run_benchmark_env_monitoring_fewshot.py  few-shot variant
 │   │   ├── run_benchmark_people_detection.py  CV model mAP on COCO128
 │   │   ├── run_pipeline_people_analysis.py    CV → VLM two-stage pipeline
 │   │   ├── run_approach_a_vlm_only.py         VLM-only baseline (no CV)
-│   │   └── run_face_detection.py              face detection model comparison
-│   │
-│   ├── Prompting research
+│   │   ├── run_face_detection.py              face detection model comparison
 │   │   └── run_benchmark_prompting_techniques.py  4 strategies: direct/CoT/few-shot
 │   │
-│   ├── Shell runners
-│   │   ├── run_all_models.sh
-│   │   ├── run_all_models_prompting.sh
-│   │   ├── run_pipeline_all_vlms.sh
-│   │   └── run_env_monitoring_binary.sh
-│   │
-│   ├── Report generators
-│   │   ├── generate_plot.py
-│   │   ├── generate_dashboard.py
+│   ├── reports/                      post-run visualisation and report generators
+│   │   ├── generate_plot.py / generate_dashboard.py
 │   │   ├── generate_binary_report.py / generate_binary_figures.py
 │   │   ├── generate_pipeline_report.py / generate_pipeline_figures.py
 │   │   ├── generate_prompting_report.py / generate_prompting_examples.py
 │   │   ├── generate_detection_plot.py / generate_detection_figures.py
 │   │   ├── generate_approach_comparison.py / generate_approach_comparison_plot.py
-│   │   ├── generate_three_approach_plot.py
-│   │   ├── generate_cv_comparison_plot.py
+│   │   ├── generate_three_approach_plot.py / generate_cv_comparison_plot.py
 │   │   └── generate_examples_report.py
+│   │
+│   ├── scripts/                      shell runners for multi-model sequential runs
+│   │   ├── run_all_models.sh
+│   │   ├── run_all_models_prompting.sh
+│   │   ├── run_pipeline_all_vlms.sh
+│   │   └── run_env_monitoring_binary.sh
 │   │
 │   ├── models/
 │   │   ├── __init__.py           MODEL_REGISTRY (class name → class)
@@ -197,7 +189,7 @@ unified_eval_framework/
 │   │   ├── captioning_100.json       100-image diverse test set
 │   │   ├── meeting_room_sample.json  meeting room readiness samples
 │   │   ├── download_test_images.py   download from Wikimedia Commons
-│   │   └── generate_test_set.py      build a test set from a local folder
+│   │   └── download_test_images.py   download images from Wikimedia Commons
 │   │
 │   └── results/                  auto-created; JSON + HTML reports (gitignored)
 │
@@ -244,7 +236,7 @@ GPT generates 5 targeted, image-specific questions per image together with refer
 
 ```bash
 cd benchmark
-CUDA_VISIBLE_DEVICES=0 python run_benchmark_vqa.py \
+CUDA_VISIBLE_DEVICES=0 python runs/run_benchmark_vqa.py \
     --test-set test_sets/captioning_100.json --all
 ```
 
@@ -254,14 +246,14 @@ Outputs: `results/vqa_report_<timestamp>.html` + `results/vqa_results_<timestamp
 VLMs describe each image freely. GPT judges each description 0–100 using a rubric that considers accuracy, completeness, and relevance.
 
 ```bash
-python run_benchmark.py --test-set test_sets/captioning_100.json --models smolvlm qwen3vl_4b
+python runs/run_benchmark.py --test-set test_sets/captioning_100.json --models smolvlm qwen3vl_4b
 ```
 
 #### Meeting Room Checklist (`run_benchmark_meeting_room.py`)
 No API required. VLMs answer a fixed binary checklist per image (e.g., "Is the whiteboard clean?", "Are chairs arranged?"). Predictions are compared to human ground-truth labels. Metrics: item accuracy, room accuracy, per-item F1.
 
 ```bash
-python run_benchmark_meeting_room.py --test-set test_sets/meeting_room_sample.json --all
+python runs/run_benchmark_meeting_room.py --test-set test_sets/meeting_room_sample.json --all
 ```
 
 ---
@@ -283,8 +275,8 @@ This yields four predicted classes:
 | `uncertain` | Stage 1 yes, Stage 2 unparseable |
 
 ```bash
-python run_benchmark_env_monitoring.py --all
-python run_benchmark_env_monitoring.py --models qwen3vl_4b internvl
+python runs/run_benchmark_env_monitoring.py --all
+python runs/run_benchmark_env_monitoring.py --models qwen3vl_4b internvl
 ```
 
 Variants:
@@ -304,9 +296,9 @@ Two-stage hybrid pipeline for meeting participant analysis:
 - Is this person currently talking/speaking?
 
 ```bash
-python run_pipeline_people_analysis.py
-python run_pipeline_people_analysis.py --vlm smolvlm qwen3vl_4b
-python run_pipeline_people_analysis.py --detector-for-crops yolo11s
+python runs/run_pipeline_people_analysis.py
+python runs/run_pipeline_people_analysis.py --vlm smolvlm qwen3vl_4b
+python runs/run_pipeline_people_analysis.py --detector-for-crops yolo11s
 ```
 
 #### CV-Only People Detection (`run_benchmark_people_detection.py`)
@@ -328,7 +320,7 @@ Benchmarks three face detectors on a custom people-images dataset:
 | YOLOv8-Face | ultralytics, fine-tuned on WiderFace |
 
 ```bash
-python run_face_detection.py
+python runs/run_face_detection.py
 ```
 
 See `benchmark/face_detection/` for pipeline variants and Logitech-device-specific plots.
@@ -347,7 +339,7 @@ Compares four prompting strategies on the meeting-room checklist task:
 | **Few-Shot Per-Item** | One call per item with reference images showing true/false examples. |
 
 ```bash
-python run_benchmark_prompting_techniques.py --all
+python runs/run_benchmark_prompting_techniques.py --all
 ```
 
 ---
@@ -492,11 +484,7 @@ python test_sets/download_test_images.py --count 100 --query "office meeting roo
 
 **Option C — Your own images**
 
-```bash
-python test_sets/generate_test_set.py \
-    --images /path/to/your/images \
-    --output test_sets/your_test_set.json
-```
+Create a JSON file with the same structure as `test_sets/sample.json` pointing to your local image paths, then pass it with `--test-set`.
 
 ---
 
@@ -523,21 +511,21 @@ export OPENAI_API_KEY=sk-...
 conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 
 # VQA (GPT-generated questions, all models)
-CUDA_VISIBLE_DEVICES=0 python run_benchmark_vqa.py \
+CUDA_VISIBLE_DEVICES=0 python runs/run_benchmark_vqa.py \
     --test-set test_sets/captioning_100.json --all
 
 # Captioning
-CUDA_VISIBLE_DEVICES=0 python run_benchmark.py \
+CUDA_VISIBLE_DEVICES=0 python runs/run_benchmark.py \
     --test-set test_sets/captioning_100.json --all
 
 # Environment monitoring (no API key needed)
-CUDA_VISIBLE_DEVICES=0 python run_benchmark_env_monitoring.py --all
+CUDA_VISIBLE_DEVICES=0 python runs/run_benchmark_env_monitoring.py --all
 
 # People detection pipeline
-CUDA_VISIBLE_DEVICES=0 python run_pipeline_people_analysis.py
+CUDA_VISIBLE_DEVICES=0 python runs/run_pipeline_people_analysis.py
 
 # Prompting technique comparison
-CUDA_VISIBLE_DEVICES=0 python run_benchmark_prompting_techniques.py --all
+CUDA_VISIBLE_DEVICES=0 python runs/run_benchmark_prompting_techniques.py --all
 ```
 
 ---

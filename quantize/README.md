@@ -88,11 +88,11 @@ cd benchmark
 conda activate /mnt/shared/<yourname>/envs/Qwen3VL-env
 export OPENAI_API_KEY=sk-...
 
-CUDA_VISIBLE_DEVICES=0 python run_benchmark_vqa.py \
+CUDA_VISIBLE_DEVICES=0 python runs/run_benchmark_vqa.py \
     --test-set test_sets/captioning_100.json \
     --models internvl_int8 qwen3vl_4b_int8
 
-CUDA_VISIBLE_DEVICES=1 python run_benchmark_vqa.py \
+CUDA_VISIBLE_DEVICES=1 python runs/run_benchmark_vqa.py \
     --test-set test_sets/captioning_100.json \
     --models qwen3vl_8b_int8
 ```
