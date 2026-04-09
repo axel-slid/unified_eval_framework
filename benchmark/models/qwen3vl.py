@@ -22,19 +22,36 @@ class Qwen3VLModel(BaseVLMModel):
     def load(self) -> None:
         print(f"[{self.name}] Loading from {self.cfg.model_path} ...")
 
-        os.environ.setdefault("HF_HOME", "/mnt/shared/dils/hf_cache")
-        os.environ.setdefault("HUGGINGFACE_HUB_CACHE", "/mnt/shared/dils/hf_cache")
+        # Only set cluster cache dirs when they actually exist (not on local dev machines)
+        if os.path.isdir("/mnt/shared/dils/hf_cache"):
+            os.environ.setdefault("HF_HOME", "/mnt/shared/dils/hf_cache")
+            os.environ.setdefault("HUGGINGFACE_HUB_CACHE", "/mnt/shared/dils/hf_cache")
 
-        local_only = os.path.isdir(self.cfg.model_path)
+        is_abs_path = os.path.isabs(self.cfg.model_path)
+        local_only  = os.path.isdir(self.cfg.model_path)
+
+        if is_abs_path and not local_only:
+            raise FileNotFoundError(
+                f"[{self.name}] Local model directory not found: {self.cfg.model_path}\n"
+                "  Pass a HuggingFace repo ID (e.g. 'Qwen/Qwen3-VL-4B-Instruct') "
+                "or a valid local path."
+            )
 
         self.processor = AutoProcessor.from_pretrained(
             self.cfg.model_path,
             local_files_only=local_only,
         )
+        if torch.cuda.is_available():
+            device_map = "cuda"
+        elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            device_map = "mps"
+        else:
+            device_map = "cpu"
+
         self.model = Qwen3VLForConditionalGeneration.from_pretrained(
             self.cfg.model_path,
             torch_dtype=_resolve_dtype(self.cfg.dtype),
-            device_map="cuda" if torch.cuda.is_available() else "cpu",
+            device_map=device_map,
             local_files_only=local_only,
         )
         self.model = self.model.eval()
