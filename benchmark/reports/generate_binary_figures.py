@@ -214,6 +214,58 @@ def save_prompts_table(out: Path) -> None:
     print(f"  prompts     → {out}")
 
 
+def save_latency_table(all_results: dict, out: Path) -> None:
+    model_keys = sorted(all_results, key=lambda k: -all_results[k]["metrics"]["accuracy"])
+
+    rows = []
+    for k in model_keys:
+        m = all_results[k]["metrics"]
+        name = all_results[k]["model_name"]
+        lat = m.get("avg_latency_ms", 0)
+        tps = m.get("avg_tps", 0.0)
+        acc = m["accuracy"]
+        rows.append((name, acc, lat, tps))
+
+    n = len(rows)
+    fig, ax = plt.subplots(figsize=(7, n * 0.55 + 1.0))
+    fig.patch.set_facecolor("#f9fafb")
+    ax.set_facecolor("#f9fafb")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, n + 0.8)
+    ax.axis("off")
+
+    col_x = {"name": 0.02, "acc": 0.62, "lat": 0.76, "tps": 0.90}
+    headers = [("MODEL", col_x["name"]), ("OVERALL", col_x["acc"]),
+               ("AVG LAT", col_x["lat"]), ("AVG T/S", col_x["tps"])]
+
+    y_hdr = n + 0.55
+    for label, cx in headers:
+        ax.text(cx, y_hdr, label, fontsize=7.5, fontweight="700",
+                color="#6b7280", va="top", fontfamily="monospace")
+    ax.plot([0.01, 0.99], [n + 0.38, n + 0.38], color="#e5e7eb", linewidth=1)
+
+    for i, (name, acc, lat, tps) in enumerate(rows):
+        y = n - i - 0.5
+        bg = "#ffffff" if i % 2 == 0 else "#f3f4f6"
+        ax.add_patch(mpatches.FancyBboxPatch(
+            (0.005, y - 0.42), 0.99, 0.84,
+            boxstyle="round,pad=0.01", facecolor=bg, edgecolor="none"
+        ))
+        ax.text(col_x["name"], y, name, fontsize=8.5, color="#111827", va="center")
+        acc_c = acc_color(acc)
+        ax.text(col_x["acc"], y, f"{acc:.0%}", fontsize=9, fontweight="700",
+                color=acc_c, va="center", ha="left")
+        lat_str = f"{lat:,} ms" if lat else "—"
+        tps_str = f"{tps:.1f}" if tps else "—"
+        ax.text(col_x["lat"], y, lat_str, fontsize=8.5, color="#374151", va="center", ha="left")
+        ax.text(col_x["tps"], y, tps_str, fontsize=8.5, color="#374151", va="center", ha="left")
+
+    plt.tight_layout()
+    fig.savefig(out, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
+    plt.close(fig)
+    print(f"  latency     → {out}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default=None)
@@ -231,6 +283,7 @@ def main() -> None:
     save_heatmap(all_results, out_dir / "heatmap.png")
     save_bar_chart(all_results, out_dir / "bar_chart.png")
     save_prompts_table(out_dir / "prompts_table.png")
+    save_latency_table(all_results, out_dir / "latency_table.png")
 
 
 if __name__ == "__main__":

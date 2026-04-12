@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 """
 face_detection/plot_logitech.py — Logitech rally-board image with YOLOv8-Face
-dilated bboxes colour-coded by Qwen3-VL-4B participant/talking verdict.
+dilated bboxes colour-coded by Qwen3-VL-4B participant verdict.
 
-Colour scheme (matches generate_detection_plot.py):
-  Green  — Participant · Talking
-  Blue   — Participant · Silent
-  Amber  — Non-participant · Talking
-  Red    — Non-participant · Silent
+Colour scheme:
+  Green  — Participant
+  Red    — Non-participant
 
 Usage
 -----
@@ -35,10 +33,8 @@ IMAGE_STEM  = "rally-board-65-rightsight-2-group-view"
 IMAGE_PATH  = HERE.parent.parent / "people_images" / f"{IMAGE_STEM}.png"
 
 COLORS = {
-    ("participant",     "talking"): ("#1a7f37", "#2da44e"),  # green
-    ("participant",     "silent"):  ("#0969da", "#218bff"),  # blue
-    ("non-participant", "talking"): ("#9a6700", "#d1a000"),  # amber
-    ("non-participant", "silent"):  ("#cf222e", "#fa4549"),  # red
+    "participant":     ("#1a7f37", "#2da44e"),  # green
+    "non-participant": ("#cf222e", "#fa4549"),  # red
 }
 
 
@@ -79,12 +75,8 @@ def main():
 
         person = next((p for p in persons if p.get("face_idx") == f_idx), None)
         part   = person.get("participant") if person else None
-        talk   = person.get("talking")     if person else None
 
-        role_key  = (
-            "participant"     if part else "non-participant",
-            "talking"         if talk else "silent",
-        )
+        role_key           = "participant" if part else "non-participant"
         edge_col, fill_col = COLORS[role_key]
 
         # Box
@@ -98,8 +90,7 @@ def main():
 
         # Label pill
         part_str = "Participant" if part else "Non-participant"
-        talk_str = " · Talking"  if talk else " · Silent"
-        label    = f"#{f_idx}  {part_str}{talk_str}  ({conf:.0%})"
+        label    = f"#{f_idx}  {part_str}  ({conf:.0%})"
 
         pill_y = max(y1 - 6, 14)
         ax.text(
@@ -112,10 +103,8 @@ def main():
 
     # Legend
     legend_elements = [
-        mpatches.Patch(facecolor="#2da44e", edgecolor="#1a7f37", label="Participant · Talking"),
-        mpatches.Patch(facecolor="#218bff", edgecolor="#0969da", label="Participant · Silent"),
-        mpatches.Patch(facecolor="#d1a000", edgecolor="#9a6700", label="Non-participant · Talking"),
-        mpatches.Patch(facecolor="#fa4549", edgecolor="#cf222e", label="Non-participant · Silent"),
+        mpatches.Patch(facecolor="#2da44e", edgecolor="#1a7f37", label="Participant"),
+        mpatches.Patch(facecolor="#fa4549", edgecolor="#cf222e", label="Non-participant"),
     ]
     legend = ax.legend(
         handles=legend_elements, loc="lower left",

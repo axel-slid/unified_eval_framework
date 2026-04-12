@@ -80,6 +80,30 @@ models:
     generation:
       max_new_tokens: 256
 
+  gemma_e2b_4bit:
+    enabled: true
+    class: GemmaModel
+    model_path: unsloth/gemma-4-E2B-it   # unsloth hub — no gated-repo auth needed
+    dtype: int4
+    generation:
+      max_new_tokens: 256
+
+  gemma_e2b_8bit_hf:
+    enabled: true
+    class: GemmaModel
+    model_path: unsloth/gemma-4-E2B-it
+    dtype: int8
+    generation:
+      max_new_tokens: 256
+
+  gemma_e4b_4bit:
+    enabled: true
+    class: GemmaModel
+    model_path: unsloth/gemma-4-E4B-it
+    dtype: int4
+    generation:
+      max_new_tokens: 256
+
   # ── Template for adding a new model ─────────────────────────────────────────
   # yourmodel:
   #   enabled: false

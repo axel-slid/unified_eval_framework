@@ -17,6 +17,11 @@ try:
 except Exception:
     Qwen3VLModel = None  # type: ignore[assignment,misc]
 
+try:
+    from .gemma import GemmaModel
+except Exception:
+    GemmaModel = None  # type: ignore[assignment,misc]
+
 # CV detection models
 from .yolov11 import YOLOv11Model
 from .mobilenet_ssd import MobileNetSSDModel
@@ -27,6 +32,7 @@ MODEL_REGISTRY: dict[str, type[BaseVLMModel]] = {
         "SmolVLMModel":  SmolVLMModel,
         "InternVLModel": InternVLModel,
         "Qwen3VLModel":  Qwen3VLModel,
+        "GemmaModel":    GemmaModel,
     }.items() if v is not None
 }
 
@@ -45,6 +51,7 @@ __all__ = [
     "SmolVLMModel",
     "InternVLModel",
     "Qwen3VLModel",
+    "GemmaModel",
     "YOLOv11Model",
     "MobileNetSSDModel",
     "MODEL_REGISTRY",

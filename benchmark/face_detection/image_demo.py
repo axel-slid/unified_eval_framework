@@ -38,39 +38,60 @@ sys.path.insert(0, str(BENCH_ROOT))
 #   Each entry holds enough info to construct + load the model lazily.
 
 MODEL_REGISTRY: dict[str, dict] = {
+    # ── SmolVLM2 ─────────────────────────────────────────────────────────────
+    "smolvlm": {
+        "label":      "SmolVLM2 2.2B · bf16  (~5 GB)",
+        "backend":    "smolvlm",
+        "key":        "smolvlm",
+        "model_path": "/mnt/shared/dils/models/SmolVLM2-2.2B-Instruct",
+    },
+    # ── InternVL3 4B ─────────────────────────────────────────────────────────
+    "internvl": {
+        "label":      "InternVL3 4B · bf16   (~9 GB)",
+        "backend":    "internvl",
+        "key":        "internvl",
+        "model_path": "OpenGVLab/InternVL3_5-4B-HF",
+    },
+    # ── Qwen3-VL 4B ──────────────────────────────────────────────────────────
+    "qwen3vl_4b": {
+        "label":      "Qwen3-VL 4B · bf16    (~9 GB)",
+        "backend":    "qwen3vl",
+        "key":        "qwen3vl_4b",
+        "model_path": "/mnt/shared/dils/models/Qwen3-VL-4B-Instruct",
+    },
+    # ── Qwen3-VL 8B ──────────────────────────────────────────────────────────
+    "qwen3vl_8b": {
+        "label":      "Qwen3-VL 8B · bf16    (~18 GB)",
+        "backend":    "qwen3vl",
+        "key":        "qwen3vl_8b",
+        "model_path": "/mnt/shared/dils/models/Qwen3-VL-8B-Instruct",
+    },
     # ── Gemma 4 E2B ──────────────────────────────────────────────────────────
     "gemma4_e2b_4bit": {
-        "label":   "Gemma 4 E2B · 4-bit  (~4 GB)",
+        "label":   "Gemma 4 E2B · 4-bit     (~4 GB)",
         "backend": "unsloth",
         "key":     "gemma4_e2b_4bit",
     },
     "gemma4_e2b_8bit": {
-        "label":   "Gemma 4 E2B · 8-bit  (~6 GB)",
+        "label":   "Gemma 4 E2B · 8-bit     (~6 GB)",
         "backend": "unsloth",
         "key":     "gemma4_e2b_8bit",
     },
     "gemma4_e2b_bf16": {
-        "label":   "Gemma 4 E2B · bf16   (~10 GB)",
+        "label":   "Gemma 4 E2B · bf16      (~10 GB)",
         "backend": "unsloth",
         "key":     "gemma4_e2b_bf16",
     },
     # ── Gemma 3 4B ───────────────────────────────────────────────────────────
     "gemma3_4b_4bit": {
-        "label":   "Gemma 3 4B · 4-bit   (~4 GB)",
+        "label":   "Gemma 3 4B · 4-bit      (~4 GB)",
         "backend": "unsloth",
         "key":     "gemma3_4b_4bit",
     },
     "gemma3_4b_bf16": {
-        "label":   "Gemma 3 4B · bf16    (~8 GB)",
+        "label":   "Gemma 3 4B · bf16       (~8 GB)",
         "backend": "unsloth",
         "key":     "gemma3_4b_bf16",
-    },
-    # ── Qwen3-VL (comparison baseline) ───────────────────────────────────────
-    "qwen3vl_4b": {
-        "label":   "Qwen3-VL 4B · bf16",
-        "backend": "qwen3vl",
-        "key":     "qwen3vl_4b",
-        "model_path": "Qwen/Qwen3-VL-4B-Instruct",
     },
 }
 
@@ -279,6 +300,12 @@ def _build_model(key: str):
     elif backend == "qwen3vl":
         from models.qwen3vl import Qwen3VLModel
         return Qwen3VLModel(cfg)
+    elif backend == "smolvlm":
+        from models.smolvlm import SmolVLMModel
+        return SmolVLMModel(cfg)
+    elif backend == "internvl":
+        from models.internvl import InternVLModel
+        return InternVLModel(cfg)
     else:
         raise ValueError(f"Unknown backend: {backend}")
 
@@ -684,12 +711,15 @@ def _short_label(key: str | None) -> str:
     if key is None:
         return "?"
     mapping = {
+        "smolvlm":         "SmolVLM",
+        "internvl":        "InternVL",
+        "qwen3vl_4b":      "Qwen3VL-4B",
+        "qwen3vl_8b":      "Qwen3VL-8B",
         "gemma4_e2b_4bit": "G4-E2B 4b",
         "gemma4_e2b_8bit": "G4-E2B 8b",
         "gemma4_e2b_bf16": "G4-E2B f16",
         "gemma3_4b_4bit":  "G3-4B 4b",
         "gemma3_4b_bf16":  "G3-4B f16",
-        "qwen3vl_4b":      "Qwen3VL",
     }
     return mapping.get(key, key[:10])
 

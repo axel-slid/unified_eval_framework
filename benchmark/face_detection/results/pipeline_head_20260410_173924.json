@@ -1,0 +1,611 @@
+{
+  "timestamp": "20260410_173924",
+  "detector": "yolov8_head_nano",
+  "device": "cuda",
+  "conf": 0.3,
+  "dilate": 1.5,
+  "images": [
+    "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/rally-board-65-rightsight-2-group-view.png"
+  ],
+  "cv_results": {
+    "rally-board-65-rightsight-2-group-view": {
+      "image_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/people_images/rally-board-65-rightsight-2-group-view.png",
+      "n_faces": 15,
+      "detections": [
+        {
+          "original_bbox": [
+            351.3600769042969,
+            81.43325805664062,
+            404.4130859375,
+            146.56674194335938
+          ],
+          "dilated_bbox": [
+            338.0968246459961,
+            65.14988708496094,
+            417.6763381958008,
+            162.85011291503906
+          ],
+          "confidence": 0.8720733523368835,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head00.png"
+        },
+        {
+          "original_bbox": [
+            616.81298828125,
+            89.5062255859375,
+            712.88916015625,
+            209.34413146972656
+          ],
+          "dilated_bbox": [
+            592.7939453125,
+            59.546749114990234,
+            736.908203125,
+            239.30360794067383
+          ],
+          "confidence": 0.8658899664878845,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head01.png"
+        },
+        {
+          "original_bbox": [
+            99.17401885986328,
+            105.62083435058594,
+            173.33639526367188,
+            195.32369995117188
+          ],
+          "dilated_bbox": [
+            80.63342475891113,
+            83.19511795043945,
+            191.87698936462402,
+            217.74941635131836
+          ],
+          "confidence": 0.8385520577430725,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head02.png"
+        },
+        {
+          "original_bbox": [
+            489.873046875,
+            124.72848510742188,
+            557.8851318359375,
+            199.2319793701172
+          ],
+          "dilated_bbox": [
+            472.8700256347656,
+            106.10261154174805,
+            574.8881530761719,
+            217.85785293579102
+          ],
+          "confidence": 0.8337973356246948,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head03.png"
+        },
+        {
+          "original_bbox": [
+            51.5273551940918,
+            86.44322967529297,
+            74.60772705078125,
+            111.8006820678711
+          ],
+          "dilated_bbox": [
+            45.757262229919434,
+            80.10386657714844,
+            80.37782001495361,
+            118.14004516601562
+          ],
+          "confidence": 0.7766887545585632,
+          "face_idx": 4,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head04.png"
+        },
+        {
+          "original_bbox": [
+            272.34832763671875,
+            114.39107513427734,
+            303.7376708984375,
+            146.3068084716797
+          ],
+          "dilated_bbox": [
+            264.50099182128906,
+            106.41214179992676,
+            311.5850067138672,
+            154.28574180603027
+          ],
+          "confidence": 0.7721233367919922,
+          "face_idx": 5,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head05.png"
+        },
+        {
+          "original_bbox": [
+            557.2876586914062,
+            118.19481658935547,
+            581.4913940429688,
+            145.283203125
+          ],
+          "dilated_bbox": [
+            551.2367248535156,
+            111.42271995544434,
+            587.5423278808594,
+            152.05529975891113
+          ],
+          "confidence": 0.760359525680542,
+          "face_idx": 6,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head06.png"
+        },
+        {
+          "original_bbox": [
+            160.5216827392578,
+            118.72977447509766,
+            185.60433959960938,
+            149.36143493652344
+          ],
+          "dilated_bbox": [
+            154.25101852416992,
+            111.07185935974121,
+            191.87500381469727,
+            157.01935005187988
+          ],
+          "confidence": 0.6827132105827332,
+          "face_idx": 7,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head07.png"
+        },
+        {
+          "original_bbox": [
+            421.37884521484375,
+            110.47254180908203,
+            443.6912536621094,
+            136.5742645263672
+          ],
+          "dilated_bbox": [
+            415.80074310302734,
+            103.94711112976074,
+            449.2693557739258,
+            143.09969520568848
+          ],
+          "confidence": 0.668148934841156,
+          "face_idx": 8,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head08.png"
+        },
+        {
+          "original_bbox": [
+            198.96640014648438,
+            113.70004272460938,
+            221.56715393066406,
+            137.26153564453125
+          ],
+          "dilated_bbox": [
+            193.31621170043945,
+            107.8096694946289,
+            227.21734237670898,
+            143.15190887451172
+          ],
+          "confidence": 0.6556951999664307,
+          "face_idx": 9,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head09.png"
+        },
+        {
+          "original_bbox": [
+            79.12818145751953,
+            98.9053726196289,
+            95.53236389160156,
+            118.86841583251953
+          ],
+          "dilated_bbox": [
+            75.02713584899902,
+            93.91461181640625,
+            99.63340950012207,
+            123.85917663574219
+          ],
+          "confidence": 0.45961636304855347,
+          "face_idx": 10,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head10.png"
+        },
+        {
+          "original_bbox": [
+            442.4643249511719,
+            124.27084350585938,
+            472.30743408203125,
+            155.51646423339844
+          ],
+          "dilated_bbox": [
+            435.00354766845703,
+            116.45943832397461,
+            479.7682113647461,
+            163.3278694152832
+          ],
+          "confidence": 0.45074257254600525,
+          "face_idx": 11,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head11.png"
+        },
+        {
+          "original_bbox": [
+            296.4052429199219,
+            182.25515747070312,
+            320.8229675292969,
+            211.83245849609375
+          ],
+          "dilated_bbox": [
+            290.3008117675781,
+            174.86083221435547,
+            326.9273986816406,
+            219.2267837524414
+          ],
+          "confidence": 0.4360851049423218,
+          "face_idx": 12,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head12.png"
+        },
+        {
+          "original_bbox": [
+            600.6674194335938,
+            93.39193725585938,
+            610.2420654296875,
+            105.22193145751953
+          ],
+          "dilated_bbox": [
+            598.2737579345703,
+            90.43443870544434,
+            612.6357269287109,
+            108.17943000793457
+          ],
+          "confidence": 0.37124305963516235,
+          "face_idx": 13,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head13.png"
+        },
+        {
+          "original_bbox": [
+            283.6071472167969,
+            185.37135314941406,
+            306.0257263183594,
+            210.60459899902344
+          ],
+          "dilated_bbox": [
+            278.00250244140625,
+            179.06304168701172,
+            311.63037109375,
+            216.91291046142578
+          ],
+          "confidence": 0.36106640100479126,
+          "face_idx": 14,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head14.png"
+        }
+      ],
+      "latency_ms": 5756.67662313208,
+      "error": null
+    }
+  },
+  "vlm_results": {
+    "qwen3vl_4b": {
+      "rally-board-65-rightsight-2-group-view": [
+        {
+          "original_bbox": [
+            351.3600769042969,
+            81.43325805664062,
+            404.4130859375,
+            146.56674194335938
+          ],
+          "dilated_bbox": [
+            338.0968246459961,
+            65.14988708496094,
+            417.6763381958008,
+            162.85011291503906
+          ],
+          "confidence": 0.8720733523368835,
+          "face_idx": 0,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head00.png",
+          "participant_response": "YES. The person is seated at the table with a laptop, smiling toward the camera, and appears to be part of the group in the meeting, not standing or observing from the periphery.",
+          "participant": true,
+          "participant_latency": 3271.1977041326463,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            616.81298828125,
+            89.5062255859375,
+            712.88916015625,
+            209.34413146972656
+          ],
+          "dilated_bbox": [
+            592.7939453125,
+            59.546749114990234,
+            736.908203125,
+            239.30360794067383
+          ],
+          "confidence": 0.8658899664878845,
+          "face_idx": 1,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head01.png",
+          "participant_response": "YES \u2014 he is seated at the table, smiling toward the camera, and appears engaged in the meeting as part of the group.",
+          "participant": true,
+          "participant_latency": 1097.8463240899146,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            99.17401885986328,
+            105.62083435058594,
+            173.33639526367188,
+            195.32369995117188
+          ],
+          "dilated_bbox": [
+            80.63342475891113,
+            83.19511795043945,
+            191.87698936462402,
+            217.74941635131836
+          ],
+          "confidence": 0.8385520577430725,
+          "face_idx": 2,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head02.png",
+          "participant_response": "YES. She is seated at the table with her laptop, smiling toward the camera, and is part of the group of four people who are the focus of the meeting in Image 1.",
+          "participant": true,
+          "participant_latency": 1545.9878202527761,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            489.873046875,
+            124.72848510742188,
+            557.8851318359375,
+            199.2319793701172
+          ],
+          "dilated_bbox": [
+            472.8700256347656,
+            106.10261154174805,
+            574.8881530761719,
+            217.85785293579102
+          ],
+          "confidence": 0.8337973356246948,
+          "face_idx": 3,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head03.png",
+          "participant_response": "YES. She is seated at the table with her laptop and smiling toward the camera, indicating active participation in the meeting.",
+          "participant": true,
+          "participant_latency": 1008.5042268037796,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            51.5273551940918,
+            86.44322967529297,
+            74.60772705078125,
+            111.8006820678711
+          ],
+          "dilated_bbox": [
+            45.757262229919434,
+            80.10386657714844,
+            80.37782001495361,
+            118.14004516601562
+          ],
+          "confidence": 0.7766887545585632,
+          "face_idx": 4,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head04.png",
+          "participant_response": "NO. The person in Image 2 is standing in the background, not seated at the main table, and is not engaged in the meeting.",
+          "participant": false,
+          "participant_latency": 1204.9294668249786,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            272.34832763671875,
+            114.39107513427734,
+            303.7376708984375,
+            146.3068084716797
+          ],
+          "dilated_bbox": [
+            264.50099182128906,
+            106.41214179992676,
+            311.5850067138672,
+            154.28574180603027
+          ],
+          "confidence": 0.7721233367919922,
+          "face_idx": 5,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head05.png",
+          "participant_response": "YES. The person in Image 2 is seated at the table in Image 1, with a laptop and notebook in front of them, indicating active participation in the meeting.",
+          "participant": true,
+          "participant_latency": 1453.0777442269027,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            557.2876586914062,
+            118.19481658935547,
+            581.4913940429688,
+            145.283203125
+          ],
+          "dilated_bbox": [
+            551.2367248535156,
+            111.42271995544434,
+            587.5423278808594,
+            152.05529975891113
+          ],
+          "confidence": 0.760359525680542,
+          "face_idx": 6,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head06.png",
+          "participant_response": "NO. The person in Image 2 is blurred and appears to be standing in the background, not seated at the main table or engaged in the meeting.",
+          "participant": false,
+          "participant_latency": 1317.5892196595669,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            160.5216827392578,
+            118.72977447509766,
+            185.60433959960938,
+            149.36143493652344
+          ],
+          "dilated_bbox": [
+            154.25101852416992,
+            111.07185935974121,
+            191.87500381469727,
+            157.01935005187988
+          ],
+          "confidence": 0.6827132105827332,
+          "face_idx": 7,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head07.png",
+          "participant_response": "NO. The person in Image 2 is blurred and appears to be in the background, not seated at the main table with the others, and is not visibly engaged in the meeting.",
+          "participant": false,
+          "participant_latency": 1523.2046395540237,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            421.37884521484375,
+            110.47254180908203,
+            443.6912536621094,
+            136.5742645263672
+          ],
+          "dilated_bbox": [
+            415.80074310302734,
+            103.94711112976074,
+            449.2693557739258,
+            143.09969520568848
+          ],
+          "confidence": 0.668148934841156,
+          "face_idx": 8,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head08.png",
+          "participant_response": "YES. The person in Image 2 is a cropped view of the woman on the left in Image 1, who is seated at the table with laptops and is smiling toward the camera, indicating active participation in the meeting.",
+          "participant": true,
+          "participant_latency": 1754.2577041313052,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            198.96640014648438,
+            113.70004272460938,
+            221.56715393066406,
+            137.26153564453125
+          ],
+          "dilated_bbox": [
+            193.31621170043945,
+            107.8096694946289,
+            227.21734237670898,
+            143.15190887451172
+          ],
+          "confidence": 0.6556951999664307,
+          "face_idx": 9,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head09.png",
+          "participant_response": "NO. The person in Image 2 is blurry and appears to be in the background, not seated at the main table with the others, and is not visibly engaged in the meeting.",
+          "participant": false,
+          "participant_latency": 1448.4842573292553,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            79.12818145751953,
+            98.9053726196289,
+            95.53236389160156,
+            118.86841583251953
+          ],
+          "dilated_bbox": [
+            75.02713584899902,
+            93.91461181640625,
+            99.63340950012207,
+            123.85917663574219
+          ],
+          "confidence": 0.45961636304855347,
+          "face_idx": 10,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head10.png",
+          "participant_response": "NO. The person in Image 2 is blurred and appears to be in the background, not seated or engaged at the main table where the meeting participants are.",
+          "participant": false,
+          "participant_latency": 1278.5718450322747,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            442.4643249511719,
+            124.27084350585938,
+            472.30743408203125,
+            155.51646423339844
+          ],
+          "dilated_bbox": [
+            435.00354766845703,
+            116.45943832397461,
+            479.7682113647461,
+            163.3278694152832
+          ],
+          "confidence": 0.45074257254600525,
+          "face_idx": 11,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head11.png",
+          "participant_response": "NO. The person in Image 2 is a blurry, cropped view of someone standing in the background, not seated at the main table with the other participants.",
+          "participant": false,
+          "participant_latency": 1282.9147852025926,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            296.4052429199219,
+            182.25515747070312,
+            320.8229675292969,
+            211.83245849609375
+          ],
+          "dilated_bbox": [
+            290.3008117675781,
+            174.86083221435547,
+            326.9273986816406,
+            219.2267837524414
+          ],
+          "confidence": 0.4360851049423218,
+          "face_idx": 12,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head12.png",
+          "participant_response": "YES. The person in the crop (Image 2) is part of the group seated at the main table in Image 1, with their hands clasped and facing forward, indicating active participation in the meeting.",
+          "participant": true,
+          "participant_latency": 1658.4379700943828,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            600.6674194335938,
+            93.39193725585938,
+            610.2420654296875,
+            105.22193145751953
+          ],
+          "dilated_bbox": [
+            598.2737579345703,
+            90.43443870544434,
+            612.6357269287109,
+            108.17943000793457
+          ],
+          "confidence": 0.37124305963516235,
+          "face_idx": 13,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head13.png",
+          "participant_response": "YES. The person in Image 2 is part of the group seated at the main table in Image 1, and their presence in the foreground of the meeting room context indicates they are a genuine participant.",
+          "participant": true,
+          "participant_latency": 1593.7252501025796,
+          "participant_error": null,
+          "talking": null
+        },
+        {
+          "original_bbox": [
+            283.6071472167969,
+            185.37135314941406,
+            306.0257263183594,
+            210.60459899902344
+          ],
+          "dilated_bbox": [
+            278.00250244140625,
+            179.06304168701172,
+            311.63037109375,
+            216.91291046142578
+          ],
+          "confidence": 0.36106640100479126,
+          "face_idx": 14,
+          "crop_path": "/mnt/shared/dils/projects/logitech/unified_eval_framework/benchmark/face_detection/results/head_crops/rally-board-65-rightsight-2-group-view__head14.png",
+          "participant_response": "YES. The person in Image 2 is a cropped view of the older man on the right in Image 1, who is seated at the table, smiling toward the camera, and appears engaged in the meeting.",
+          "participant": true,
+          "participant_latency": 1659.8469349555671,
+          "participant_error": null,
+          "talking": null
+        }
+      ]
+    }
+  }
+}

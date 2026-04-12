@@ -204,9 +204,8 @@ def fig_crops_vlm(data: dict, out: Path):
 
             if person:
                 pv   = person.get("participant")
-                tv   = person.get("talking")
-                line = f"P:{_yn_str(pv)}  T:{_yn_str(tv)}"
-                bgc  = _yn_color(tv)
+                line = f"P:{_yn_str(pv)}"
+                bgc  = _yn_color(pv)
             else:
                 line = "—"
                 bgc  = UNK_COLOR
@@ -221,7 +220,7 @@ def fig_crops_vlm(data: dict, out: Path):
     for j in range(n_crops, len(axes_flat)):
         axes_flat[j].set_visible(False)
 
-    fig.suptitle("Stage 2 — Qwen3-VL-4B on Dilated Face Crops   (P=Participant · T=Talking)",
+    fig.suptitle("Stage 2 — Qwen3-VL-4B on Dilated Face Crops   (P=Participant)",
                  color=TEXT, fontsize=12, fontweight="bold", y=1.01)
     fig.tight_layout(pad=0.4)
     fig.savefig(out, dpi=150, bbox_inches="tight", facecolor=BG)
@@ -245,13 +244,14 @@ def fig_summary(data: dict, out: Path):
 
     vlm_counts = {}
     for vk in vlm_keys:
-        part_list, talk_list = [], []
+        part_list, nonpart_list = [], []
         for img_path in image_paths:
             stem    = Path(img_path).stem
             persons = data["vlm_results"][vk].get(stem, [])
-            part_list.append(sum(1 for p in persons if p.get("participant") is True))
-            talk_list.append(sum(1 for p in persons if p.get("talking")     is True))
-        vlm_counts[vk] = {"participant": part_list, "talking": talk_list}
+            n_part  = sum(1 for p in persons if p.get("participant") is True)
+            part_list.append(n_part)
+            nonpart_list.append(len(persons) - n_part)
+        vlm_counts[vk] = {"participant": part_list, "non_participant": nonpart_list}
 
     n_cols = 1 + n_vlms + 1
     fig, axes = plt.subplots(1, n_cols,
@@ -274,16 +274,15 @@ def fig_summary(data: dict, out: Path):
     ax0.set_xticklabels(short_names, fontsize=7, rotation=30, ha="right")
     ax0.set_ylim(0, max(face_counts) + 2.5)
 
-    # ── Per-VLM participant + talking bars ────────────────────────────────────
+    # ── Per-VLM participant / non-participant bars ────────────────────────────
     for vi, vk in enumerate(vlm_keys):
         ax  = axes[1 + vi]
         lbl = vk.replace("qwen3vl_", "Qwen3-VL-").replace("_int8", "-int8")
         _style_ax(ax, title=lbl, ylabel="Count")
-        ax.bar(x - 0.22, face_counts,                       0.20, label="Detected",    color="#94a3b8", alpha=0.6)
-        ax.bar(x,        vlm_counts[vk]["participant"],      0.20, label="Participant", color=YES_COLOR, alpha=0.85)
-        ax.bar(x + 0.22, vlm_counts[vk]["talking"],          0.20, label="Talking",    color="#f97316", alpha=0.85)
-        for xi, (nf, np_, nt) in enumerate(zip(face_counts, vlm_counts[vk]["participant"], vlm_counts[vk]["talking"])):
-            for xoff, val in [(-0.22, nf), (0, np_), (0.22, nt)]:
+        ax.bar(x - 0.12, vlm_counts[vk]["participant"],    0.22, label="Participant",     color=YES_COLOR, alpha=0.85)
+        ax.bar(x + 0.12, vlm_counts[vk]["non_participant"], 0.22, label="Non-participant", color=NO_COLOR,  alpha=0.85)
+        for xi, (np_, nnp) in enumerate(zip(vlm_counts[vk]["participant"], vlm_counts[vk]["non_participant"])):
+            for xoff, val in [(-0.12, np_), (0.12, nnp)]:
                 if val > 0:
                     ax.text(xi + xoff, val + 0.05, str(val),
                             ha="center", va="bottom", fontsize=6.5, color=TEXT)
@@ -292,7 +291,7 @@ def fig_summary(data: dict, out: Path):
         ax.legend(fontsize=7)
         ax.set_ylim(0, max(face_counts) + 2.5)
 
-    # ── Talking fraction heatmap ──────────────────────────────────────────────
+    # ── Participant fraction heatmap ──────────────────────────────────────────
     ax_h = axes[-1]
     ax_h.set_facecolor(PANEL_BG)
     matrix = []
@@ -302,8 +301,8 @@ def fig_summary(data: dict, out: Path):
             stem    = Path(img_path).stem
             persons = data["vlm_results"][vk].get(stem, [])
             n_total = len(persons)
-            n_talk  = sum(1 for p in persons if p.get("talking") is True)
-            row_vals.append(n_talk / n_total if n_total > 0 else 0.0)
+            n_part  = sum(1 for p in persons if p.get("participant") is True)
+            row_vals.append(n_part / n_total if n_total > 0 else 0.0)
         matrix.append(row_vals)
 
     mat = np.array(matrix)
@@ -319,10 +318,10 @@ def fig_summary(data: dict, out: Path):
             ax_h.text(c, r, f"{mat[r,c]:.0%}", ha="center", va="center",
                       fontsize=9, fontweight="bold",
                       color="white" if mat[r,c] > 0.55 else TEXT)
-    ax_h.set_title("Talking Fraction", color=TEXT, fontsize=10, fontweight="bold", pad=7)
+    ax_h.set_title("Participant Fraction", color=TEXT, fontsize=10, fontweight="bold", pad=7)
     plt.colorbar(im, ax=ax_h, fraction=0.06, pad=0.04)
 
-    fig.suptitle("Pipeline Summary — YOLOv8-Face + Qwen3-VL-4B",
+    fig.suptitle("Pipeline Summary — YOLOv8-Face + Qwen3-VL-4B  (Participant / Non-participant)",
                  color=TEXT, fontsize=13, fontweight="bold", y=1.02)
     fig.tight_layout(pad=0.8, w_pad=1.2)
     fig.savefig(out, dpi=150, bbox_inches="tight", facecolor=BG)
@@ -380,20 +379,12 @@ def fig_matrix(data: dict, out: Path, vlm_key: str = "qwen3vl_4b"):
                 person = next((p for p in persons if p.get("face_idx") == f_idx), None)
                 if person:
                     pv = person.get("participant")
-                    tv = person.get("talking")
                     p_color = _yn_color(pv)
-                    t_color = _yn_color(tv)
                     ax.text(0.5, -0.05,
                             f"Participant: {_yn_str(pv)}",
                             transform=ax.transAxes, ha="center", va="top",
                             fontsize=7.5, color="white",
                             bbox=dict(facecolor=p_color, alpha=0.92, pad=2,
-                                      edgecolor="none", boxstyle="round,pad=0.3"))
-                    ax.text(0.5, -0.20,
-                            f"Talking: {_yn_str(tv)}",
-                            transform=ax.transAxes, ha="center", va="top",
-                            fontsize=7.5, color="white",
-                            bbox=dict(facecolor=t_color, alpha=0.92, pad=2,
                                       edgecolor="none", boxstyle="round,pad=0.3"))
                     # Confidence
                     ax.text(0.02, 0.02, f"{det['confidence']:.2f}",

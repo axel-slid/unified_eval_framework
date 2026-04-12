@@ -163,21 +163,18 @@ def main():
     for det, vlm_p in zip(cv, b_vlm):
         x1, y1, x2, y2 = det["bbox"]
         part  = vlm_p.get("participant")
-        talk  = vlm_p.get("talking")
         pidx  = vlm_p["person_idx"]
-        color = TALK_COLOR if (part and talk) else PART_COLOR if part else NONPART_COLOR
-        label = f"#{ pidx } {'Talk.' if (part and talk) else 'Part.' if part else 'NP'}"
+        color = PART_COLOR if part else NONPART_COLOR
+        label = f"#{pidx} {'Part.' if part else 'NP'}"
         draw_box(ax, x1, y1, x2, y2, color, label=label)
 
     ax.legend(handles=[
-        mpatches.Patch(facecolor=TALK_COLOR,   label="Participant · Talking"),
-        mpatches.Patch(facecolor=PART_COLOR,   label="Participant · Silent"),
+        mpatches.Patch(facecolor=PART_COLOR,    label="Participant"),
         mpatches.Patch(facecolor=NONPART_COLOR, label="Non-participant"),
     ], loc="lower left", fontsize=8, framealpha=0.92, facecolor="white", edgecolor="#d0d7de")
 
     n_part = sum(1 for p in b_vlm if p.get("participant"))
-    n_talk = sum(1 for p in b_vlm if p.get("talking"))
-    ax.text(3, H - 5, f"{len(cv)} detected · {n_part} participant · {n_talk} talking",
+    ax.text(3, H - 5, f"{len(cv)} detected · {n_part} participant · {len(cv)-n_part} non-participant",
             fontsize=7.5, color="white", ha="left", va="bottom",
             bbox=dict(boxstyle="round,pad=0.3", facecolor="#24292f", edgecolor="none", alpha=0.75))
 
@@ -185,7 +182,7 @@ def main():
     fig.text(0.5, 0.01,
              "A: zero-shot bbox hallucination (imprecise boxes, role labels)  ·  "
              "A+: LoRA bbox-trained (tighter boxes, no roles, some repetition)  ·  "
-             "B: YOLO grounds detection, VLM classifies with room context",
+             "B: YOLO grounds detection, VLM classifies participant / non-participant",
              ha="center", fontsize=8.5, color="#57606a", style="italic")
 
     plt.tight_layout(rect=[0, 0.04, 1, 1])

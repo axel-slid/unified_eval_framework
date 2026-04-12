@@ -66,12 +66,7 @@ QUESTIONS: dict[str, dict] = {
         "yes_means": "clean",
     },
     "chairs": {
-        "question": (
-            "Look at the chairs around the table in this image.\n"
-            "Go through each chair one by one and check whether it is facing towards the table.\n"
-            "Are ALL of the chairs oriented towards the table?\n"
-            "End your response with a line containing only: yes or no"
-        ),
+        "question": "yes or no: are the chairs all tucked into the table?",
         "yes_means": "clean",
     },
     "whiteboard": {
@@ -121,6 +116,8 @@ def predict_label(answer: bool | None, yes_means: str) -> str | None:
 def compute_metrics(results: list[dict]) -> dict:
     total = correct = parse_errors = 0
     by_type: dict[str, dict] = {}
+    latencies: list[float] = []
+    tps_vals: list[float] = []
 
     for r in results:
         pred = r.get("predicted_label")
@@ -141,6 +138,13 @@ def compute_metrics(results: list[dict]) -> dict:
         if pred is None:
             by_type[ct]["parse_errors"] += 1
 
+        lat = r.get("latency_ms", 0)
+        if lat and lat > 0:
+            latencies.append(lat)
+            n_tok = len(r.get("raw_response", "").split())
+            if n_tok > 0:
+                tps_vals.append(n_tok / (lat / 1000))
+
     acc = correct / total if total else 0.0
     per_type = {
         ct: {
@@ -152,10 +156,15 @@ def compute_metrics(results: list[dict]) -> dict:
         for ct, v in by_type.items()
     }
 
+    avg_latency_ms = round(sum(latencies) / len(latencies)) if latencies else 0
+    avg_tps = round(sum(tps_vals) / len(tps_vals), 1) if tps_vals else 0.0
+
     return {
         "accuracy": round(acc, 4),
         "n_images": total,
         "parse_errors": parse_errors,
+        "avg_latency_ms": avg_latency_ms,
+        "avg_tps": avg_tps,
         "per_change_type": per_type,
     }
 
