@@ -103,7 +103,7 @@ CHAIR_PROMPTS: list[dict] = [
         "key": "chair_direct_binary",
         "label": "Direct Binary",
         "question": (
-            "Are all the chairs tucked into the table in a neat meeting-ready arrangement?\n"
+            "Are all visible chairs fully tucked into the table in a neat meeting-ready arrangement?\n"
             "End your response with a final line containing only: yes or no"
         ),
         "yes_means": "clean",
@@ -147,6 +147,61 @@ CHAIR_PROMPTS: list[dict] = [
         "question": (
             "Answer yes only if there is no evidence of any chair being left out.\n"
             "If you can see a chair that is pulled back, rotated away, separated from the table, or not reset, answer no.\n"
+            "End your response with a final line containing only: yes or no"
+        ),
+        "yes_means": "clean",
+    },
+    {
+        "key": "chair_single_failure_rule",
+        "label": "Single Failure Rule",
+        "question": (
+            "Check whether every visible chair is tucked in.\n"
+            "If even a single chair is not tucked in, answer no.\n"
+            "Answer yes only if all visible chairs are tucked in.\n"
+            "End your response with a final line containing only: yes or no"
+        ),
+        "yes_means": "clean",
+    },
+    {
+        "key": "chair_zero_tolerance",
+        "label": "Zero Tolerance",
+        "question": (
+            "Use a zero-tolerance rule for chair placement.\n"
+            "If one or more chairs are even clearly slightly left out from the table, answer no.\n"
+            "Only answer yes if none of the visible chairs are left out.\n"
+            "End your response with a final line containing only: yes or no"
+        ),
+        "yes_means": "clean",
+    },
+    {
+        "key": "chair_exception_scan",
+        "label": "Exception Scan",
+        "question": (
+            "Scan the room for any exception to a fully reset chair layout.\n"
+            "A single chair that is pulled out, angled away, or detached from the table means the answer is no.\n"
+            "If there are no such exceptions, answer yes.\n"
+            "End your response with a final line containing only: yes or no"
+        ),
+        "yes_means": "clean",
+    },
+    {
+        "key": "chair_all_or_nothing",
+        "label": "All or Nothing",
+        "question": (
+            "This is an all-or-nothing check.\n"
+            "Answer yes only if every visible chair is tucked in around the table.\n"
+            "If even one visible chair is not tucked in, answer no.\n"
+            "End your response with a final line containing only: yes or no"
+        ),
+        "yes_means": "clean",
+    },
+    {
+        "key": "chair_reset_state",
+        "label": "Reset State",
+        "question": (
+            "Decide whether the chairs are in a fully reset state after room cleanup.\n"
+            "Fully reset means all visible chairs are pushed in.\n"
+            "If any single visible chair is left out, the room is not reset and the answer is no.\n"
             "End your response with a final line containing only: yes or no"
         ),
         "yes_means": "clean",
