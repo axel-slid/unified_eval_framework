@@ -1,0 +1,725 @@
+{
+    "dataset_info": {
+      "project": "Logitech ML@B Task 1 - Meeting Participant Dataset",
+      "description": "Classify each subject as participant/non-participant",
+      "version": "1.0"
+    },
+    "annotations": [ 
+        {
+            "file_name": "GPTgenerated1.jpg",
+            "people": [
+              {
+                "id": "P1",
+                "bbox": [
+                  66,
+                  148,
+                  143,
+                  249
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P2",
+                "bbox": [
+                  137,
+                  158,
+                  176,
+                  219
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P3",
+                "bbox": [
+                  189,
+                  159,
+                  219,
+                  200
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P4",
+                "bbox": [
+                  210,
+                  160,
+                  225,
+                  190
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P5",
+                "bbox": [
+                  343,
+                  158,
+                  375,
+                  201
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P6",
+                "bbox": [
+                  377,
+                  156,
+                  413,
+                  206
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P7",
+                "bbox": [
+                  415,
+                  158,
+                  450,
+                  217
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P8",
+                "bbox": [
+                  447,
+                  150,
+                  498,
+                  251
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              }
+            ]
+          },
+          {
+            "file_name": "GPTgenerated2.jpg",
+            "people": [
+              {
+                "id": "P1",
+                "bbox": [
+                  12,
+                  186,
+                  108,
+                  308
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P2",
+                "bbox": [
+                    65,
+                    99,
+                    116,
+                    238
+                  ],
+                  "role": "participant",
+                  "is_target_speaker": false
+              },
+              {
+                "id": "P3",
+                "bbox": [
+                  127,
+                  123,
+                  164,
+                  242
+                ],
+                "role": "participant",
+                "is_target_speaker": true
+              },
+              {
+                "id": "P4",
+                "bbox": [
+                  306,
+                  115,
+                  351,
+                  231
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P5",
+                "bbox": [
+                  361,
+                  111,
+                  399,
+                  214
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P6",
+                "bbox": [
+                    370,
+                    172,
+                    426,
+                    286
+                  ],
+                  "role": "participant",
+                  "is_target_speaker": false
+              }
+            ]
+          },
+          {
+            "file_name": "GPTgenerated3.png",
+            "people": [
+              {
+                "id": "P1",
+                "bbox": [
+                  48,
+                  353,
+                  177,
+                  618
+                ],
+                "role": "non-participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P2",
+                "bbox": [
+                  236,
+                  388,
+                  317,
+                  496
+                ],
+                "role": "non-participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P3",
+                "bbox": [
+                  174,
+                  495,
+                  506,
+                  805
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P4",
+                "bbox": [
+                  363,
+                  461,
+                  567,
+                  666
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P5",
+                "bbox": [
+                  472,
+                  469,
+                  588,
+                  612
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P6",
+                "bbox": [
+                  551,
+                  473,
+                  677,
+                  585
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P7",
+                "bbox": [
+                  871,
+                  462,
+                  958,
+                  568
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P8",
+                "bbox": [
+                  924,
+                  467,
+                  1026,
+                  586
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P9",
+                "bbox": [
+                  974,
+                  478,
+                  1106,
+                  643
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P10",
+                "bbox": [
+                  1062,
+                  502,
+                  1189,
+                  682
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P11",
+                "bbox": [
+                  1025,
+                  472,
+                  1376,
+                  827
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              }
+            ]
+          },
+          {
+            "file_name": "GPTgenerated4.png",
+            "people": [
+              {
+                "id": "P1",
+                "bbox": [
+                  303,
+                  512,
+                  584,
+                  783
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P2",
+                "bbox": [
+                  470,
+                  487,
+                  641,
+                  704
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P3",
+                "bbox": [
+                  564,
+                  497,
+                  659,
+                  655
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P4",
+                "bbox": [
+                  790,
+                  488,
+                  957,
+                  626
+                ],
+                "role": "participant",
+                "is_target_speaker": true
+              },
+              {
+                "id": "P5",
+                "bbox": [
+                  861,
+                  496,
+                  995,
+                  675
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P6",
+                "bbox": [
+                  890,
+                  503,
+                  1143,
+                  785
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P7",
+                "bbox": [
+                  1243,
+                  412,
+                  1353,
+                  753
+                ],
+                "role": "non-participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P8",
+                "bbox": [
+                  1333,
+                  408,
+                  1435,
+                  809
+                ],
+                "role": "non-participant",
+                "is_target_speaker": false
+              }
+            ]
+          },
+          {
+            "file_name": "OriginalEmpty.png",
+            "people":[]
+          },
+          {
+            "file_name": "OriginalFilled.jpg",
+            "people": [
+                {
+                  "id": "P1",
+                  "bbox": [
+                    523,
+                    2526,
+                    2273,
+                    4081
+                  ],
+                  "role": "participant",
+                  "is_target_speaker": false
+                },
+                {
+                  "id": "P2",
+                  "bbox": [
+                    1870,
+                    2306,
+                    2959,
+                    3204
+                  ],
+                  "role": "participant",
+                  "is_target_speaker": false
+                },
+                {
+                  "id": "P3",
+                  "bbox": [
+                    3096,
+                    1919,
+                    3703,
+                    2784
+                  ],
+                  "role": "participant",
+                  "is_target_speaker": true
+                },
+                {
+                  "id": "P4",
+                  "bbox": [
+                    4173,
+                    2298,
+                    5196,
+                    3033
+                  ],
+                  "role": "participant",
+                  "is_target_speaker": false
+                },
+                {
+                  "id": "P5",
+                  "bbox": [
+                    5487,
+                    2489,
+                    6156,
+                    3349
+                  ],
+                  "role": "participant",
+                  "is_target_speaker": false
+                }
+              ]
+          },
+          {
+            "file_name": "GeminiGenerated1.png",
+            
+                "people": [
+                  {
+                    "id": "P1",
+                    "bbox": [
+                      382,
+                      840,
+                      803,
+                      1152
+                    ],
+                    "role": "participant",
+                    "is_target_speaker": false
+                  },
+                  {
+                    "id": "P2",
+                    "bbox": [
+                      683,
+                      832,
+                      946,
+                      1094
+                    ],
+                    "role": "participant",
+                    "is_target_speaker": true
+                  },
+                  {
+                    "id": "P3",
+                    "bbox": [
+                      1080,
+                      844,
+                      1395,
+                      1148
+                    ],
+                    "role": "participant",
+                    "is_target_speaker": false
+                  },
+                  {
+                    "id": "P4",
+                    "bbox": [
+                      1407,
+                      843,
+                      1808,
+                      1227
+                    ],
+                    "role": "participant",
+                    "is_target_speaker": false
+                  },
+                  {
+                    "id": "P5",
+                    "bbox": [
+                      1940,
+                      887,
+                      2242,
+                      1312
+                    ],
+                    "role": "participant",
+                    "is_target_speaker": false
+                  }
+                ]
+              
+          },
+          {
+            "file_name": "GeminiGenerated2.png",
+            "people": [
+              {
+                "id": "P1",
+                "bbox": [
+                  106,
+                  842,
+                  523,
+                  1232
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P2",
+                "bbox": [
+                  659,
+                  814,
+                  1045,
+                  1170
+                ],
+                "role": "participant",
+                "is_target_speaker": true
+              },
+              {
+                "id": "P3",
+                "bbox": [
+                  1181,
+                  872,
+                  1467,
+                  1230
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              }
+            ]
+          },
+          {
+            "file_name": "GeminiGenerated3.png",
+            "people": [
+              {
+                "id": "P1",
+                "bbox": [
+                  108,
+                  594,
+                  348,
+                  1082
+                ],
+                "role": "non-participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P2",
+                "bbox": [
+                  348,
+                  715,
+                  814,
+                  1110
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P3",
+                "bbox": [
+                  672,
+                  708,
+                  939,
+                  994
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P4",
+                "bbox": [
+                  884,
+                  747,
+                  1061,
+                  927
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P5",
+                "bbox": [
+                  970,
+                  757,
+                  1097,
+                  879
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P6",
+                "bbox": [
+                  1045,
+                  676,
+                  1222,
+                  849
+                ],
+                "role": "participant",
+                "is_target_speaker": true
+              },
+              {
+                "id": "P7",
+                "bbox": [
+                  1368,
+                  746,
+                  1522,
+                  887
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P8",
+                "bbox": [
+                  1498,
+                  764,
+                  1585,
+                  922
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P9",
+                "bbox": [
+                  1595,
+                  750,
+                  1696,
+                  938
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P10",
+                "bbox": [
+                  1580,
+                  743,
+                  1891,
+                  1021
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P11",
+                "bbox": [
+                  1664,
+                  734,
+                  2210,
+                  1213
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              }
+            ]
+          },
+          {
+            "file_name": "GeminiGenerated4.png",
+            "people": [
+              {
+                "id": "P1",
+                "bbox": [
+                  873,
+                  485,
+                  1255,
+                  805
+                ],
+                "role": "participant",
+                "is_target_speaker": true
+              },
+              {
+                "id": "P2",
+                "bbox": [
+                  1240,
+                  501,
+                  1546,
+                  768
+                ],
+                "role": "participant",
+                "is_target_speaker": false
+              },
+              {
+                "id": "P3",
+                "bbox": [
+                  1742,
+                  430,
+                  1907,
+                  724
+                ],
+                "role": "non-participant",
+                "is_target_speaker": false
+              }
+            ]
+          }
+
+          
+
+
+
+    ]
+}
