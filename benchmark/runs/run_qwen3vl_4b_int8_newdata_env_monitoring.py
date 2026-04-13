@@ -46,6 +46,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = ROOT.parent
 DATA_ROOT = PROJECT_ROOT / "data" / "data4.12.26"
 LABELS_CSV = DATA_ROOT / "labels.csv"
+DEFAULT_OUT_DIR = DATA_ROOT / "eval_results" / "qwen3vl_4b_int8_newdata_env_monitoring"
 
 FIXED_PROMPTS: dict[str, dict] = {
     "whiteboard": {
@@ -452,7 +453,7 @@ def save_plots(out_dir: Path, timestamp: str, fixed_results: dict, chair_variant
 def main() -> None:
     parser = argparse.ArgumentParser(description="Qwen3-VL-4B int8 eval on new data/ folder with chair strategy sweep.")
     parser.add_argument("--config", default=str(ROOT / "benchmark_config.yaml"))
-    parser.add_argument("--out-dir", default=str(ROOT / "results"))
+    parser.add_argument("--out-dir", default=str(DEFAULT_OUT_DIR))
     args = parser.parse_args()
 
     samples = load_samples()
