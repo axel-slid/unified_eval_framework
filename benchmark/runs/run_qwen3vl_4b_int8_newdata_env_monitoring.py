@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Evaluate the new data/ dataset with Qwen3-VL-4B int8 only.
+Evaluate the new data/ dataset with Qwen3-VL-4B.
 
 Dataset expected:
   data/data4.12.26/labels.csv
@@ -48,7 +48,8 @@ ROOT = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = ROOT.parent
 DATA_ROOT = PROJECT_ROOT / "data" / "data4.12.26"
 LABELS_CSV = DATA_ROOT / "labels.csv"
-DEFAULT_OUT_DIR = DATA_ROOT / "eval_results" / "qwen3vl_4b_int8_newdata_env_monitoring"
+MODEL_KEY = "qwen3vl_4b"
+DEFAULT_OUT_DIR = DATA_ROOT / "eval_results" / "qwen3vl_4b_newdata_env_monitoring"
 
 FIXED_PROMPTS: dict[str, dict] = {
     "whiteboard": {
@@ -345,9 +346,9 @@ def compute_metrics(results: list[dict]) -> dict:
 
 def load_qwen_model(config_path: str):
     cfg = load_config(config_path)
-    mcfg = next((m for m in cfg.enabled_models if m.key == "qwen3vl_4b_int8"), None)
+    mcfg = next((m for m in cfg.enabled_models if m.key == MODEL_KEY), None)
     if mcfg is None:
-        raise SystemExit("qwen3vl_4b_int8 not enabled in benchmark_config.yaml")
+        raise SystemExit(f"{MODEL_KEY} not enabled in benchmark_config.yaml")
     cls = MODEL_REGISTRY.get(mcfg.cls_name)
     if cls is None:
         raise SystemExit(f"Missing model class: {mcfg.cls_name}")
@@ -590,7 +591,7 @@ def save_plots(out_dir: Path, timestamp: str, fixed_results: dict, chair_variant
     ax.grid(axis="y", linestyle="--", linewidth=0.7, alpha=0.5)
     ax.legend(fontsize=8, loc="upper left")
     fig.tight_layout()
-    p1 = figures_dir / f"qwen4b_int8_newdata_chair_strategy_accuracy_{timestamp}.png"
+    p1 = figures_dir / f"qwen4b_newdata_chair_strategy_accuracy_{timestamp}.png"
     fig.savefig(p1, dpi=180, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     saved.append(str(p1))
@@ -605,10 +606,74 @@ def save_plots(out_dir: Path, timestamp: str, fixed_results: dict, chair_variant
     ax.set_title(f"Best Strategy Category Accuracy ({chair_variants[best_key]['label']})")
     ax.grid(axis="y", linestyle="--", linewidth=0.7, alpha=0.5)
     fig.tight_layout()
-    p2 = figures_dir / f"qwen4b_int8_newdata_best_strategy_category_accuracy_{timestamp}.png"
+    p2 = figures_dir / f"qwen4b_newdata_best_strategy_category_accuracy_{timestamp}.png"
     fig.savefig(p2, dpi=180, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     saved.append(str(p2))
+
+    latencies = [
+        round(np.mean([r.get("latency_ms", 0) for r in chair_variants[k]["chair_records"]]), 1)
+        if chair_variants[k]["chair_records"] else 0.0
+        for k in keys
+    ]
+    fig, ax = plt.subplots(figsize=(12, 5.5), facecolor="white")
+    ax.set_facecolor("#fbfbf9")
+    ax.bar(x, latencies, color="#c084fc")
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=20, ha="right")
+    ax.set_title("Chair Strategy Mean Latency")
+    ax.set_ylabel("Latency (ms)")
+    ax.grid(axis="y", linestyle="--", linewidth=0.7, alpha=0.5)
+    fig.tight_layout()
+    p_latency = figures_dir / f"qwen4b_newdata_chair_strategy_latency_{timestamp}.png"
+    fig.savefig(p_latency, dpi=180, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    saved.append(str(p_latency))
+
+    best_records = chair_variants[best_key]["chair_records"]
+    room_types = ["meeting_room", "open_space"]
+    room_acc = []
+    for room_type in room_types:
+        room_rows = [r for r in best_records if r.get("room_type") == room_type]
+        room_acc.append(
+            sum(1 for r in room_rows if r.get("predicted_label") == r.get("label")) / len(room_rows)
+            if room_rows else 0.0
+        )
+    fig, ax = plt.subplots(figsize=(7, 4.8), facecolor="white")
+    ax.set_facecolor("#fbfbf9")
+    ax.bar(room_types, room_acc, color=["#f59e0b", "#14b8a6"])
+    ax.set_ylim(0, 1.0)
+    ax.set_title(f"Best Chair Strategy by Room Type ({chair_variants[best_key]['label']})")
+    ax.grid(axis="y", linestyle="--", linewidth=0.7, alpha=0.5)
+    fig.tight_layout()
+    p_room = figures_dir / f"qwen4b_newdata_best_strategy_room_accuracy_{timestamp}.png"
+    fig.savefig(p_room, dpi=180, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    saved.append(str(p_room))
+
+    chair_labels = ["clean", "messy", "unparsed"]
+    pred_counts = {k: {label: 0 for label in chair_labels} for k in keys}
+    for key in keys:
+        for rec in chair_variants[key]["chair_records"]:
+            pred = rec.get("predicted_label") or "unparsed"
+            pred_counts[key][pred] += 1
+    clean_counts = [pred_counts[k]["clean"] for k in keys]
+    messy_counts = [pred_counts[k]["messy"] for k in keys]
+    unparsed_counts = [pred_counts[k]["unparsed"] for k in keys]
+    fig, ax = plt.subplots(figsize=(12, 5.8), facecolor="white")
+    ax.set_facecolor("#fbfbf9")
+    ax.bar(x, clean_counts, label="Pred clean", color="#22c55e")
+    ax.bar(x, messy_counts, bottom=clean_counts, label="Pred messy", color="#ef4444")
+    ax.bar(x, unparsed_counts, bottom=np.array(clean_counts) + np.array(messy_counts), label="Unparsed", color="#94a3b8")
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=20, ha="right")
+    ax.set_title("Chair Strategy Prediction Distribution")
+    ax.legend(fontsize=8, loc="upper right")
+    fig.tight_layout()
+    p_dist = figures_dir / f"qwen4b_newdata_chair_strategy_prediction_mix_{timestamp}.png"
+    fig.savefig(p_dist, dpi=180, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    saved.append(str(p_dist))
 
     examples = chair_variants[best_key]["chair_records"]
     bad = [r for r in examples if r["predicted_label"] != r["label"] and not r["error"]][:3]
@@ -642,7 +707,7 @@ def save_plots(out_dir: Path, timestamp: str, fixed_results: dict, chair_variant
         for ax in axes[len(chosen):]:
             ax.axis("off")
         fig.tight_layout()
-        p3 = figures_dir / f"qwen4b_int8_newdata_best_strategy_examples_{timestamp}.png"
+        p3 = figures_dir / f"qwen4b_newdata_best_strategy_examples_{timestamp}.png"
         fig.savefig(p3, dpi=180, bbox_inches="tight", facecolor="white")
         plt.close(fig)
         saved.append(str(p3))
@@ -733,7 +798,7 @@ def build_html_report(
 <html>
 <head>
 <meta charset="utf-8">
-<title>Qwen3-VL-4B Int8 New Data Report {html.escape(timestamp)}</title>
+<title>Qwen3-VL-4B New Data Report {html.escape(timestamp)}</title>
 <style>
 body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f6f3ee; color:#1f2937; margin:0; padding:24px; }}
 .wrap {{ max-width: 1560px; margin: 0 auto; }}
@@ -771,7 +836,7 @@ pre {{ white-space:pre-wrap; background:#faf8f4; border:1px solid #eee7de; borde
 <body>
 <div class="wrap">
   <div class="hero">
-    <h1>Qwen3-VL-4B Int8 New-Data Report</h1>
+    <h1>Qwen3-VL-4B New-Data Report</h1>
     <p class="muted">{html.escape(timestamp)} · model <strong>{html.escape(model_key)}</strong> · chair strategy <strong>{html.escape(report_variant['label'])}</strong> (`{html.escape(report_chair_key)}`)</p>
     <p>This report includes all generated plots plus every prediction card. Chairs are shown using the <strong>messy_refs_2</strong> prompting setup when present.</p>
   </div>
@@ -793,7 +858,7 @@ pre {{ white-space:pre-wrap; background:#faf8f4; border:1px solid #eee7de; borde
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Qwen3-VL-4B int8 eval on new data/ folder with chair strategy sweep.")
+    parser = argparse.ArgumentParser(description="Qwen3-VL-4B eval on new data/ folder with chair strategy sweep.")
     parser.add_argument("--config", default=str(ROOT / "benchmark_config.yaml"))
     parser.add_argument("--out-dir", default=str(DEFAULT_OUT_DIR))
     parser.add_argument("--retries", type=int, default=2, help="Retries on parse failure")
@@ -803,11 +868,12 @@ def main() -> None:
     args = parser.parse_args()
 
     samples = load_samples()
-    out_dir = Path(args.out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    tmp_dir = out_dir / "_chair_crop_cache"
-    tmp_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    base_out_dir = Path(args.out_dir)
+    run_dir = base_out_dir / ts
+    run_dir.mkdir(parents=True, exist_ok=True)
+    tmp_dir = run_dir / "_chair_crop_cache"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Dataset: {LABELS_CSV}")
     print(f"Samples: {len(samples)}")
@@ -906,12 +972,12 @@ def main() -> None:
         "best_chair_strategy_label": chair_variants[best_key]["label"],
         "target_hit": chair_variants[best_key]["chair_metrics"]["accuracy"] >= args.target_chair_accuracy,
     }
-    out_path = out_dir / f"qwen3vl_4b_int8_newdata_env_monitoring_{ts}.json"
+    out_path = run_dir / f"qwen3vl_4b_newdata_env_monitoring_{ts}.json"
     out_path.write_text(json.dumps(out, indent=2))
 
-    saved_plots = save_plots(out_dir, ts, fixed_results, chair_variants, best_key)
+    saved_plots = save_plots(run_dir, ts, fixed_results, chair_variants, best_key)
     report_key = "messy_refs_2" if "messy_refs_2" in chair_variants else best_key
-    html_path = out_dir / f"qwen3vl_4b_int8_newdata_env_monitoring_{ts}.html"
+    html_path = run_dir / f"qwen3vl_4b_newdata_env_monitoring_{ts}.html"
     html_path.write_text(
         build_html_report(
             timestamp=ts,

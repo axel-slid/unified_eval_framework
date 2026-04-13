@@ -1,0 +1,1369 @@
+{
+  "dataset_info": {
+    "project": "Logitech ML@B Task 1 - Meeting Participant Dataset",
+    "description": "Classify each subject as participant/non-participant",
+    "version": "2.0"
+  },
+  "annotations": [
+    {
+      "file_name": "all_participants_1.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            357,
+            345,
+            404,
+            395
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            558,
+            331,
+            606,
+            382
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            640,
+            340,
+            701,
+            388
+          ],
+          "role": "participant"
+        }
+      ]
+    },
+    {
+      "file_name": "all_participants_2.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            424,
+            366,
+            457,
+            397
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            493,
+            418,
+            529,
+            458
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            520,
+            408,
+            543,
+            440
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            686,
+            409,
+            711,
+            438
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            708,
+            413,
+            743,
+            453
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            749,
+            421,
+            790,
+            470
+          ],
+          "role": "participant"
+        }
+      ]
+    },
+    {
+      "file_name": "all_participants_3.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            163,
+            299,
+            295,
+            441
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            286,
+            293,
+            378,
+            391
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            360,
+            278,
+            424,
+            352
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            843,
+            282,
+            908,
+            362
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            963,
+            292,
+            1050,
+            385
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            1012,
+            315,
+            1147,
+            440
+          ],
+          "role": "participant"
+        }
+      ]
+    },
+    {
+      "file_name": "all_participants_4.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            237,
+            439,
+            298,
+            490
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            368,
+            430,
+            418,
+            483
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            470,
+            422,
+            508,
+            470
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            571,
+            429,
+            613,
+            479
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            682,
+            428,
+            730,
+            477
+          ],
+          "role": "participant"
+        }
+      ]
+    },
+    {
+      "file_name": "all_participants_5.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            388,
+            426,
+            446,
+            475
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            490,
+            418,
+            519,
+            450
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            681,
+            407,
+            706,
+            432
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            715,
+            412,
+            740,
+            442
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            740,
+            417,
+            775,
+            456
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            778,
+            420,
+            825,
+            470
+          ],
+          "role": "participant"
+        }
+      ]
+    },
+    {
+      "file_name": "all_participants_6.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            188,
+            278,
+            313,
+            408
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            288,
+            268,
+            377,
+            367
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            379,
+            260,
+            457,
+            350
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            850,
+            264,
+            924,
+            350
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            977,
+            260,
+            1103,
+            388
+          ],
+          "role": "participant"
+        }
+      ]
+    },
+    {
+      "file_name": "all_participants_7.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            412,
+            346,
+            472,
+            419
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            574,
+            344,
+            617,
+            395
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            763,
+            354,
+            820,
+            403
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            870,
+            349,
+            933,
+            410
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            930,
+            336,
+            1014,
+            418
+          ],
+          "role": "participant"
+        }
+      ]
+    },
+    {
+      "file_name": "all_participants_8.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            385,
+            419,
+            453,
+            487
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            492,
+            408,
+            543,
+            471
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            829,
+            403,
+            876,
+            457
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            893,
+            401,
+            951,
+            464
+          ],
+          "role": "participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_1.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            309,
+            431,
+            353,
+            475
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            431,
+            362,
+            463,
+            402
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            484,
+            438,
+            535,
+            497
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            600,
+            429,
+            642,
+            470
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            696,
+            425,
+            745,
+            473
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            906,
+            372,
+            937,
+            409
+          ],
+          "role": "non-participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_10.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            106,
+            331,
+            191,
+            414
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            211,
+            361,
+            270,
+            421
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            361,
+            349,
+            416,
+            415
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            526,
+            351,
+            590,
+            419
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            597,
+            345,
+            671,
+            422
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            847,
+            217,
+            892,
+            288
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P7",
+          "bbox": [
+            1124,
+            336,
+            1170,
+            393
+          ],
+          "role": "non-participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_11.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            235,
+            332,
+            291,
+            398
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            334,
+            338,
+            384,
+            395
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            446,
+            283,
+            479,
+            323
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            530,
+            344,
+            591,
+            410
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            663,
+            332,
+            736,
+            402
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            827,
+            333,
+            867,
+            376
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P7",
+          "bbox": [
+            1062,
+            325,
+            1115,
+            377
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P8",
+          "bbox": [
+            938,
+            306,
+            967,
+            343
+          ],
+          "role": "non-participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_12.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            170,
+            595,
+            266,
+            699
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            488,
+            728,
+            657,
+            884
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            760,
+            726,
+            868,
+            856
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            913,
+            761,
+            978,
+            845
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            985,
+            760,
+            1042,
+            812
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            1094,
+            674,
+            1131,
+            728
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P7",
+          "bbox": [
+            1450,
+            752,
+            1500,
+            809
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P8",
+          "bbox": [
+            1525,
+            762,
+            1589,
+            823
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P9",
+          "bbox": [
+            1612,
+            756,
+            1699,
+            833
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P10",
+          "bbox": [
+            1753,
+            719,
+            1872,
+            848
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P11",
+          "bbox": [
+            1890,
+            710,
+            2074,
+            898
+          ],
+          "role": "participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_2.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            202,
+            252,
+            329,
+            382
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            298,
+            227,
+            392,
+            322
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            589,
+            304,
+            724,
+            447
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            707,
+            177,
+            783,
+            268
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            1042,
+            192,
+            1137,
+            290
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            1055,
+            248,
+            1184,
+            395
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P7",
+          "bbox": [
+            920,
+            154,
+            981,
+            219
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P8",
+          "bbox": [
+            1161,
+            156,
+            1204,
+            208
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P9",
+          "bbox": [
+            1268,
+            167,
+            1337,
+            235
+          ],
+          "role": "non-participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_3.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            110,
+            302,
+            200,
+            402
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            175,
+            319,
+            236,
+            403
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            625,
+            322,
+            695,
+            400
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            785,
+            333,
+            870,
+            409
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            897,
+            332,
+            991,
+            416
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            1053,
+            283,
+            1091,
+            331
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P7",
+          "bbox": [
+            1185,
+            252,
+            1233,
+            310
+          ],
+          "role": "non-participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_4.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            69,
+            246,
+            106,
+            282
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            207,
+            269,
+            229,
+            301
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            413,
+            311,
+            463,
+            363
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            481,
+            317,
+            518,
+            360
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            679,
+            267,
+            705,
+            300
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            765,
+            313,
+            809,
+            357
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P7",
+          "bbox": [
+            839,
+            320,
+            891,
+            376
+          ],
+          "role": "participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_5.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            281,
+            349,
+            394,
+            467
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            474,
+            351,
+            576,
+            476
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            666,
+            354,
+            763,
+            472
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            861,
+            342,
+            969,
+            464
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            987,
+            283,
+            1040,
+            345
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            1120,
+            259,
+            1173,
+            322
+          ],
+          "role": "non-participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_6.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            250,
+            413,
+            302,
+            475
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            358,
+            414,
+            399,
+            462
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            437,
+            418,
+            488,
+            472
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            1109,
+            391,
+            1135,
+            424
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            917,
+            407,
+            943,
+            437
+          ],
+          "role": "non-participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_7.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            275,
+            343,
+            384,
+            459
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            484,
+            348,
+            578,
+            465
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            925,
+            346,
+            1000,
+            451
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            982,
+            331,
+            1095,
+            465
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            1131,
+            273,
+            1177,
+            336
+          ],
+          "role": "non-participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_8.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            153,
+            243,
+            185,
+            279
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            276,
+            178,
+            316,
+            224
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            358,
+            250,
+            396,
+            293
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            538,
+            271,
+            586,
+            328
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            726,
+            272,
+            774,
+            331
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            793,
+            285,
+            844,
+            349
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P7",
+          "bbox": [
+            893,
+            265,
+            932,
+            319
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P8",
+          "bbox": [
+            977,
+            268,
+            1024,
+            319
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P9",
+          "bbox": [
+            1178,
+            179,
+            1219,
+            233
+          ],
+          "role": "non-participant"
+        }
+      ]
+    },
+    {
+      "file_name": "non_participants_9.png",
+      "people": [
+        {
+          "id": "P1",
+          "bbox": [
+            491,
+            352,
+            555,
+            433
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P2",
+          "bbox": [
+            645,
+            366,
+            695,
+            428
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P3",
+          "bbox": [
+            789,
+            357,
+            844,
+            429
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P4",
+          "bbox": [
+            845,
+            389,
+            921,
+            465
+          ],
+          "role": "participant"
+        },
+        {
+          "id": "P5",
+          "bbox": [
+            877,
+            226,
+            906,
+            265
+          ],
+          "role": "non-participant"
+        },
+        {
+          "id": "P6",
+          "bbox": [
+            736,
+            236,
+            755,
+            261
+          ],
+          "role": "non-participant"
+        }
+      ]
+    }
+  ]
+}
