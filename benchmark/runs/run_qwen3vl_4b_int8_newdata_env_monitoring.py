@@ -75,89 +75,213 @@ FIXED_PROMPTS: dict[str, dict] = {
     },
 }
 
-CHAIR_STRATEGIES = [
-    {
-        "key": "strict_negative_full",
-        "label": "Strict Negative Full",
-        "mode": "single",
-        "question": (
-            "Answer yes only if every visible chair is tucked in.\n"
-            "If even one visible chair is pulled out, angled away, or left out, answer no.\n"
-            "End your response with a final line containing only: yes or no"
-        ),
+STRICT_CHAIR_SUFFIX = "End your response with a final line containing only: yes or no"
+
+
+def chair_strategy(
+    key: str,
+    label: str,
+    mode: str,
+    question: str,
+    few_shot: dict | None = None,
+) -> dict:
+    out = {
+        "key": key,
+        "label": label,
+        "mode": mode,
+        "question": question,
         "yes_means": "clean",
-    },
-    {
-        "key": "single_failure_rule",
-        "label": "Single Failure Rule",
-        "mode": "single",
-        "question": (
-            "Check whether every visible chair is tucked in.\n"
-            "If a single visible chair is not tucked in, answer no.\n"
-            "Only answer yes if all visible chairs are tucked in.\n"
-            "End your response with a final line containing only: yes or no"
+    }
+    if few_shot:
+        out["few_shot"] = few_shot
+    return out
+
+
+def build_chair_strategies() -> list[dict]:
+    return [
+        chair_strategy(
+            "strict_negative_full",
+            "Strict Negative Full",
+            "single",
+            (
+                "Answer yes only if every visible chair is tucked in.\n"
+                "If even one visible chair is pulled out, angled away, rotated out from the table, "
+                f"or left out, answer no.\n{STRICT_CHAIR_SUFFIX}"
+            ),
         ),
-        "yes_means": "clean",
-    },
-    {
-        "key": "all_or_nothing",
-        "label": "All or Nothing",
-        "mode": "single",
-        "question": (
-            "This is an all-or-nothing check for chairs.\n"
-            "Yes means all visible chairs are tucked in.\n"
-            "No means at least one visible chair is left out.\n"
-            "End your response with a final line containing only: yes or no"
+        chair_strategy(
+            "single_failure_rule",
+            "Single Failure Rule",
+            "single",
+            (
+                "Check whether every visible chair is tucked in.\n"
+                "If a single visible chair is not tucked in, answer no.\n"
+                f"Only answer yes if all visible chairs are tucked in.\n{STRICT_CHAIR_SUFFIX}"
+            ),
         ),
-        "yes_means": "clean",
-    },
-    {
-        "key": "strict_negative_lr",
-        "label": "Strict Negative LR Halves",
-        "mode": "split_lr",
-        "question": (
-            "Inspect this crop for chairs.\n"
-            "Answer yes only if every visible chair in this crop is tucked in.\n"
-            "If even one visible chair in this crop is left out, answer no.\n"
-            "End your response with a final line containing only: yes or no"
+        chair_strategy(
+            "visible_only_exception_scan",
+            "Visible Exception Scan",
+            "single",
+            (
+                "Scan all visible chairs one by one.\n"
+                "Ignore chairs you cannot see.\n"
+                "If you notice even one visible chair sticking out from the table or aisle, answer no.\n"
+                f"Answer yes only when every visible chair looks pushed in neatly.\n{STRICT_CHAIR_SUFFIX}"
+            ),
         ),
-        "yes_means": "clean",
-    },
-    {
-        "key": "strict_negative_quads",
-        "label": "Strict Negative Quadrants",
-        "mode": "split_quads",
-        "question": (
-            "Inspect this crop for chair placement.\n"
-            "If you can see any chair not tucked in, answer no.\n"
-            "Answer yes only if all visible chairs in this crop are tucked in.\n"
-            "End your response with a final line containing only: yes or no"
+        chair_strategy(
+            "count_then_fail",
+            "Count Then Fail",
+            "single",
+            (
+                "Mentally count the visible chairs that are not tucked in.\n"
+                "If the count is 0, answer yes.\n"
+                f"If the count is 1 or more, answer no.\n{STRICT_CHAIR_SUFFIX}"
+            ),
         ),
-        "yes_means": "clean",
-    },
-    {
-        "key": "full_then_lr_verify",
-        "label": "Full + LR Verify",
-        "mode": "full_plus_lr",
-        "question": (
-            "Use a strict rule: one visible chair left out means no.\n"
-            "For this image region, answer yes only if every visible chair here is tucked in.\n"
-            "End your response with a final line containing only: yes or no"
+        chair_strategy(
+            "strict_negative_lr",
+            "Strict Negative LR Halves",
+            "split_lr",
+            (
+                "Inspect this crop for chairs.\n"
+                "Answer yes only if every visible chair in this crop is tucked in.\n"
+                f"If even one visible chair in this crop is left out, answer no.\n{STRICT_CHAIR_SUFFIX}"
+            ),
         ),
-        "yes_means": "clean",
-    },
-    {
-        "key": "full_then_quads_verify",
-        "label": "Full + Quadrants Verify",
-        "mode": "full_plus_quads",
-        "question": (
-            "Use a strict rule: if one visible chair is left out, the answer is no.\n"
-            "For this image region, answer yes only if every visible chair here is tucked in.\n"
-            "End your response with a final line containing only: yes or no"
+        chair_strategy(
+            "strict_negative_quads",
+            "Strict Negative Quadrants",
+            "split_quads",
+            (
+                "Inspect this crop for chair placement.\n"
+                "If you can see any chair not tucked in, answer no.\n"
+                f"Answer yes only if all visible chairs in this crop are tucked in.\n{STRICT_CHAIR_SUFFIX}"
+            ),
         ),
-        "yes_means": "clean",
-    },
-]
+        chair_strategy(
+            "vertical_thirds",
+            "Vertical Thirds",
+            "split_vertical_thirds",
+            (
+                "Inspect this vertical slice for chairs.\n"
+                "If any visible chair in this slice is pulled out or crooked, answer no.\n"
+                f"Answer yes only if all visible chairs in this slice are tucked in.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+        ),
+        chair_strategy(
+            "horizontal_bands",
+            "Horizontal Bands",
+            "split_horizontal_bands",
+            (
+                "Inspect this horizontal band for chairs.\n"
+                "If one visible chair is not pushed in, answer no.\n"
+                f"Answer yes only if every visible chair in this band is tucked in.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+        ),
+        chair_strategy(
+            "overlap_quads",
+            "Overlap Quadrants",
+            "split_overlap_quads",
+            (
+                "Inspect this overlapping crop for chairs near the table.\n"
+                "If any visible chair appears left out, not aligned, or not tucked in, answer no.\n"
+                f"Answer yes only if every visible chair in this crop is tucked in.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+        ),
+        chair_strategy(
+            "full_then_lr_verify",
+            "Full + LR Verify",
+            "full_plus_lr",
+            (
+                "Use a strict rule: one visible chair left out means no.\n"
+                f"For this image region, answer yes only if every visible chair here is tucked in.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+        ),
+        chair_strategy(
+            "full_then_quads_verify",
+            "Full + Quadrants Verify",
+            "full_plus_quads",
+            (
+                "Use a strict rule: if one visible chair is left out, the answer is no.\n"
+                f"For this image region, answer yes only if every visible chair here is tucked in.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+        ),
+        chair_strategy(
+            "full_then_vertical_thirds",
+            "Full + Vertical Thirds",
+            "full_plus_vertical_thirds",
+            (
+                "Apply a zero-tolerance rule for chair placement in this region.\n"
+                f"Yes means every visible chair is tucked in; no means at least one is left out.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+        ),
+        chair_strategy(
+            "full_then_overlap_quads",
+            "Full + Overlap Quads",
+            "full_plus_overlap_quads",
+            (
+                "Use zero tolerance for chairs in this region.\n"
+                f"If one visible chair is not tucked in, answer no; otherwise answer yes.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+        ),
+        chair_strategy(
+            "messy_refs_2",
+            "Messy Refs x2",
+            "single",
+            (
+                "Use the reference images labeled not_ready as examples of messy chairs.\n"
+                "For the test image, answer yes only if every visible chair is tucked in.\n"
+                f"If the test image resembles the messy references in any visible chair, answer no.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+            few_shot={"mode": "messy_only", "n_messy": 2},
+        ),
+        chair_strategy(
+            "mixed_refs_1x1",
+            "Mixed Refs 1+1",
+            "single",
+            (
+                "Use the ready references as clean examples and the not_ready references as messy examples.\n"
+                "Answer yes only if the test image matches the clean pattern where all visible chairs are tucked in.\n"
+                f"If even one visible chair looks like the messy references, answer no.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+            few_shot={"mode": "mixed", "n_clean": 1, "n_messy": 1},
+        ),
+        chair_strategy(
+            "mixed_refs_2x2",
+            "Mixed Refs 2+2",
+            "single",
+            (
+                "Compare the test image against the clean and messy references.\n"
+                "Answer yes only if all visible chairs resemble the clean references.\n"
+                f"If any visible chair resembles the messy references by being left out, answer no.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+            few_shot={"mode": "mixed", "n_clean": 2, "n_messy": 2},
+        ),
+        chair_strategy(
+            "lr_with_messy_refs",
+            "LR Halves + Messy Refs",
+            "split_lr",
+            (
+                "Use the not_ready references as examples of chairs left out.\n"
+                "For this crop, answer yes only if every visible chair is tucked in.\n"
+                f"If any visible chair in this crop resembles a messy reference, answer no.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+            few_shot={"mode": "messy_only", "n_messy": 2},
+        ),
+        chair_strategy(
+            "quads_with_mixed_refs",
+            "Quads + Mixed Refs",
+            "split_quads",
+            (
+                "Use the ready and not_ready references to judge this crop.\n"
+                "Answer yes only if every visible chair in this crop matches the ready pattern.\n"
+                f"If any visible chair matches the not_ready pattern, answer no.\n{STRICT_CHAIR_SUFFIX}"
+            ),
+            few_shot={"mode": "mixed", "n_clean": 1, "n_messy": 1},
+        ),
+    ]
 
 
 def parse_yes_no(response: str) -> bool | None:
@@ -289,6 +413,31 @@ def load_samples() -> list[dict]:
     return normalized
 
 
+def build_chair_ref_images(all_chair_samples: list[dict], test_sample: dict, few_shot_cfg: dict) -> list[tuple[str, str]]:
+    test_path = test_sample["image_path"]
+    clean_candidates = [
+        s for s in all_chair_samples
+        if s["image_path"] != test_path and s["label"] == "clean" and Path(s["image_path"]).exists()
+    ]
+    messy_candidates = [
+        s for s in all_chair_samples
+        if s["image_path"] != test_path and s["label"] == "messy" and Path(s["image_path"]).exists()
+    ]
+
+    refs: list[tuple[str, str]] = []
+    n_clean = few_shot_cfg.get("n_clean", 0)
+    n_messy = few_shot_cfg.get("n_messy", 0)
+    mode = few_shot_cfg.get("mode", "mixed")
+
+    if mode == "messy_only":
+        refs.extend((s["image_path"], "not_ready") for s in messy_candidates[:n_messy])
+        return refs
+
+    refs.extend((s["image_path"], "ready") for s in clean_candidates[:n_clean])
+    refs.extend((s["image_path"], "not_ready") for s in messy_candidates[:n_messy])
+    return refs
+
+
 def crop_regions(image_path: Path, mode: str, tmp_dir: Path) -> list[Path]:
     img = Image.open(image_path).convert("RGB")
     w, h = img.size
@@ -308,18 +457,65 @@ def crop_regions(image_path: Path, mode: str, tmp_dir: Path) -> list[Path]:
         save_crop((w // 2, 0, w, h // 2), "q2")
         save_crop((0, h // 2, w // 2, h), "q3")
         save_crop((w // 2, h // 2, w, h), "q4")
+    elif mode in {"split_vertical_thirds", "full_plus_vertical_thirds"}:
+        x1 = w // 3
+        x2 = (2 * w) // 3
+        save_crop((0, 0, x1, h), "v1")
+        save_crop((x1, 0, x2, h), "v2")
+        save_crop((x2, 0, w, h), "v3")
+    elif mode in {"split_horizontal_bands", "full_plus_horizontal_bands"}:
+        y1 = h // 3
+        y2 = (2 * h) // 3
+        save_crop((0, 0, w, y1), "h1")
+        save_crop((0, y1, w, y2), "h2")
+        save_crop((0, y2, w, h), "h3")
+    elif mode in {"split_overlap_quads", "full_plus_overlap_quads"}:
+        ox = int(w * 0.15)
+        oy = int(h * 0.15)
+        mx = w // 2
+        my = h // 2
+        save_crop((0, 0, min(w, mx + ox), min(h, my + oy)), "oq1")
+        save_crop((max(0, mx - ox), 0, w, min(h, my + oy)), "oq2")
+        save_crop((0, max(0, my - oy), min(w, mx + ox), h), "oq3")
+        save_crop((max(0, mx - ox), max(0, my - oy), w, h), "oq4")
     return regions
 
 
-def run_prompt(model, image_path: str, prompt: str) -> tuple[bool | None, str, int, str | None]:
-    r = model.run(image_path, prompt)
-    ans = None if r.error else parse_yes_no(r.response)
-    return ans, r.response, round(r.latency_ms), r.error
+def run_prompt(
+    model,
+    image_path: str,
+    prompt: str,
+    retries: int,
+    refs: list[tuple[str, str]] | None = None,
+) -> tuple[bool | None, str, int, str | None]:
+    total_latency = 0
+    last_response = ""
+    last_error = None
+    answer = None
+    for _ in range(retries + 1):
+        r = model.run_few_shot(refs, image_path, prompt) if refs else model.run(image_path, prompt)
+        total_latency += round(r.latency_ms)
+        last_response = r.response
+        last_error = r.error
+        if r.error:
+            break
+        answer = parse_yes_no(r.response)
+        if answer is not None:
+            break
+    return answer, last_response, total_latency, last_error
 
 
-def evaluate_chair_strategy(model, sample: dict, strategy: dict, tmp_dir: Path) -> dict:
+def evaluate_chair_strategy(
+    model,
+    sample: dict,
+    strategy: dict,
+    tmp_dir: Path,
+    retries: int,
+    all_chair_samples: list[dict],
+) -> dict:
     image_path = Path(sample["image_path"])
     mode = strategy["mode"]
+    refs = build_chair_ref_images(all_chair_samples, sample, strategy["few_shot"]) if strategy.get("few_shot") else None
 
     answers = []
     raw_parts = []
@@ -327,20 +523,20 @@ def evaluate_chair_strategy(model, sample: dict, strategy: dict, tmp_dir: Path) 
     error = None
 
     if mode == "single":
-        ans, raw, lat, err = run_prompt(model, str(image_path), strategy["question"])
+        ans, raw, lat, err = run_prompt(model, str(image_path), strategy["question"], retries, refs)
         answers.append(ans)
         raw_parts.append(("full", raw))
         total_latency += lat
         error = err
     else:
         if mode.startswith("full_plus"):
-            ans, raw, lat, err = run_prompt(model, str(image_path), strategy["question"])
+            ans, raw, lat, err = run_prompt(model, str(image_path), strategy["question"], retries, refs)
             answers.append(ans)
             raw_parts.append(("full", raw))
             total_latency += lat
             error = err or error
         for crop_path in crop_regions(image_path, mode, tmp_dir):
-            ans, raw, lat, err = run_prompt(model, str(crop_path), strategy["question"])
+            ans, raw, lat, err = run_prompt(model, str(crop_path), strategy["question"], retries, refs)
             answers.append(ans)
             raw_parts.append((crop_path.stem, raw))
             total_latency += lat
@@ -364,6 +560,7 @@ def evaluate_chair_strategy(model, sample: dict, strategy: dict, tmp_dir: Path) 
         "error": error,
         "latency_ms": total_latency,
         "n_views": len(raw_parts),
+        "n_refs": len(refs or []),
     }
 
 
@@ -454,6 +651,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Qwen3-VL-4B int8 eval on new data/ folder with chair strategy sweep.")
     parser.add_argument("--config", default=str(ROOT / "benchmark_config.yaml"))
     parser.add_argument("--out-dir", default=str(DEFAULT_OUT_DIR))
+    parser.add_argument("--retries", type=int, default=2, help="Retries on parse failure")
+    parser.add_argument("--target-chair-accuracy", type=float, default=0.70)
+    parser.add_argument("--max-chair-strategies", type=int, default=0, help="0 means evaluate all strategies")
     args = parser.parse_args()
 
     samples = load_samples()
@@ -467,6 +667,7 @@ def main() -> None:
     print(f"Samples: {len(samples)}")
     if os.environ.get("CUDA_VISIBLE_DEVICES") is not None:
         print(f"CUDA_VISIBLE_DEVICES={os.environ['CUDA_VISIBLE_DEVICES']}")
+    print(f"Target chair accuracy: {args.target_chair_accuracy:.2f}")
 
     model, model_cfg = load_qwen_model(args.config)
     print(f"Loading model: {model_cfg.key}")
@@ -478,7 +679,7 @@ def main() -> None:
         records = []
         print(f"\nRunning fixed prompt for {subtask_key}: {len(rows)} images")
         for sample in rows:
-            ans, raw, lat, err = run_prompt(model, sample["image_path"], prompt_cfg["question"])
+            ans, raw, lat, err = run_prompt(model, sample["image_path"], prompt_cfg["question"], args.retries)
             pred = predict_label(ans, prompt_cfg["yes_means"])
             rec = {
                 **sample,
@@ -494,13 +695,20 @@ def main() -> None:
 
     chair_rows = [s for s in samples if s["subtask"] == "chairs"]
     chair_variants = {}
-    for strategy in CHAIR_STRATEGIES:
+    chair_strategies = build_chair_strategies()
+    if args.max_chair_strategies > 0:
+        chair_strategies = chair_strategies[:args.max_chair_strategies]
+
+    for idx, strategy in enumerate(chair_strategies, start=1):
         print(f"\nRunning chair strategy: {strategy['label']} ({strategy['mode']})")
         records = []
         for sample in chair_rows:
-            rec = evaluate_chair_strategy(model, sample, strategy, tmp_dir)
+            rec = evaluate_chair_strategy(model, sample, strategy, tmp_dir, args.retries, chair_rows)
             records.append(rec)
-            print(f"  {sample['image_filename']}: pred={rec['predicted_label']} gt={sample['label']} views={rec['n_views']}")
+            print(
+                f"  {sample['image_filename']}: pred={rec['predicted_label']} "
+                f"gt={sample['label']} views={rec['n_views']} refs={rec['n_refs']}"
+            )
         combined = []
         for key in ("tables", "blinds", "whiteboard"):
             combined.extend(fixed_results[key]["records"])
@@ -512,6 +720,18 @@ def main() -> None:
             "combined_metrics": compute_metrics(combined),
             "chair_records": records,
         }
+        chair_acc = chair_variants[strategy["key"]]["chair_metrics"]["accuracy"]
+        overall_acc = chair_variants[strategy["key"]]["combined_metrics"]["accuracy"]
+        print(
+            f"  -> strategy {idx}/{len(chair_strategies)} "
+            f"chair_acc={chair_acc:.1%} overall_acc={overall_acc:.1%}"
+        )
+        if chair_acc >= args.target_chair_accuracy:
+            print(
+                f"Stopping early: {strategy['key']} reached chair accuracy "
+                f"{chair_acc:.1%} >= {args.target_chair_accuracy:.1%}"
+            )
+            break
 
     model.unload()
 
@@ -528,10 +748,13 @@ def main() -> None:
         "dataset": str(LABELS_CSV),
         "model_key": model_cfg.key,
         "model_path": model_cfg.model_path,
+        "target_chair_accuracy": args.target_chair_accuracy,
+        "retries": args.retries,
         "fixed_category_results": fixed_results,
         "chair_strategy_results": chair_variants,
         "best_chair_strategy_key": best_key,
         "best_chair_strategy_label": chair_variants[best_key]["label"],
+        "target_hit": chair_variants[best_key]["chair_metrics"]["accuracy"] >= args.target_chair_accuracy,
     }
     out_path = out_dir / f"qwen3vl_4b_int8_newdata_env_monitoring_{ts}.json"
     out_path.write_text(json.dumps(out, indent=2))
