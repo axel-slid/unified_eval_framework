@@ -241,12 +241,21 @@ def load_samples() -> list[dict]:
     with open(LABELS_CSV, newline="") as f:
         rows = list(csv.DictReader(f))
 
+    discovered_paths = {p.name: p for p in DATA_ROOT.rglob("*") if p.is_file()}
     normalized = []
+    skipped = []
     for row in rows:
         subtask = row["subtask"]
         image_name = Path(row["output_path"]).name
         folder = {"table": "tables"}.get(subtask, subtask)
-        actual_path = DATA_ROOT / "meeting_room" / folder / image_name
+        room_type = row.get("room_type", "meeting_room")
+        actual_path = DATA_ROOT / room_type / folder / image_name
+        if not actual_path.exists():
+            discovered = discovered_paths.get(image_name)
+            if discovered is None:
+                skipped.append((row["output_path"], room_type, subtask, image_name))
+                continue
+            actual_path = discovered
         label = row["label"]
         if subtask == "chairs":
             mapped = "clean" if "neat" in label or label.endswith("_clean") else "messy"
@@ -269,6 +278,13 @@ def load_samples() -> list[dict]:
                 "label": mapped,
             }
         )
+    if skipped:
+        print(f"Warning: skipping {len(skipped)} rows with missing images")
+        for output_path, room_type, subtask, image_name in skipped[:10]:
+            print(
+                f"  missing image: room_type={room_type} subtask={subtask} "
+                f"file={image_name} output_path={output_path}"
+            )
     return normalized
 
 
