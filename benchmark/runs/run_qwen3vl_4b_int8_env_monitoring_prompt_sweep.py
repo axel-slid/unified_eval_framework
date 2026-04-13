@@ -206,6 +206,57 @@ CHAIR_PROMPTS: list[dict] = [
         ),
         "yes_means": "clean",
     },
+    {
+        "key": "chair_strict_negative_messy_refs_2",
+        "label": "Strict Negative + 2 Messy Refs",
+        "question": (
+            "The reference images above are NOT READY examples where at least one visible chair is left out.\n"
+            "Now apply the same strict rule to the test image.\n"
+            "Answer yes only if every visible chair is tucked in.\n"
+            "If even one visible chair is not tucked in, answer no.\n"
+            "End your response with a final line containing only: yes or no"
+        ),
+        "yes_means": "clean",
+        "few_shot": {"mode": "messy_only", "n_messy": 2, "n_clean": 0},
+    },
+    {
+        "key": "chair_strict_negative_messy_refs_4",
+        "label": "Strict Negative + 4 Messy Refs",
+        "question": (
+            "The reference images above are NOT READY examples where one or more visible chairs are left out.\n"
+            "Use those failures as visual references.\n"
+            "For the test image, answer yes only if all visible chairs are tucked in.\n"
+            "If even one visible chair is not tucked in, answer no.\n"
+            "End your response with a final line containing only: yes or no"
+        ),
+        "yes_means": "clean",
+        "few_shot": {"mode": "messy_only", "n_messy": 4, "n_clean": 0},
+    },
+    {
+        "key": "chair_strict_negative_mixed_refs_2x2",
+        "label": "Strict Negative + 2 Clean 2 Messy",
+        "question": (
+            "The reference images above show READY and NOT READY chair layouts.\n"
+            "READY means all visible chairs are tucked in.\n"
+            "NOT READY means even one visible chair is left out.\n"
+            "Apply the same rule to the test image.\n"
+            "End your response with a final line containing only: yes or no"
+        ),
+        "yes_means": "clean",
+        "few_shot": {"mode": "mixed", "n_messy": 2, "n_clean": 2},
+    },
+    {
+        "key": "chair_strict_negative_mixed_refs_1x3",
+        "label": "Strict Negative + 1 Clean 3 Messy",
+        "question": (
+            "Use the reference images above to compare chair layouts.\n"
+            "A single visible chair left out is enough to make the answer no.\n"
+            "Only answer yes if every visible chair in the test image is tucked in.\n"
+            "End your response with a final line containing only: yes or no"
+        ),
+        "yes_means": "clean",
+        "few_shot": {"mode": "mixed", "n_messy": 3, "n_clean": 1},
+    },
 ]
 
 
@@ -399,6 +450,31 @@ def load_samples() -> list[dict]:
         return list(csv.DictReader(f))
 
 
+def build_chair_ref_images(all_chair_samples: list[dict], test_sample: dict, few_shot_cfg: dict) -> list[tuple[str, str]]:
+    test_path = test_sample["image_path"]
+    clean_candidates = [
+        s for s in all_chair_samples
+        if s["image_path"] != test_path and s["label"] == "clean" and Path(s["image_path"]).exists()
+    ]
+    messy_candidates = [
+        s for s in all_chair_samples
+        if s["image_path"] != test_path and s["label"] == "messy" and Path(s["image_path"]).exists()
+    ]
+
+    refs: list[tuple[str, str]] = []
+    n_clean = few_shot_cfg.get("n_clean", 0)
+    n_messy = few_shot_cfg.get("n_messy", 0)
+    mode = few_shot_cfg.get("mode", "mixed")
+
+    if mode == "messy_only":
+        refs.extend((s["image_path"], "not_ready") for s in messy_candidates[:n_messy])
+        return refs
+
+    refs.extend((s["image_path"], "ready") for s in clean_candidates[:n_clean])
+    refs.extend((s["image_path"], "not_ready") for s in messy_candidates[:n_messy])
+    return refs
+
+
 def load_qwen4b_int8_model(config_path: str) -> tuple[object, ModelConfig]:
     cfg = load_config(config_path)
     mcfg = next((m for m in cfg.enabled_models if m.key == "qwen3vl_4b_int8"), None)
@@ -419,7 +495,7 @@ def load_qwen4b_int8_model(config_path: str) -> tuple[object, ModelConfig]:
     return cls(run_cfg), run_cfg
 
 
-def run_once(model, sample: dict, prompt_cfg: dict, retries: int) -> dict:
+def run_once(model, sample: dict, prompt_cfg: dict, retries: int, all_chair_samples: list[dict] | None = None) -> dict:
     image_path = sample["image_path"]
     sid = sample["image_filename"].replace(".png", "").replace(".jpg", "")[:35]
 
@@ -439,7 +515,11 @@ def run_once(model, sample: dict, prompt_cfg: dict, retries: int) -> dict:
     answer = None
     error = None
     for attempt in range(retries + 1):
-        result = model.run(image_path, prompt_cfg["question"])
+        if prompt_cfg.get("few_shot"):
+            refs = build_chair_ref_images(all_chair_samples or [], sample, prompt_cfg["few_shot"])
+            result = model.run_few_shot(refs, image_path, prompt_cfg["question"])
+        else:
+            result = model.run(image_path, prompt_cfg["question"])
         total_latency += round(result.latency_ms)
         raw_response = result.response
         error = result.error
@@ -458,6 +538,7 @@ def run_once(model, sample: dict, prompt_cfg: dict, retries: int) -> dict:
         "raw_response": raw_response,
         "error": error,
         "latency_ms": total_latency,
+        "n_refs": len(build_chair_ref_images(all_chair_samples or [], sample, prompt_cfg["few_shot"])) if prompt_cfg.get("few_shot") else 0,
     }
 
 
@@ -507,11 +588,11 @@ def main() -> None:
         print(f"\nRunning chair variant: {chair_prompt['label']} ({len(chair_rows)} images)")
         records = []
         for sample in chair_rows:
-            rec = run_once(model, sample, chair_prompt, args.retries)
+            rec = run_once(model, sample, chair_prompt, args.retries, all_chair_samples=chair_rows)
             records.append(rec)
             print(
                 f"  [{rec['sample_id']}] chairs/{chair_prompt['key']}: "
-                f"pred={rec['predicted_label']} gt={rec['label']} "
+                f"pred={rec['predicted_label']} gt={rec['label']} refs={rec['n_refs']} "
                 f"{'ERR' if rec['error'] else round(rec['latency_ms'])}"
             )
 
