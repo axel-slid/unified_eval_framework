@@ -18,7 +18,9 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import base64
 import csv
+import html
 import json
 import os
 import re
@@ -647,6 +649,149 @@ def save_plots(out_dir: Path, timestamp: str, fixed_results: dict, chair_variant
     return saved
 
 
+def img_b64(path: str | Path) -> str | None:
+    try:
+        p = Path(path)
+        ext = p.suffix.lower().strip(".")
+        mime = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png"}.get(ext, "image/png")
+        return f"data:{mime};base64,{base64.b64encode(p.read_bytes()).decode()}"
+    except Exception:
+        return None
+
+
+def build_html_report(
+    timestamp: str,
+    out_path: Path,
+    fixed_results: dict,
+    chair_variants: dict,
+    report_chair_key: str,
+    plot_paths: list[str],
+    model_key: str,
+) -> str:
+    report_variant = chair_variants[report_chair_key]
+    sections = []
+
+    def metric_block(title: str, metrics: dict) -> str:
+        rows = []
+        for cat, vals in metrics.get("per_change_type", {}).items():
+            rows.append(
+                f"<tr><td>{html.escape(cat)}</td><td>{vals['correct']}/{vals['total']}</td>"
+                f"<td>{vals['accuracy']:.1%}</td><td>{vals['parse_errors']}</td></tr>"
+            )
+        return (
+            f"<div class='metric-card'><h3>{html.escape(title)}</h3>"
+            f"<p><strong>Accuracy:</strong> {metrics.get('accuracy', 0.0):.1%} "
+            f"<span class='muted'>({metrics.get('n_images', 0)} images, parse errors {metrics.get('parse_errors', 0)})</span></p>"
+            f"<table><tr><th>Category</th><th>Correct</th><th>Accuracy</th><th>Parse Errors</th></tr>{''.join(rows)}</table>"
+            f"</div>"
+        )
+
+    plot_html = "".join(
+        (
+            f"<figure class='plot-card'><img src='{img_b64(p) or ''}' alt='{html.escape(Path(p).name)}'>"
+            f"<figcaption>{html.escape(Path(p).name)}</figcaption></figure>"
+        )
+        for p in plot_paths
+        if Path(p).exists()
+    )
+
+    records_by_category = {
+        "whiteboard": fixed_results["whiteboard"]["records"],
+        "blinds": fixed_results["blinds"]["records"],
+        "tables": fixed_results["tables"]["records"],
+        "chairs": report_variant["chair_records"],
+    }
+
+    for category, records in records_by_category.items():
+        cards = []
+        for rec in sorted(records, key=lambda r: (r["label"], r["image_filename"])):
+            img_src = img_b64(rec["image_path"]) or ""
+            pred = rec.get("predicted_label")
+            gt = rec["label"]
+            ok = pred == gt
+            status_class = "ok" if ok else "bad"
+            answer = rec.get("answer")
+            answer_str = "yes" if answer is True else "no" if answer is False else "unparsed"
+            cards.append(
+                "<article class='card'>"
+                f"<img src='{img_src}' alt='{html.escape(rec['image_filename'])}'>"
+                f"<div class='meta'><div class='filename'>{html.escape(rec['image_filename'])}</div>"
+                f"<div class='badges'><span class='badge gt'>gt={html.escape(gt)}</span>"
+                f"<span class='badge {status_class}'>pred={html.escape(str(pred))}</span>"
+                f"<span class='badge neutral'>answer={html.escape(answer_str)}</span>"
+                f"<span class='badge neutral'>latency={rec.get('latency_ms', 0)}ms</span>"
+                f"<span class='badge neutral'>views={rec.get('n_views', 1)}</span>"
+                f"<span class='badge neutral'>refs={rec.get('n_refs', 0)}</span></div>"
+                f"<details><summary>Model response</summary><pre>{html.escape(rec.get('raw_response') or '')}</pre></details>"
+                "</div></article>"
+            )
+        sections.append(
+            f"<section><h2>{html.escape(category.title())}</h2><div class='grid'>{''.join(cards)}</div></section>"
+        )
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Qwen3-VL-4B Int8 New Data Report {html.escape(timestamp)}</title>
+<style>
+body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f6f3ee; color:#1f2937; margin:0; padding:24px; }}
+.wrap {{ max-width: 1560px; margin: 0 auto; }}
+h1 {{ margin:0 0 8px; font-size:32px; }}
+h2 {{ margin:28px 0 14px; font-size:20px; }}
+h3 {{ margin:0 0 8px; font-size:16px; }}
+p, li {{ line-height:1.45; }}
+.muted {{ color:#6b7280; }}
+.hero {{ background:white; border:1px solid #e5ded3; border-radius:18px; padding:20px 22px; box-shadow:0 12px 30px rgba(0,0,0,0.06); }}
+.metrics {{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px; }}
+.metric-card, .plot-card, .card {{ background:white; border:1px solid #e5ded3; border-radius:16px; box-shadow:0 10px 24px rgba(0,0,0,0.05); }}
+.metric-card {{ padding:16px; }}
+table {{ width:100%; border-collapse:collapse; font-size:14px; }}
+th, td {{ text-align:left; padding:8px 10px; border-bottom:1px solid #eee7de; }}
+.plots {{ display:grid; grid-template-columns:repeat(auto-fit, minmax(380px, 1fr)); gap:18px; margin-top:14px; }}
+.plot-card {{ padding:12px; }}
+.plot-card img {{ width:100%; border-radius:12px; display:block; }}
+.plot-card figcaption {{ margin-top:8px; font-size:13px; color:#6b7280; }}
+.grid {{ display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px; }}
+.card {{ overflow:hidden; }}
+.card img {{ width:100%; height:240px; object-fit:cover; display:block; background:#ece7df; }}
+.meta {{ padding:14px; }}
+.filename {{ font-size:13px; color:#6b7280; margin-bottom:10px; word-break:break-word; }}
+.badges {{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }}
+.badge {{ font-size:12px; padding:5px 8px; border-radius:999px; background:#f3efe8; }}
+.badge.gt {{ background:#e7f0ff; color:#1d4ed8; }}
+.badge.ok {{ background:#e7f8ee; color:#15803d; }}
+.badge.bad {{ background:#fdecec; color:#b91c1c; }}
+.badge.neutral {{ background:#f3efe8; color:#6b7280; }}
+details summary {{ cursor:pointer; font-size:13px; color:#374151; }}
+pre {{ white-space:pre-wrap; background:#faf8f4; border:1px solid #eee7de; border-radius:10px; padding:10px; font-size:12px; line-height:1.4; overflow:auto; }}
+@media (max-width: 900px) {{ .metrics {{ grid-template-columns:1fr; }} body {{ padding:16px; }} }}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>Qwen3-VL-4B Int8 New-Data Report</h1>
+    <p class="muted">{html.escape(timestamp)} · model <strong>{html.escape(model_key)}</strong> · chair strategy <strong>{html.escape(report_variant['label'])}</strong> (`{html.escape(report_chair_key)}`)</p>
+    <p>This report includes all generated plots plus every prediction card. Chairs are shown using the <strong>messy_refs_2</strong> prompting setup when present.</p>
+  </div>
+
+  <div class="metrics">
+    {metric_block("Fixed Categories", compute_metrics([r for v in fixed_results.values() for r in v["records"]]))}
+    {metric_block(f"Chair Strategy: {report_variant['label']}", report_variant["chair_metrics"])}
+  </div>
+
+  <section>
+    <h2>Plots</h2>
+    <div class="plots">{plot_html}</div>
+  </section>
+
+  {''.join(sections)}
+</div>
+</body>
+</html>"""
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Qwen3-VL-4B int8 eval on new data/ folder with chair strategy sweep.")
     parser.add_argument("--config", default=str(ROOT / "benchmark_config.yaml"))
@@ -654,6 +799,7 @@ def main() -> None:
     parser.add_argument("--retries", type=int, default=2, help="Retries on parse failure")
     parser.add_argument("--target-chair-accuracy", type=float, default=0.70)
     parser.add_argument("--max-chair-strategies", type=int, default=0, help="0 means evaluate all strategies")
+    parser.add_argument("--chair-strategy", default="", help="Optional single chair strategy key to run, e.g. messy_refs_2")
     args = parser.parse_args()
 
     samples = load_samples()
@@ -696,6 +842,10 @@ def main() -> None:
     chair_rows = [s for s in samples if s["subtask"] == "chairs"]
     chair_variants = {}
     chair_strategies = build_chair_strategies()
+    if args.chair_strategy:
+        chair_strategies = [s for s in chair_strategies if s["key"] == args.chair_strategy]
+        if not chair_strategies:
+            raise SystemExit(f"Unknown chair strategy: {args.chair_strategy}")
     if args.max_chair_strategies > 0:
         chair_strategies = chair_strategies[:args.max_chair_strategies]
 
@@ -760,6 +910,19 @@ def main() -> None:
     out_path.write_text(json.dumps(out, indent=2))
 
     saved_plots = save_plots(out_dir, ts, fixed_results, chair_variants, best_key)
+    report_key = "messy_refs_2" if "messy_refs_2" in chair_variants else best_key
+    html_path = out_dir / f"qwen3vl_4b_int8_newdata_env_monitoring_{ts}.html"
+    html_path.write_text(
+        build_html_report(
+            timestamp=ts,
+            out_path=html_path,
+            fixed_results=fixed_results,
+            chair_variants=chair_variants,
+            report_chair_key=report_key,
+            plot_paths=saved_plots,
+            model_key=model_cfg.key,
+        )
+    )
     print("\nChair strategy summary:")
     for key, result in chair_variants.items():
         print(
@@ -770,6 +933,7 @@ def main() -> None:
     print(f"Results -> {out_path}")
     for plot_path in saved_plots:
         print(f"Plot -> {plot_path}")
+    print(f"HTML -> {html_path}")
 
 
 if __name__ == "__main__":
