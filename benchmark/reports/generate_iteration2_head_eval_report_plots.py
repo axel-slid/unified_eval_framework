@@ -158,6 +158,46 @@ def save_confusion_heatmap(data: dict, out_dir: Path) -> str:
     return str(p)
 
 
+def save_confusion_breakdown_panel(data: dict, out_dir: Path) -> str:
+    best = data["vlm"]["dilation_results"][data["vlm"]["best_dilation_key"]]["metrics"]
+    counts = {
+        "TP": best["tp"],
+        "TN": best["tn"],
+        "FP": best["fp"],
+        "FN": best["fn"],
+    }
+    mat = np.array([[counts["TP"], counts["FN"]], [counts["FP"], counts["TN"]]])
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.5, 4.8), facecolor=BG)
+    ax1.set_facecolor(PANEL)
+    im = ax1.imshow(mat, cmap="Blues")
+    ax1.set_xticks([0, 1], ["Pred participant", "Pred non-participant"])
+    ax1.set_yticks([0, 1], ["GT participant", "GT non-participant"])
+    ax1.set_title("Confusion Matrix")
+    for i in range(2):
+        for j in range(2):
+            ax1.text(j, i, str(mat[i, j]), ha="center", va="center", fontsize=14, fontweight="bold")
+    fig.colorbar(im, ax=ax1, fraction=0.046, pad=0.04)
+
+    ax2.set_facecolor(PANEL)
+    labels = list(counts.keys())
+    values = [counts[k] for k in labels]
+    colors = ["#16a34a", "#2563eb", "#f59e0b", "#dc2626"]
+    bars = ax2.bar(labels, values, color=colors)
+    ax2.set_title("Confusion Breakdown")
+    ax2.set_ylabel("Count")
+    ax2.grid(axis="y", linestyle="--", alpha=0.35)
+    for bar, value in zip(bars, values):
+        ax2.text(bar.get_x() + bar.get_width() / 2, value + max(0.2, max(values) * 0.02), str(value), ha="center", fontsize=10)
+
+    fig.suptitle("Best-Dilation False Positives / False Negatives / Confusion Summary", fontsize=13, fontweight="bold")
+    fig.tight_layout()
+    p = out_dir / "iteration2_confusion_breakdown_panel.png"
+    fig.savefig(p, dpi=180, bbox_inches="tight", facecolor=BG)
+    plt.close(fig)
+    return str(p)
+
+
 def save_per_image_counts(data: dict, out_dir: Path) -> str:
     records = data["head_detector"]["records"]
     x = np.arange(len(records))
@@ -375,6 +415,7 @@ def main() -> None:
         save_summary_overview(data, out_dir),
         save_dilation_sweep(data, out_dir),
         save_confusion_heatmap(data, out_dir),
+        save_confusion_breakdown_panel(data, out_dir),
         save_per_image_counts(data, out_dir),
         save_iou_vs_correct(data, out_dir),
         save_detection_overlay_sheet(data, out_dir),
