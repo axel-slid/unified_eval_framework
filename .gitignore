@@ -59,6 +59,10 @@ demo_test.jpg
 # Keep demo/app icon assets if any
 !demo/assets/*.png
 
+# Keep deploy example images
+!deploy/qwen3vl_4b_llamacpp/examples/*.png
+!deploy/qwen3vl_4b_llamacpp/examples/*.jpg
+
 # =============================================================================
 # Python cache
 # =============================================================================

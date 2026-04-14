@@ -19,11 +19,11 @@ Leave this terminal running.
 In a second terminal, pass any image path:
 
 ```bash
-bash deploy/qwen3vl_4b_llamacpp/infer.sh deploy/qwen3vl_4b_llamacpp/examples/example1.jpg
+bash deploy/qwen3vl_4b_llamacpp/infer.sh deploy/qwen3vl_4b_llamacpp/examples/example1.png
 ```
 
 ```bash
-bash deploy/qwen3vl_4b_llamacpp/infer.sh deploy/qwen3vl_4b_llamacpp/examples/example2.jpg
+bash deploy/qwen3vl_4b_llamacpp/infer.sh deploy/qwen3vl_4b_llamacpp/examples/example2.png
 ```
 
 The response is printed to stdout. A log file is saved to `deploy/qwen3vl_4b_llamacpp/logs/` after each run.
