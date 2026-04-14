@@ -14,6 +14,16 @@ IMAGE_PATH="${2:-}"
 
 RUNNER="${DEPLOY_DIR}/run_qwen3vl_4b_llamacpp.py"
 
+install_llama_cpp() {
+  echo "llama-server not found. Attempting to install llama.cpp..."
+  if command -v brew >/dev/null 2>&1; then
+    brew install llama.cpp
+  else
+    echo "Homebrew not found. Install llama.cpp manually: https://github.com/ggml-org/llama.cpp" >&2
+    exit 1
+  fi
+}
+
 choose_backend() {
   if [[ "${BACKEND}" != "auto" ]]; then
     echo "${BACKEND}"
@@ -21,10 +31,15 @@ choose_backend() {
   fi
   if command -v llama-server >/dev/null 2>&1; then
     echo "local"
-  elif command -v docker >/dev/null 2>&1; then
-    echo "docker"
   else
-    echo "none"
+    install_llama_cpp
+    if command -v llama-server >/dev/null 2>&1; then
+      echo "local"
+    elif command -v docker >/dev/null 2>&1; then
+      echo "docker"
+    else
+      echo "none"
+    fi
   fi
 }
 

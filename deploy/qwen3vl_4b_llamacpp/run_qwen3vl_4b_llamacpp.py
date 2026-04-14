@@ -3,7 +3,9 @@ from __future__ import annotations
 
 import argparse
 import base64
+import datetime
 import io
+import json
 import os
 import shutil
 import subprocess
@@ -17,6 +19,7 @@ from PIL import Image
 
 
 DEPLOY_DIR = Path(__file__).resolve().parent
+LOG_DIR = DEPLOY_DIR / "logs"
 PROJECT_ROOT = DEPLOY_DIR.parent.parent
 DEFAULT_MODEL_DIR = PROJECT_ROOT / "models" / "Qwen3-VL-4B-Instruct"
 DEFAULT_REPO_ID = "lmstudio-community/Qwen3-VL-4B-Instruct-GGUF"
@@ -38,6 +41,20 @@ DEFAULT_PROMPT = (
 
 def log(msg: str) -> None:
     print(msg, flush=True)
+
+
+def write_infer_log(image_path: Path, prompt: str, response: str, raw: dict) -> Path:
+    LOG_DIR.mkdir(exist_ok=True)
+    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_path = LOG_DIR / f"infer_{ts}.log"
+    log_path.write_text(
+        f"timestamp: {datetime.datetime.now().isoformat()}\n"
+        f"image: {image_path}\n"
+        f"prompt: {prompt}\n\n"
+        f"response:\n{response}\n\n"
+        f"raw:\n{json.dumps(raw, indent=2)}\n"
+    )
+    return log_path
 
 
 def _existing_ggufs(model_dir: Path) -> tuple[list[Path], list[Path]]:
@@ -281,6 +298,8 @@ def command_infer(args: argparse.Namespace) -> int:
             wait_for_server(args.port, args.health_timeout)
             out = infer_once(args.port, args.image, args.prompt, args.max_tokens, args.max_image_side)
             print(out["response"])
+            log_path = write_infer_log(args.image, args.prompt, out["response"], out["raw"])
+            log(f"Log saved: {log_path}")
             return 0
         finally:
             server_proc.terminate()
@@ -292,6 +311,8 @@ def command_infer(args: argparse.Namespace) -> int:
         wait_for_server(args.port, args.health_timeout)
         out = infer_once(args.port, args.image, args.prompt, args.max_tokens, args.max_image_side)
         print(out["response"])
+        log_path = write_infer_log(args.image, args.prompt, out["response"], out["raw"])
+        log(f"Log saved: {log_path}")
         return 0
 
 
