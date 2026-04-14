@@ -27,3 +27,9 @@ bash deploy/qwen3vl_4b_llamacpp/infer.sh deploy/qwen3vl_4b_llamacpp/examples/exa
 ```
 
 The response is printed to stdout. A log file is saved to `deploy/qwen3vl_4b_llamacpp/logs/` after each run.
+
+To get just the model's response with no extra output:
+
+```bash
+bash deploy/qwen3vl_4b_llamacpp/deploy.sh infer /path/to/image.jpg 2>/dev/null | tail -n 1
+```
